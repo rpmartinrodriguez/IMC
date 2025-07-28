@@ -10,28 +10,81 @@
     <div class="container">
         <header>
             <h1 id="patientName">Cargando paciente...</h1>
-            <!-- ENLACE ACTUALIZADO -->
             <a href="index.html" class="link-calculadora">Volver a la Lista</a>
         </header>
-
-        <!-- Sección para añadir nueva medición -->
-        <div class="card">
-            <h2>Registrar Nueva Medición</h2>
-            <form id="addMeasurementForm">
-                <div class="input-group">
-                    <label for="newWeight">Peso Actual (kg)</label>
-                    <input type="number" id="newWeight" step="0.1" required class="input-field">
-                </div>
-                <button type="submit" class="btn-guardar">Guardar Medición</button>
-            </form>
-        </div>
 
         <!-- Historial de mediciones del paciente -->
         <div class="historial-container">
             <h2>Historial de Mediciones</h2>
-            <ul id="measurementHistoryList">
-                <!-- Las mediciones de este paciente se cargarán aquí -->
-            </ul>
+            <div id="measurementHistoryList">
+                <!-- Las tarjetas de mediciones de este paciente se cargarán aquí -->
+            </div>
+        </div>
+
+        <!-- Botón flotante para agregar nueva medición -->
+        <button id="addMeasurementBtn" class="fab">+</button>
+    </div>
+
+    <!-- Ventana Modal para agregar nueva medición -->
+    <div id="addMeasurementModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Registrar Nueva Medición</h2>
+            <form id="addMeasurementForm">
+                <!-- Sección de Pesos -->
+                <fieldset>
+                    <legend>Análisis de Peso</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha">Fecha Actual</label>
+                            <input type="text" id="fecha" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="pesoAnterior">Peso Anterior (kg)</label>
+                            <input type="number" id="pesoAnterior" disabled>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pesoActual">Peso Actual (kg)</label>
+                            <input type="number" id="pesoActual" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Resultado</label>
+                            <p id="diferenciaPeso" class="result-display">-</p>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Sección de Indicadores -->
+                <fieldset>
+                    <legend>Indicadores (Pliegues)</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pt">PT</label>
+                            <input type="number" id="pt" class="indicator-input" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pse">PSE</label>
+                            <input type="number" id="pse" class="indicator-input" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="psi">PSI</label>
+                            <input type="number" id="psi" class="indicator-input" step="0.1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pa">PA</label>
+                            <input type="number" id="pa" class="indicator-input" step="0.1" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Tejido Graso (%)</label>
+                        <p id="tejidoGraso" class="result-display">-</p>
+                    </div>
+                </fieldset>
+                
+                <button type="submit" class="btn-guardar">Guardar Medición</button>
+            </form>
         </div>
     </div>
 
