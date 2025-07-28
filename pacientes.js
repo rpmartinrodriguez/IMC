@@ -1,4 +1,4 @@
-// 1. CONFIGURACIÓN DE FIREBASE (Usa la misma que en tu otro script)
+// 1. CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
   authDomain: "medicion-imc.firebaseapp.com",
@@ -12,84 +12,97 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// 3. REFERENCIAS A ELEMENTOS DEL DOM
-const addPatientBtn = document.getElementById('addPatientBtn');
-const modal = document.getElementById('addPatientModal');
-const closeModalBtn = document.querySelector('.close-btn');
-const addPatientForm = document.getElementById('addPatientForm');
-const patientListBody = document.getElementById('patientListBody');
+// Variable global para guardar todos los pacientes y no consultar a Firebase en cada búsqueda
+let allPatients = [];
 
-// 4. LÓGICA DE LA VENTANA MODAL
-addPatientBtn.addEventListener('click', () => {
-    modal.classList.add('show');
-});
+document.addEventListener('DOMContentLoaded', () => {
+    // 3. REFERENCIAS A ELEMENTOS DEL DOM
+    const addPatientBtn = document.getElementById('addPatientBtn');
+    const modal = document.getElementById('addPatientModal');
+    const closeModalBtn = document.querySelector('.close-btn');
+    const addPatientForm = document.getElementById('addPatientForm');
+    const searchInput = document.getElementById('searchInput');
 
-closeModalBtn.addEventListener('click', () => {
-    modal.classList.remove('show');
-});
-
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.classList.remove('show');
-    }
-});
-
-// 5. LÓGICA PARA GUARDAR PACIENTES
-addPatientForm.addEventListener('submit', (event) => {
-    event.preventDefault(); // Evita que la página se recargue
-
-    // Obtener valores del formulario
-    const nombre = document.getElementById('nombre').value;
-    const telefono = document.getElementById('telefono').value;
-    const peso = parseFloat(document.getElementById('peso').value);
-    const fechaIngresoStr = document.getElementById('fechaIngreso').value;
-
-    // Convertir la fecha a un objeto Timestamp de Firebase
-    const fechaIngreso = new Date(fechaIngresoStr);
-
-    // Guardar en una nueva colección "pacientes"
-    db.collection("pacientes").add({
-        nombreCompleto: nombre,
-        telefono: telefono,
-        ultimoPeso: peso,
-        fechaPrimerRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso),
-        fechaUltimoRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso) // Al inicio son la misma
-    })
-    .then(() => {
-        console.log("Paciente registrado con éxito");
-        addPatientForm.reset(); // Limpiar el formulario
-        modal.classList.remove('show'); // Cerrar el modal
-    })
-    .catch((error) => {
-        console.error("Error al registrar paciente: ", error);
-        alert("Hubo un error al registrar el paciente.");
+    // 4. LÓGICA DE LA VENTANA MODAL
+    addPatientBtn.addEventListener('click', () => { modal.classList.add('show'); });
+    closeModalBtn.addEventListener('click', () => { modal.classList.remove('show'); });
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) { modal.classList.remove('show'); }
     });
-});
 
-// 6. CARGAR Y MOSTRAR PACIENTES EN LA TABLA
-const cargarPacientes = () => {
-    db.collection("pacientes").orderBy("fechaPrimerRegistro", "desc").onSnapshot(querySnapshot => {
-        patientListBody.innerHTML = ''; // Limpiar tabla antes de cargar datos nuevos
+    // 5. LÓGICA PARA GUARDAR PACIENTES
+    addPatientForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const nombre = document.getElementById('nombre').value;
+        const telefono = document.getElementById('telefono').value;
+        const peso = parseFloat(document.getElementById('peso').value);
+        const fechaIngresoStr = document.getElementById('fechaIngreso').value;
+        if (!fechaIngresoStr) { alert("Por favor, selecciona una fecha de ingreso."); return; }
+        const fechaIngreso = new Date(fechaIngresoStr);
 
-        if (querySnapshot.empty) {
-            patientListBody.innerHTML = '<tr><td colspan="4">No hay pacientes registrados.</td></tr>';
-            return;
-        }
-
-        querySnapshot.forEach(doc => {
-            const paciente = doc.data();
-            
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${paciente.nombreCompleto}</td>
-                <td>${paciente.telefono}</td>
-                <td>${paciente.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES')}</td>
-                <td>${paciente.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES')}</td>
-            `;
-            patientListBody.appendChild(tr);
+        db.collection("pacientes").add({
+            nombreCompleto: nombre,
+            telefono: telefono,
+            ultimoPeso: peso,
+            fechaPrimerRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso),
+            fechaUltimoRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso)
+        }).then(() => {
+            console.log("Paciente registrado con éxito");
+            addPatientForm.reset();
+            modal.classList.remove('show');
+        }).catch((error) => {
+            console.error("Error al registrar paciente: ", error);
+            alert("Hubo un error al registrar el paciente.");
         });
     });
-};
 
-// Iniciar la carga de pacientes cuando la página esté lista
-document.addEventListener('DOMContentLoaded', cargarPacientes);
+    // 6. LÓGICA DE BÚSQUEDA
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredPatients = allPatients.filter(patient => 
+            patient.data.nombreCompleto.toLowerCase().includes(searchTerm)
+        );
+        renderPatients(filteredPatients);
+    });
+
+    // 7. CARGAR PACIENTES DESDE FIREBASE
+    db.collection("pacientes").orderBy("fechaPrimerRegistro", "desc").onSnapshot(querySnapshot => {
+        allPatients = [];
+        querySnapshot.forEach(doc => {
+            allPatients.push({ id: doc.id, data: doc.data() });
+        });
+        renderPatients(allPatients); // Renderizar la lista completa inicial
+    });
+});
+
+// 8. FUNCIÓN PARA RENDERIZAR LA TABLA DE PACIENTES
+function renderPatients(patients) {
+    const patientListBody = document.getElementById('patientListBody');
+    patientListBody.innerHTML = '';
+
+    if (patients.length === 0) {
+        patientListBody.innerHTML = '<tr><td colspan="4">No se encontraron pacientes.</td></tr>';
+        return;
+    }
+
+    patients.forEach(patient => {
+        const doc = patient.data;
+        const tr = document.createElement('tr');
+        tr.dataset.id = patient.id; // Guardar el ID del documento en el elemento
+        tr.classList.add('patient-row'); // Clase para darle estilo de clic
+        
+        tr.innerHTML = `
+            <td>${doc.nombreCompleto}</td>
+            <td>${doc.telefono}</td>
+            <td>${doc.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES')}</td>
+            <td>${doc.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES')}</td>
+        `;
+        
+        // Añadir evento de clic para navegar
+        tr.addEventListener('click', () => {
+            window.location.href = `mediciones.html?id=${patient.id}`;
+        });
+
+        patientListBody.appendChild(tr);
+    });
+}
