@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Paciente</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 id="patientName">Cargando paciente...</h1>
+            <a href="pacientes.html" class="link-calculadora">Volver a la Lista</a>
+        </header>
+
+        <!-- Sección para añadir nueva medición -->
+        <div class="card">
+            <h2>Registrar Nueva Medición</h2>
+            <form id="addMeasurementForm">
+                <div class="input-group">
+                    <label for="newWeight">Peso Actual (kg)</label>
+                    <input type="number" id="newWeight" step="0.1" required class="input-field">
+                </div>
+                <button type="submit" class="btn-guardar">Guardar Medición</button>
+            </form>
+        </div>
+
+        <!-- Historial de mediciones del paciente -->
+        <div class="historial-container">
+            <h2>Historial de Mediciones</h2>
+            <ul id="measurementHistoryList">
+                <!-- Las mediciones de este paciente se cargarán aquí -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- SDKs de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    
+    <!-- Script para esta página -->
+    <script src="mediciones.js"></script>
+</body>
+</html>
