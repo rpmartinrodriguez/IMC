@@ -1,5 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+// NO es necesario inicializar Firebase aquí si solo calculamos
 
+document.addEventListener('DOMContentLoaded', () => {
     const pesoInput = document.getElementById('peso');
     const alturaInput = document.getElementById('altura');
     const calcularBtn = document.getElementById('calcularBtn');
@@ -15,15 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Convertir altura de cm a metros
         const alturaM = alturaCm / 100;
-
-        // Calcular IMC
         const imc = peso / (alturaM * alturaM);
 
-        // Mostrar el resultado con 2 decimales
-        resultadoDiv.textContent = `Tu IMC es: ${imc.toFixed(2)}`;
+        resultadoDiv.textContent = `El IMC es: ${imc.toFixed(2)}`;
         resultadoDiv.classList.remove('resultado-placeholder');
     });
-
 });
