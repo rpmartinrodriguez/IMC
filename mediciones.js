@@ -16,6 +16,9 @@ const db = firebase.firestore();
 let currentPatientId = null;
 let patientData = null;
 let measurementHistory = [];
+// Instancias de los gráficos para poder destruirlos y redibujarlos
+let weightChartInstance = null;
+let fatChartInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     // 3. OBTENER ID DEL PACIENTE DESDE LA URL
@@ -29,15 +32,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. REFERENCIAS A ELEMENTOS DEL DOM
     const patientNameEl = document.getElementById('patientName');
-    const measurementHistoryListEl = document.getElementById('measurementHistoryList');
     
-    // --- Add Modal elements ---
+    // Add Modal elements
     const addMeasurementBtn = document.getElementById('addMeasurementBtn');
     const addModal = document.getElementById('addMeasurementModal');
     const closeAddModalBtn = addModal.querySelector('.close-btn');
     const addForm = document.getElementById('addMeasurementForm');
     
-    // --- View Modal elements (NUEVO) ---
+    // View Modal elements
     const viewModal = document.getElementById('viewMeasurementModal');
     const closeViewModalBtn = viewModal.querySelector('.close-btn');
     const viewModalTitle = document.getElementById('viewModalTitle');
@@ -60,10 +62,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. LÓGICA DE MODALES
     addMeasurementBtn.addEventListener('click', openAddModal);
     closeAddModalBtn.addEventListener('click', () => addModal.classList.remove('show'));
-    closeViewModalBtn.addEventListener('click', () => viewModal.classList.remove('show')); // NUEVO
+    closeViewModalBtn.addEventListener('click', () => viewModal.classList.remove('show'));
     window.addEventListener('click', (event) => {
         if (event.target === addModal) addModal.classList.remove('show');
-        if (event.target === viewModal) viewModal.classList.remove('show'); // NUEVO
+        if (event.target === viewModal) viewModal.classList.remove('show');
     });
 
     // 7. CÁLCULOS EN TIEMPO REAL DENTRO DEL MODAL DE AÑADIR
@@ -86,17 +88,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function loadMeasurementHistory() {
-        db.collection('pacientes').doc(currentPatientId).collection('mediciones').orderBy('fecha', 'desc').onSnapshot(snapshot => {
+        db.collection('pacientes').doc(currentPatientId).collection('mediciones').orderBy('fecha', 'asc').onSnapshot(snapshot => {
             measurementHistory = [];
             snapshot.forEach(doc => measurementHistory.push(doc.data()));
             renderHistory();
+            renderCharts();
         });
     }
 
     function openAddModal() {
         addForm.reset();
         document.getElementById('fecha').value = new Date().toLocaleDateString('es-ES');
-        const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[0] : null;
+        const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[measurementHistory.length - 1] : null; // La última en orden cronológico
         document.getElementById('pesoAnterior').value = ultimaMedicion ? ultimaMedicion.resultados.pesoActual : patientData.ultimoPeso;
         document.getElementById('diferenciaPeso').textContent = '-';
         document.getElementById('diferenciaPeso').className = 'result-display';
@@ -104,14 +107,12 @@ document.addEventListener('DOMContentLoaded', () => {
         addModal.classList.add('show');
     }
 
-    // NUEVA FUNCIÓN PARA ABRIR EL MODAL DE VISUALIZACIÓN
     function openViewModal(medicion) {
         const r = medicion.resultados;
         const i = medicion.indicadores;
 
         viewModalTitle.textContent = `Detalle de Medición (${medicion.fecha.toDate().toLocaleDateString('es-ES')})`;
         
-        // Populate data
         viewPesoAnterior.textContent = `${r.pesoAnterior} kg`;
         viewPesoActual.textContent = `${r.pesoActual} kg`;
         viewDiferenciaPeso.textContent = `${r.diferenciaPeso.toFixed(2)} kg`;
@@ -164,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const diferenciaPeso = pesoAnterior - pesoActual;
         const tejidoGrasoPorcentaje = ((pt + pse + psi + pa) * 0.153) + 5.783;
         const kilosGrasaTotal = (pesoActual * tejidoGrasoPorcentaje) / 100;
-        const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[0] : null;
+        const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[measurementHistory.length - 1] : null;
         const kilosGrasaAnterior = ultimaMedicion ? ultimaMedicion.resultados.kilosGrasaTotal : (pesoAnterior * tejidoGrasoPorcentaje) / 100;
         const cambioGrasaGramos = (kilosGrasaAnterior - kilosGrasaTotal) * 1000;
         const masaMagraActual = pesoActual - kilosGrasaTotal;
@@ -190,13 +191,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderHistory() {
+        const measurementHistoryListEl = document.getElementById('measurementHistoryList');
         measurementHistoryListEl.innerHTML = '';
-        if (measurementHistory.length === 0) {
+        const reversedHistory = [...measurementHistory].reverse();
+        if (reversedHistory.length === 0) {
             measurementHistoryListEl.innerHTML = '<p>No hay mediciones registradas para este paciente.</p>';
             return;
         }
 
-        measurementHistory.forEach(medicion => {
+        reversedHistory.forEach(medicion => {
             const r = medicion.resultados;
             const card = document.createElement('div');
             card.className = 'card measurement-card';
@@ -216,10 +219,70 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             
-            // AÑADIR EVENTO DE CLIC PARA VER DETALLES
             card.addEventListener('click', () => openViewModal(medicion));
-
             measurementHistoryListEl.appendChild(card);
+        });
+    }
+
+    function renderCharts() {
+        const chartsSection = document.getElementById('chartsSection');
+        if (measurementHistory.length < 2) {
+            chartsSection.style.display = 'none';
+            return;
+        }
+        chartsSection.style.display = 'grid';
+
+        const labels = measurementHistory.map(m => m.fecha.toDate().toLocaleDateString('es-ES'));
+        const weightData = measurementHistory.map(m => m.resultados.pesoActual);
+        const fatPercentageData = measurementHistory.map(m => m.resultados.tejidoGrasoPorcentaje.toFixed(2));
+        const leanMassData = measurementHistory.map(m => (m.resultados.pesoActual - m.resultados.kilosGrasaTotal).toFixed(2));
+
+        if (weightChartInstance) weightChartInstance.destroy();
+        if (fatChartInstance) fatChartInstance.destroy();
+
+        const weightCtx = document.getElementById('weightChart').getContext('2d');
+        weightChartInstance = new Chart(weightCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Peso Total (kg)',
+                    data: weightData,
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }, {
+                    label: 'Masa Magra (kg)',
+                    data: leanMassData,
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: false } }
+            }
+        });
+
+        const fatCtx = document.getElementById('fatPercentageChart').getContext('2d');
+        fatChartInstance = new Chart(fatCtx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '% Grasa Corporal',
+                    data: fatPercentageData,
+                    borderColor: 'rgb(255, 159, 64)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    tension: 0.1,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: { y: { beginAtZero: false } }
+            }
         });
     }
 });
