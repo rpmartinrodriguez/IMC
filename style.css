@@ -24,6 +24,13 @@ h1, h2 {
     margin-bottom: 25px;
 }
 
+.card {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
 /* =================================================================
    ESTILOS PARA LA PÁGINA DE CALCULADORA (index.html)
    ================================================================= */
@@ -93,14 +100,14 @@ h1, h2 {
     padding-top: 20px;
 }
 
-#historialLista {
+#historialLista, #measurementHistoryList {
     list-style-type: none;
     padding: 0;
     max-height: 300px;
     overflow-y: auto;
 }
 
-#historialLista li {
+#historialLista li, #measurementHistoryList li {
     background-color: #f8f9fa;
     padding: 15px;
     border-radius: 8px;
@@ -113,7 +120,7 @@ h1, h2 {
     flex-wrap: wrap;
 }
 
-#historialLista li .fecha {
+#historialLista li .fecha, #measurementHistoryList li .fecha {
     font-size: 12px;
     color: #6c757d;
     width: 100%;
@@ -156,6 +163,24 @@ header h1 {
     text-decoration: none;
     font-weight: 500;
 }
+
+/* --- NUEVOS ESTILOS --- */
+.search-container {
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.patient-row {
+    cursor: pointer;
+}
+/* --- FIN NUEVOS ESTILOS --- */
 
 .table-container {
     overflow-x: auto;
