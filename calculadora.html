@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Antropométrica con Firebase</title>
+    <title>Calculadora Antropométrica</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div class="container">
-        <h1>Control Antropométrico</h1>
+        <h1>Calculadora de IMC</h1>
+        <p>Esta es una calculadora genérica. Las mediciones aquí no se guardan para ningún paciente.</p>
         <div class="input-group">
             <label for="peso">Peso (kg)</label>
             <input type="number" id="peso" placeholder="Ej: 70" class="input-field">
@@ -18,26 +19,20 @@
             <label for="altura">Altura (cm)</label>
             <input type="number" id="altura" placeholder="Ej: 175" class="input-field">
         </div>
-        <button id="calcularBtn">Guardar Medición</button>
+        <button id="calcularBtn">Calcular IMC</button>
         <div id="resultado" class="resultado-placeholder">
             <!-- El resultado del IMC aparecerá aquí -->
         </div>
 
-        <div class="historial-container">
-            <h2>Historial de Mediciones</h2>
-            <ul id="historialLista">
-                <!-- El historial de Firebase se cargará aquí -->
-            </ul>
-        </div>
-
-        <a href="pacientes.html" class="link-pacientes">Ver Lista de Pacientes</a>
+        <!-- ENLACE ACTUALIZADO -->
+        <a href="index.html" class="link-pacientes">Volver a la Lista de Pacientes</a>
     </div>
 
     <!-- SDK de Firebase (Compatibilidad) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     
-    <!-- Tu script -->
-    <script src="script.js"></script>
+    <!-- SCRIPT ACTUALIZADO -->
+    <script src="calculadora.js"></script>
 </body>
 </html>
