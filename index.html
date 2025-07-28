@@ -9,7 +9,6 @@
 <body>
 
     <div class="container">
-        <div id="auth-status">Conectando...</div>
         <h1>Control Antropométrico</h1>
         <div class="input-group">
             <label for="peso">Peso (kg)</label>
@@ -19,9 +18,9 @@
             <label for="altura">Altura (cm)</label>
             <input type="number" id="altura" placeholder="Ej: 175" class="input-field">
         </div>
-        <button id="calcularBtn" disabled>Guardar Medición</button>
+        <button id="calcularBtn">Guardar Medición</button>
         <div id="resultado" class="resultado-placeholder">
-            Inicia sesión para empezar...
+            <!-- El resultado del IMC aparecerá aquí -->
         </div>
 
         <div class="historial-container">
@@ -30,11 +29,12 @@
                 <!-- El historial de Firebase se cargará aquí -->
             </ul>
         </div>
+
+        <a href="pacientes.html" class="link-pacientes">Ver Lista de Pacientes</a>
     </div>
 
     <!-- SDK de Firebase (Compatibilidad) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script> <!-- AÑADIDO -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     
     <!-- Tu script -->
