@@ -29,121 +29,22 @@ h1, h2 {
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 30px;
+    border: 1px solid #e9ecef;
 }
 
-/* =================================================================
-   ESTILOS PARA LA PÁGINA DE CALCULADORA (index.html)
-   ================================================================= */
-.input-group {
-    margin-bottom: 20px;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 8px;
-    color: #555;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.input-field {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
-
-.input-field:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-#calcularBtn {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(45deg, #007bff, #0056b3);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-#calcularBtn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-#resultado {
-    margin-top: 25px;
-    font-size: 18px;
+.text-success {
+    color: #28a745;
     font-weight: bold;
-    text-align: center;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #e9ecef;
 }
 
-.resultado-placeholder {
-    color: #888;
-    font-style: italic;
-    background-color: transparent;
-}
-
-.historial-container {
-    margin-top: 40px;
-    border-top: 1px solid #e0e0e0;
-    padding-top: 20px;
-}
-
-#historialLista, #measurementHistoryList {
-    list-style-type: none;
-    padding: 0;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-#historialLista li, #measurementHistoryList li {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    border-left: 4px solid #007bff;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-}
-
-#historialLista li .fecha, #measurementHistoryList li .fecha {
-    font-size: 12px;
-    color: #6c757d;
-    width: 100%;
-    margin-top: 5px;
-    text-align: right;
-}
-
-.link-pacientes {
-    display: block;
-    margin-top: 30px;
-    text-align: center;
-    color: #007bff;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.link-pacientes:hover {
-    text-decoration: underline;
+.text-danger {
+    color: #dc3545;
+    font-weight: bold;
 }
 
 
 /* =================================================================
-   ESTILOS PARA LA PÁGINA DE PACIENTES (pacientes.html)
+   ESTILOS PARA LA PÁGINA DE PACIENTES (index.html)
    ================================================================= */
 header {
     display: flex;
@@ -154,9 +55,7 @@ header {
     margin-bottom: 30px;
 }
 
-header h1 {
-    margin: 0;
-}
+header h1 { margin: 0; }
 
 .link-calculadora {
     color: #007bff;
@@ -164,10 +63,7 @@ header h1 {
     font-weight: 500;
 }
 
-/* --- NUEVOS ESTILOS --- */
-.search-container {
-    margin-bottom: 20px;
-}
+.search-container { margin-bottom: 20px; }
 
 #searchInput {
     width: 100%;
@@ -177,14 +73,9 @@ header h1 {
     box-sizing: border-box;
 }
 
-.patient-row {
-    cursor: pointer;
-}
-/* --- FIN NUEVOS ESTILOS --- */
+.patient-row { cursor: pointer; }
 
-.table-container {
-    overflow-x: auto;
-}
+.table-container { overflow-x: auto; }
 
 table {
     width: 100%;
@@ -204,9 +95,7 @@ th {
     color: #495057;
 }
 
-tbody tr:hover {
-    background-color: #f1f1f1;
-}
+tbody tr:hover { background-color: #f1f1f1; }
 
 .fab {
     position: fixed;
@@ -232,7 +121,9 @@ tbody tr:hover {
     transform: rotate(90deg);
 }
 
-/* --- Estilos de la Ventana Modal --- */
+/* =================================================================
+   VENTANA MODAL (General)
+   ================================================================= */
 .modal {
     display: none;
     position: fixed;
@@ -247,9 +138,7 @@ tbody tr:hover {
     align-items: center;
 }
 
-.modal.show {
-    display: flex;
-}
+.modal.show { display: flex; }
 
 .modal-content {
     background-color: #fefefe;
@@ -257,7 +146,7 @@ tbody tr:hover {
     padding: 30px;
     border-radius: 10px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     position: relative;
     animation: slide-down 0.4s ease-out;
 }
@@ -285,12 +174,15 @@ tbody tr:hover {
 
 .form-group {
     margin-bottom: 20px;
+    flex: 1;
+    padding: 0 10px;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
+    font-size: 14px;
 }
 
 .form-group input {
@@ -299,6 +191,11 @@ tbody tr:hover {
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
+}
+
+.form-group input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
 }
 
 .btn-guardar {
@@ -311,8 +208,64 @@ tbody tr:hover {
     cursor: pointer;
     font-size: 16px;
     font-weight: 600;
+    margin-top: 20px;
 }
 
-.btn-guardar:hover {
-    background: #218838;
+.btn-guardar:hover { background: #218838; }
+
+/* =================================================================
+   ESTILOS ESPECÍFICOS MEDICIONES.HTML
+   ================================================================= */
+.historial-container {
+    margin-top: 20px;
 }
+
+.measurement-card {
+    margin-bottom: 15px;
+}
+
+.measurement-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.measurement-card .card-body p {
+    margin: 5px 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Estilos para el modal de mediciones */
+#addMeasurementModal fieldset {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+#addMeasurementModal legend {
+    font-weight: bold;
+    color: #007bff;
+    padding: 0 10px;
+}
+
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 -10px;
+}
+
+.result-display {
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    min-height: 41px; /* Alineado con la altura del input */
+    box-sizing: border-box;
+}
+
