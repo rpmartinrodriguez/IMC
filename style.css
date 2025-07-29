@@ -33,15 +33,8 @@ h3 { font-size: 1.2em; }
     border: 1px solid #e9ecef;
 }
 
-.text-success {
-    color: #28a745;
-    font-weight: bold;
-}
-
-.text-danger {
-    color: #dc3545;
-    font-weight: bold;
-}
+.text-success { color: #28a745; font-weight: bold; }
+.text-danger { color: #dc3545; font-weight: bold; }
 
 /* =================================================================
    MENÚ DE NAVEGACIÓN (HAMBURGUESA)
@@ -59,7 +52,7 @@ header h1 {
     margin: 0;
     flex-grow: 1;
     text-align: center;
-    padding-left: 50px; /* Espacio para compensar el botón */
+    padding-left: 50px;
 }
 
 .hamburger-button {
@@ -97,9 +90,7 @@ header h1 {
     transition: left 0.4s ease-in-out;
 }
 
-.navigation-overlay.show {
-    left: 0;
-}
+.navigation-overlay.show { left: 0; }
 
 .navigation-overlay .close-nav-button {
     position: absolute;
@@ -112,27 +103,10 @@ header h1 {
     cursor: pointer;
 }
 
-.nav-links {
-    list-style: none;
-    padding: 0;
-    text-align: center;
-}
-
-.nav-links li {
-    margin-bottom: 30px;
-}
-
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    font-size: 28px;
-    font-weight: 600;
-    transition: color 0.3s;
-}
-
-.nav-links a:hover {
-    color: #007bff;
-}
+.nav-links { list-style: none; padding: 0; text-align: center; }
+.nav-links li { margin-bottom: 30px; }
+.nav-links a { color: white; text-decoration: none; font-size: 28px; font-weight: 600; transition: color 0.3s; }
+.nav-links a:hover { color: #007bff; }
 
 /* =================================================================
    GRÁFICOS (mediciones.html)
@@ -149,12 +123,6 @@ header h1 {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-@media (max-width: 900px) {
-    .charts-container {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* =================================================================
@@ -685,7 +653,7 @@ legend {
 }
 
 .modal-content.large {
-    max-width: 800px; /* Modal más ancho para el plan */
+    max-width: 800px;
 }
 
 .tabs {
@@ -725,7 +693,7 @@ legend {
 .btn-edit {
     padding: 6px 12px;
     font-size: 12px;
-    background-color: #ffc107; /* Un color amarillo para editar */
+    background-color: #ffc107;
     color: #212529;
     border: none;
     border-radius: 5px;
@@ -738,7 +706,65 @@ legend {
     background-color: #e0a800;
 }
 
-/* Ajuste para que la fila de la tabla no parezca clickeable en la celda de acciones */
 td:has(.btn-edit) {
     cursor: default;
+}
+
+/* =================================================================
+   NUEVO: DISEÑO RESPONSIVO PARA MÓVILES
+   ================================================================= */
+@media (max-width: 768px) {
+    body { padding: 10px; }
+    .container { padding: 15px; }
+
+    header { flex-wrap: wrap; }
+    header h1 { font-size: 1.3em; padding-left: 0; width: 100%; order: -1; text-align: center; margin-bottom: 10px; }
+    .header-actions { flex-direction: column; gap: 10px; width: 100%; margin-top: 10px; }
+    .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+
+    .charts-container, .data-grid, .form-row, .menu-list-container, .food-list-container {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+
+    .fab { bottom: 15px; right: 15px; }
+    .modal-content { width: 95%; padding: 20px; }
+
+    /* Transformar tabla de pacientes en tarjetas */
+    .table-container thead {
+        display: none;
+    }
+    .table-container tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .table-container td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #eee;
+        padding: 10px 5px;
+        text-align: right;
+    }
+    .table-container td:last-child {
+        border-bottom: none;
+    }
+    .table-container td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        text-align: left;
+        margin-right: 10px;
+        color: #555;
+    }
+    .table-container td:has(.btn-edit) {
+        justify-content: center;
+        padding-top: 15px;
+    }
+    .table-container td:has(.btn-edit)::before {
+        display: none;
+    }
 }
