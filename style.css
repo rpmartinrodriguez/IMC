@@ -710,6 +710,12 @@ td:has(.btn-edit) {
     cursor: default;
 }
 
+.btn-primary.full-width {
+    width: 100%;
+    margin-top: 15px;
+    padding: 12px;
+}
+
 /* =================================================================
    NUEVO: DISEÑO RESPONSIVO PARA MÓVILES
    ================================================================= */
