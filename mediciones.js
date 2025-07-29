@@ -424,7 +424,12 @@ document.addEventListener('DOMContentLoaded', () => {
             edad--;
         }
         const pesoActual = ultimaMedicion.resultados.pesoActual;
-        const alturaCm = (patientData.sexo === 'masculino') ? 175 : 165;
+        const alturaCm = patientData.altura; // CORREGIDO: Usar la altura real
+        if (!alturaCm) {
+            alert("El paciente no tiene una altura registrada. No se puede generar el plan.");
+            return null;
+        }
+
         let bmr;
         if (patientData.sexo === 'masculino') {
             bmr = 10 * pesoActual + 6.25 * alturaCm - 5 * edad + 5;
@@ -486,11 +491,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const ultimaMedicionDoc = measurementHistory[measurementHistory.length - 1];
-        if (!ultimaMedicionDoc.objetivos || !patientData.fechaNacimiento || !patientData.sexo) {
-            alert("La última medición debe tener objetivos y el paciente debe tener fecha de nacimiento y sexo registrados.");
+        if (!ultimaMedicionDoc.objetivos || !patientData.fechaNacimiento || !patientData.sexo || !patientData.altura) {
+            alert("Para generar un plan, el paciente debe tener altura, fecha de nacimiento y sexo registrados, y la última medición debe tener objetivos.");
             return;
         }
-        const { caloriasObjetivo, macros } = calculateNeeds(ultimaMedicionDoc);
+        const calculatedNeeds = calculateNeeds(ultimaMedicionDoc);
+        if (!calculatedNeeds) return; // Detener si no se pudo calcular (ej. falta altura)
+
+        const { caloriasObjetivo, macros } = calculatedNeeds;
         const menuPlan = buildMenu(macros);
         const ejercicioPlan = generateExerciseTips(ultimaMedicionDoc.objetivos);
         const planData = {
