@@ -241,7 +241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span>Peso: ${r.pesoActual} kg</span>
                 </div>
                 <div class="card-body">
-                    <p><strong>Kilos de Grasa Total:</strong> ${r.kilosGrasaTotal.toFixed(2)} kg</p>
+                    <p><strong>Kilos de Grasa Total:</strong><span>${r.kilosGrasaTotal.toFixed(2)} kg</span></p>
                     <p><strong>Grasa (vs ant.):</strong> ${grasaMsg}</p>
                     <p><strong>Masa Magra (vs ant.):</strong> ${masaMagraMsg}</p>
                 </div>
@@ -309,27 +309,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         let yPos = 20;
+
         pdf.setFontSize(22);
         pdf.text(patientData.nombreCompleto, 105, yPos, { align: 'center' });
         yPos += 10;
         pdf.setFontSize(16);
         pdf.text('Evolución de Mediciones Antropométricas', 105, yPos, { align: 'center' });
         yPos += 15;
+
         try {
             const chart1Canvas = await html2canvas(document.getElementById('weightChart'));
             const chart2Canvas = await html2canvas(document.getElementById('fatPercentageChart'));
             pdf.addImage(chart1Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 85);
             yPos += 95;
             pdf.addImage(chart2Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 85);
-        } catch (error) {
-            console.error("Error al renderizar gráficos: ", error);
-            pdf.text('No se pudieron generar los gráficos.', 15, yPos);
-        }
+        } catch (error) { console.error("Error al renderizar gráficos: ", error); }
+
         pdf.addPage();
         yPos = 20;
         pdf.setFontSize(16);
         pdf.text('Historial de Mediciones', 15, yPos);
         yPos += 12;
+
         const dateFrom = document.getElementById('dateFrom').value;
         const dateTo = document.getElementById('dateTo').value;
         const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
@@ -338,24 +339,53 @@ document.addEventListener('DOMContentLoaded', () => {
             const mDate = m.fecha.toDate().getTime();
             return mDate >= fromTimestamp && mDate <= toTimestamp;
         });
-        pdf.autoTable({
-            startY: yPos,
-            head: [['Fecha', 'Peso (kg)', '% Grasa', 'Kg Grasa', 'Kg M. Magra']],
-            body: filteredHistory.map(m => {
-                const r = m.resultados;
-                const masaMagra = r.pesoActual - r.kilosGrasaTotal;
-                return [
-                    m.fecha.toDate().toLocaleDateString('es-ES'),
-                    r.pesoActual.toFixed(2),
-                    r.tejidoGrasoPorcentaje.toFixed(2),
-                    r.kilosGrasaTotal.toFixed(2),
-                    masaMagra.toFixed(2)
-                ];
-            }),
-            theme: 'grid',
-            headStyles: { fillColor: [44, 62, 80] }
+
+        // REEMPLAZAMOS LA TABLA POR EL FORMATO DE TARJETAS
+        filteredHistory.forEach(medicion => {
+            if (yPos > 260) { // Chequeo de espacio para la tarjeta completa
+                pdf.addPage();
+                yPos = 20;
+            }
+            const r = medicion.resultados;
+            const fechaStr = medicion.fecha.toDate().toLocaleDateString('es-ES');
+            
+            // Dibuja el contenedor de la tarjeta
+            pdf.setDrawColor(221, 221, 221); // Gris claro
+            pdf.setFillColor(248, 249, 250); // Gris muy claro
+            pdf.roundedRect(14, yPos - 5, 182, 32, 3, 3, 'FD');
+
+            // Header de la tarjeta
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`Fecha: ${fechaStr}`, 20, yPos + 2);
+            pdf.setFont(undefined, 'normal');
+            pdf.text(`Peso: ${r.pesoActual} kg`, 190, yPos + 2, { align: 'right' });
+            yPos += 8;
+            pdf.setDrawColor(221, 221, 221);
+            pdf.line(20, yPos, 190, yPos); // Línea divisoria
+            yPos += 8;
+
+            // Cuerpo de la tarjeta
+            pdf.setFontSize(10);
+            pdf.text('Kilos de Grasa Total:', 20, yPos);
+            pdf.text(`${r.kilosGrasaTotal.toFixed(2)} kg`, 190, yPos, { align: 'right' });
+            yPos += 7;
+
+            pdf.text('Grasa (vs ant.):', 20, yPos);
+            const grasaMsg = r.cambioGrasaGramos > 0 ? `Quemados ${r.cambioGrasaGramos.toFixed(0)} gr` : `Ganados ${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr`;
+            pdf.setTextColor(r.cambioGrasaGramos > 0 ? '#28a745' : '#dc3545');
+            pdf.text(grasaMsg, 190, yPos, { align: 'right' });
+            pdf.setTextColor('#000000'); // Resetear color
+            yPos += 7;
+
+            pdf.text('Masa Magra (vs ant.):', 20, yPos);
+            const masaMagraMsg = r.cambioMasaMagraGramos > 0 ? `Ganados ${r.cambioMasaMagraGramos.toFixed(0)} gr` : `Perdidos ${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr`;
+            pdf.setTextColor(r.cambioMasaMagraGramos > 0 ? '#28a745' : '#dc3545');
+            pdf.text(masaMagraMsg, 190, yPos, { align: 'right' });
+            pdf.setTextColor('#000000'); // Resetear color
+            yPos += 15; // Espacio entre tarjetas
         });
-        yPos = pdf.autoTable.previous.finalY + 15;
+
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
             if (yPos > 200) { pdf.addPage(); yPos = 20; }
@@ -392,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const textLines = pdf.splitTextToSize(recommendationsText, 180);
             pdf.text(textLines, 15, yPos);
         }
+        
         const includeMenuCheck = document.getElementById('includeMenuCheck');
         const menuSelect = document.getElementById('menuSelect');
         if (includeMenuCheck.checked && menuSelect.value) {
@@ -412,10 +443,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error("Error adjuntando menú: ", error);
             }
         }
+        
         pdf.save(`informe-${patientData.nombreCompleto.replace(/\s/g, '_')}-${new Date().toISOString().slice(0,10)}.pdf`);
         loadingOverlay.style.display = 'none';
     }
-
+    
     function calculateNeeds(ultimaMedicion) {
         const hoy = new Date();
         const nacimiento = patientData.fechaNacimiento.toDate();
