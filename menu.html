@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Menús</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gestión de Menús</h1>
+            <a href="index.html" class="link-calculadora">Volver a Pacientes</a>
+        </header>
+
+        <div id="menuList" class="menu-list-container">
+            <!-- Las tarjetas de los menús se cargarán aquí -->
+        </div>
+
+        <button id="addMenuBtn" class="fab">+</button>
+    </div>
+
+    <!-- Modal para agregar/editar menú -->
+    <div id="menuModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="menuModalTitle">Crear Nuevo Menú</h2>
+            <form id="menuForm">
+                <input type="hidden" id="menuId"> <!-- Para saber si estamos editando -->
+                <div class="form-group">
+                    <label for="menuTitle">Título del Menú</label>
+                    <input type="text" id="menuTitle" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="menuContent">Contenido del Menú (Plan de alimentación)</label>
+                    <textarea id="menuContent" rows="15" class="input-field" required></textarea>
+                </div>
+                <button type="submit" class="btn-guardar">Guardar Menú</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SDKs de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    
+    <!-- Script de esta página -->
+    <script src="menus.js"></script>
+</body>
+</html>
