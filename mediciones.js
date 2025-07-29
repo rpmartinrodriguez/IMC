@@ -49,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const planModal = document.getElementById('planResultModal');
     const closePlanModalBtn = planModal.querySelector('.close-btn');
     const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingText = document.getElementById('loading-text');
     const viewSavedPlanContainer = document.getElementById('viewSavedPlanContainer');
     const viewSavedPlanBtn = document.getElementById('viewSavedPlanBtn');
     const nivelEstresEl = document.getElementById('nivelEstres');
@@ -274,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderHistory(historyData) {
+        const measurementHistoryListEl = document.getElementById('measurementHistoryList');
         measurementHistoryListEl.innerHTML = '';
         const reversedHistory = [...historyData].reverse();
         if (reversedHistory.length === 0) {
@@ -541,8 +543,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function generateIntelligentPlan() {
-        if (measurementHistory.length === 0) {
-            alert("Se necesita al menos una medición para generar un plan.");
+        if (measurementHistory.length < 2) {
+            alert("Se necesitan al menos dos mediciones para analizar la evolución y generar un plan.");
             return;
         }
         const ultimaMedicionDoc = measurementHistory[measurementHistory.length - 1];
