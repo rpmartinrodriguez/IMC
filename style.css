@@ -400,9 +400,28 @@ tbody tr:hover { background-color: #f1f1f1; }
 .measurement-card .card-header {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     padding-bottom: 10px;
     margin-bottom: 10px;
     border-bottom: 1px solid #ddd;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-edit-measurement {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    color: #6c757d;
+}
+.btn-edit-measurement:hover {
+    color: #007bff;
 }
 
 .measurement-card .card-body p {
@@ -461,6 +480,17 @@ legend {
     margin-bottom: 5px;
 }
 
+.input-range {
+    width: 100%;
+    cursor: pointer;
+}
+
+#nivelEstresValor {
+    font-weight: bold;
+    color: #007bff;
+    margin-left: 10px;
+}
+
 /* =================================================================
    ESTILOS PARA BIBLIOTECA DE ALIMENTOS (alimentos.html)
    ================================================================= */
@@ -504,6 +534,10 @@ legend {
 .category-tag.grasa { background-color: #F1C40F; }
 .category-tag.carbohidrato { background-color: #3498DB; }
 .category-tag.general { background-color: #7F8C8D; }
+.category-tag.fuerza { background-color: #c0392b; }
+.category-tag.cardio { background-color: #2980b9; }
+.category-tag.flexibilidad { background-color: #16a085; }
+.category-tag.funcional { background-color: #8e44ad; }
 
 .food-card-body {
     padding: 15px;
@@ -717,7 +751,7 @@ td:has(.btn-edit) {
 }
 
 /* =================================================================
-   NUEVO: DISEÑO RESPONSIVO PARA MÓVILES
+   DISEÑO RESPONSIVO PARA MÓVILES
    ================================================================= */
 @media (max-width: 768px) {
     body { padding: 10px; }
