@@ -50,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (patientId) {
                 // MODO EDICIÓN: Actualizar el documento existente
-                // No actualizamos el peso inicial ni la fecha de primer registro
                 const { ultimoPeso, fechaIngreso, ...updateData } = patientData;
                 await db.collection("pacientes").doc(patientId).update(updateData);
                 console.log("Paciente actualizado con éxito");
@@ -99,9 +98,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openAddModal() {
         addPatientForm.reset();
-        patientIdInput.value = ''; // Asegurarse de que no hay ID
+        patientIdInput.value = '';
         patientModalTitle.textContent = 'Registrar Nuevo Paciente';
-        document.getElementById('peso').disabled = false; // Habilitar el campo de peso
+        document.getElementById('peso').disabled = false;
         modal.classList.add('show');
     }
 
@@ -118,13 +117,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('sexo').value = data.sexo;
                 document.getElementById('fechaNacimiento').value = data.fechaNacimiento.toDate().toISOString().split('T')[0];
                 
-                // Usar fecha de ingreso si existe, si no, usar la de primer registro por compatibilidad con datos antiguos
                 const fechaIngreso = data.fechaIngreso ? data.fechaIngreso.toDate() : data.fechaPrimerRegistro.toDate();
                 document.getElementById('fechaIngreso').value = fechaIngreso.toISOString().split('T')[0];
                 
                 const pesoInput = document.getElementById('peso');
                 pesoInput.value = data.ultimoPeso;
-                pesoInput.disabled = true; // El peso inicial no se edita, se actualiza con mediciones
+                pesoInput.disabled = true;
                 
                 modal.classList.add('show');
             }
@@ -147,9 +145,7 @@ function renderPatients(patients) {
         const doc = patient.data;
         const tr = document.createElement('tr');
         
-        // El clic en la fila entera lleva a las mediciones
         tr.addEventListener('click', (e) => {
-            // Evitar que el clic en el botón de editar navegue
             if (e.target.closest('.btn-edit')) return;
             window.location.href = `mediciones.html?id=${patient.id}`;
         });
