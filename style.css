@@ -808,3 +808,26 @@ td:has(.btn-edit) {
         display: none;
     }
 }
+
+/* =================================================================
+   ESTILOS PARA BOTÓN DE EDITAR MEDICIÓN
+   ================================================================= */
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre el botón y el texto del peso */
+}
+
+.btn-edit-measurement {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    color: #6c757d;
+    transition: color 0.2s;
+}
+.btn-edit-measurement:hover {
+    color: #007bff;
+}
+
