@@ -831,3 +831,11 @@ td:has(.btn-edit) {
     color: #007bff;
 }
 
+/* =================================================================
+   ESTILOS PARA PLAN INTELIGENTE
+   ================================================================= */
+#plan-interpretacion p {
+    line-height: 1.6;
+    font-size: 16px;
+    text-align: left;
+}
