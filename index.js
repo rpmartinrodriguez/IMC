@@ -12,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Variable global para guardar todos los pacientes y no consultar a Firebase en cada búsqueda
+// Variable global para la búsqueda
 let allPatients = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,49 +22,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = modal.querySelector('.close-btn');
     const addPatientForm = document.getElementById('addPatientForm');
     const searchInput = document.getElementById('searchInput');
+    const patientListBody = document.getElementById('patientListBody');
+    const patientModalTitle = document.getElementById('patientModalTitle');
+    const patientIdInput = document.getElementById('patientId');
 
-    // 4. LÓGICA DE LA VENTANA MODAL
-    addPatientBtn.addEventListener('click', () => { modal.classList.add('show'); });
-    closeModalBtn.addEventListener('click', () => { modal.classList.remove('show'); });
+    // 4. LÓGICA DE MODALES
+    addPatientBtn.addEventListener('click', openAddModal);
+    closeModalBtn.addEventListener('click', () => modal.classList.remove('show'));
     window.addEventListener('click', (event) => {
-        if (event.target === modal) { modal.classList.remove('show'); }
+        if (event.target === modal) modal.classList.remove('show');
     });
 
-    // 5. LÓGICA PARA GUARDAR PACIENTES (ACTUALIZADA)
-    addPatientForm.addEventListener('submit', (event) => {
+    // 5. GUARDAR O ACTUALIZAR PACIENTE
+    addPatientForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const nombre = document.getElementById('nombre').value;
-        const telefono = document.getElementById('telefono').value;
-        const peso = parseFloat(document.getElementById('peso').value);
-        const fechaIngresoStr = document.getElementById('fechaIngreso').value;
         
-        // NUEVOS CAMPOS
-        const fechaNacimientoStr = document.getElementById('fechaNacimiento').value;
-        const sexo = document.getElementById('sexo').value;
+        const patientId = patientIdInput.value;
+        const patientData = {
+            nombreCompleto: document.getElementById('nombre').value,
+            telefono: document.getElementById('telefono').value,
+            sexo: document.getElementById('sexo').value,
+            fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('fechaNacimiento').value)),
+            ultimoPeso: parseFloat(document.getElementById('peso').value),
+            fechaIngreso: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('fechaIngreso').value)),
+        };
 
-        if (!fechaIngresoStr || !fechaNacimientoStr) { 
-            alert("Por favor, completa todos los campos de fecha."); 
-            return; 
-        }
-        const fechaIngreso = new Date(fechaIngresoStr);
-        const fechaNacimiento = new Date(fechaNacimientoStr);
-
-        db.collection("pacientes").add({
-            nombreCompleto: nombre,
-            telefono: telefono,
-            sexo: sexo, // AÑADIDO
-            fechaNacimiento: firebase.firestore.Timestamp.fromDate(fechaNacimiento), // AÑADIDO
-            ultimoPeso: peso,
-            fechaPrimerRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso),
-            fechaUltimoRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso)
-        }).then(() => {
-            console.log("Paciente registrado con éxito");
-            addPatientForm.reset();
+        try {
+            if (patientId) {
+                // MODO EDICIÓN: Actualizar el documento existente
+                await db.collection("pacientes").doc(patientId).update(patientData);
+                console.log("Paciente actualizado con éxito");
+            } else {
+                // MODO AÑADIR: Crear un nuevo documento
+                patientData.fechaPrimerRegistro = patientData.fechaIngreso;
+                patientData.fechaUltimoRegistro = patientData.fechaIngreso;
+                await db.collection("pacientes").add(patientData);
+                console.log("Paciente registrado con éxito");
+            }
             modal.classList.remove('show');
-        }).catch((error) => {
-            console.error("Error al registrar paciente: ", error);
-            alert("Hubo un error al registrar el paciente.");
-        });
+        } catch (error) {
+            console.error("Error guardando paciente: ", error);
+            alert("Hubo un error al guardar los datos del paciente.");
+        }
     });
 
     // 6. LÓGICA DE BÚSQUEDA
@@ -82,38 +81,85 @@ document.addEventListener('DOMContentLoaded', () => {
         querySnapshot.forEach(doc => {
             allPatients.push({ id: doc.id, data: doc.data() });
         });
-        renderPatients(allPatients); // Renderizar la lista completa inicial
+        renderPatients(allPatients);
     });
+
+    // 8. EVENT DELEGATION PARA BOTONES DE ACCIONES
+    patientListBody.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-edit')) {
+            const patientId = e.target.dataset.id;
+            openEditModal(patientId);
+        }
+        // Aquí se podría añadir la lógica para un botón de borrar en el futuro
+    });
+
+    // --- FUNCIONES AUXILIARES ---
+
+    function openAddModal() {
+        addPatientForm.reset();
+        patientIdInput.value = ''; // Asegurarse de que no hay ID
+        patientModalTitle.textContent = 'Registrar Nuevo Paciente';
+        document.getElementById('peso').disabled = false; // Habilitar el campo de peso
+        modal.classList.add('show');
+    }
+
+    async function openEditModal(patientId) {
+        try {
+            const doc = await db.collection('pacientes').doc(patientId).get();
+            if (doc.exists) {
+                const data = doc.data();
+                
+                // Rellenar el formulario
+                patientModalTitle.textContent = 'Editar Paciente';
+                patientIdInput.value = doc.id;
+                document.getElementById('nombre').value = data.nombreCompleto;
+                document.getElementById('telefono').value = data.telefono;
+                document.getElementById('sexo').value = data.sexo;
+                // Formatear la fecha para el input type="date"
+                document.getElementById('fechaNacimiento').value = data.fechaNacimiento.toDate().toISOString().split('T')[0];
+                document.getElementById('fechaIngreso').value = data.fechaIngreso.toDate().toISOString().split('T')[0];
+                const pesoInput = document.getElementById('peso');
+                pesoInput.value = data.ultimoPeso;
+                pesoInput.disabled = true; // El peso inicial no se edita, se actualiza con mediciones
+                
+                modal.classList.add('show');
+            }
+        } catch (error) {
+            console.error("Error al obtener datos del paciente: ", error);
+        }
+    }
 });
 
-// 8. FUNCIÓN PARA RENDERIZAR LA TABLA DE PACIENTES
+// FUNCIÓN PARA RENDERIZAR LA TABLA (ACTUALIZADA)
 function renderPatients(patients) {
     const patientListBody = document.getElementById('patientListBody');
     patientListBody.innerHTML = '';
 
     if (patients.length === 0) {
-        patientListBody.innerHTML = '<tr><td colspan="4">No se encontraron pacientes.</td></tr>';
+        patientListBody.innerHTML = '<tr><td colspan="5">No se encontraron pacientes.</td></tr>';
         return;
     }
 
     patients.forEach(patient => {
         const doc = patient.data;
         const tr = document.createElement('tr');
-        tr.dataset.id = patient.id; // Guardar el ID del documento en el elemento
-        tr.classList.add('patient-row'); // Clase para darle estilo de clic
-        
-        tr.innerHTML = `
-            <td>${doc.nombreCompleto}</td>
-            <td>${doc.telefono}</td>
-            <td>${doc.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES')}</td>
-            <td>${doc.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES')}</td>
-        `;
-        
-        // Añadir evento de clic para navegar
-        tr.addEventListener('click', () => {
+        // El clic en la fila entera sigue llevando a las mediciones
+        tr.addEventListener('click', (e) => {
+            // Evitar que el clic en el botón de editar navegue
+            if (e.target.classList.contains('btn-edit')) return;
             window.location.href = `mediciones.html?id=${patient.id}`;
         });
-
+        
+        tr.innerHTML = `
+            <td class="patient-row">${doc.nombreCompleto}</td>
+            <td class="patient-row">${doc.telefono}</td>
+            <td class="patient-row">${doc.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES')}</td>
+            <td class="patient-row">${doc.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES')}</td>
+            <td>
+                <button class="btn-edit" data-id="${patient.id}">Editar</button>
+            </td>
+        `;
+        
         patientListBody.appendChild(tr);
     });
 }
