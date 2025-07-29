@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constructor de Menús</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Menú de Navegación -->
+    <div id="navigation-overlay" class="navigation-overlay">
+        <button id="close-nav-button" class="close-nav-button">&times;</button>
+        <ul class="nav-links">
+            <li><a href="index.html">Pacientes</a></li>
+            <li><a href="menus.html">Menús</a></li>
+            <li><a href="alimentos.html">Alimentos</a></li>
+            <li><a href="calculadora.html">Calculadora IMC</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <header>
+            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <h1>Constructor de Menús</h1>
+        </header>
+
+        <div class="menu-builder-container">
+            <!-- Detalles Generales del Menú -->
+            <div class="form-group">
+                <label for="menuName">Nombre del Plan de Menú</label>
+                <input type="text" id="menuName" class="input-field" placeholder="Ej: Plan Keto - Día 1">
+            </div>
+
+            <!-- Contenedor para las Comidas -->
+            <div id="mealsContainer">
+                <!-- Las comidas (Desayuno, Almuerzo, etc.) se añadirán aquí -->
+            </div>
+
+            <button id="addMealBtn" class="btn-secondary">Añadir Comida</button>
+
+            <!-- Resumen Total de Macros -->
+            <div class="card total-macros-summary">
+                <h3>Resumen Total del Día</h3>
+                <div class="macros-grid">
+                    <p><strong>Proteínas:</strong> <span id="totalProtein">0</span>g</p>
+                    <p><strong>Carbohidratos:</strong> <span id="totalCarbs">0</span>g</p>
+                    <p><strong>Grasas:</strong> <span id="totalFats">0</span>g</p>
+                </div>
+            </div>
+
+            <button id="saveMenuBtn" class="btn-guardar">Guardar Menú Completo</button>
+        </div>
+    </div>
+
+    <!-- Modal para buscar y añadir alimentos -->
+    <div id="addFoodToMealModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Añadir Alimento</h2>
+            <div class="search-container">
+                <input type="search" id="foodSearchInput" class="input-field" placeholder="Buscar en la biblioteca de alimentos...">
+            </div>
+            <ul id="foodLibraryList" class="food-library-list">
+                <!-- Lista de alimentos de la biblioteca -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="constructor-menu.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
