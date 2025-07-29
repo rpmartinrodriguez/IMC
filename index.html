@@ -15,6 +15,7 @@
             <li><a href="index.html">Pacientes</a></li>
             <li><a href="menus.html">Menús</a></li>
             <li><a href="alimentos.html">Alimentos</a></li>
+            <li><a href="ejercicios.html">Ejercicios</a></li>
             <li><a href="calculadora.html">Calculadora IMC</a></li>
         </ul>
     </div>
@@ -72,8 +73,17 @@
                         </select>
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="peso">Peso Inicial (kg)</label>
+                        <input type="number" id="peso" step="0.1" class="input-field" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="altura">Altura (cm)</label>
+                        <input type="number" id="altura" class="input-field" required>
+                    </div>
+                </div>
                 <div class="form-group"><label for="telefono">Teléfono</label><input type="tel" id="telefono" class="input-field" required></div>
-                <div class="form-group"><label for="peso">Peso Inicial (kg)</label><input type="number" id="peso" step="0.1" class="input-field" required></div>
                 <div class="form-group"><label for="fechaIngreso">Fecha de Ingreso</label><input type="date" id="fechaIngreso" class="input-field" required></div>
                 <button type="submit" class="btn-guardar">Guardar Cambios</button>
             </form>
