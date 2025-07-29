@@ -358,8 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
         yPos = pdf.autoTable.previous.finalY + 15;
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
-            pdf.addPage();
-            yPos = 20;
+            if (yPos > 200) { pdf.addPage(); yPos = 20; }
             pdf.setFontSize(16);
             pdf.text('Último Plan Inteligente Generado', 15, yPos);
             yPos += 10;
