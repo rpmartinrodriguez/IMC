@@ -444,17 +444,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function buildMenu(targetMacros) {
-        let menu = { desayuno: [], almuerzo: [], cena: [] };
+        let menu = { Desayuno: [], Almuerzo: [], Cena: [] };
         const proteinas = foodLibrary.filter(f => f.category === 'proteina' || f.protein > 15);
         const carbs = foodLibrary.filter(f => f.category === 'carbohidrato' || f.carbs > 15);
         const grasas = foodLibrary.filter(f => f.category === 'grasa' || f.fats > 10);
-        if (proteinas.length > 0) menu.desayuno.push(proteinas[0 % proteinas.length]);
-        if (carbs.length > 0) menu.desayuno.push(carbs[0 % carbs.length]);
-        if (proteinas.length > 1) menu.almuerzo.push(proteinas[1 % proteinas.length]);
-        if (carbs.length > 1) menu.almuerzo.push(carbs[1 % carbs.length]);
-        if (grasas.length > 0) menu.almuerzo.push(grasas[0 % grasas.length]);
-        if (proteinas.length > 2) menu.cena.push(proteinas[2 % proteinas.length]);
-        if (carbs.length > 2) menu.cena.push(carbs[2 % carbs.length]);
+        if (proteinas.length > 0) menu.Desayuno.push(proteinas[0 % proteinas.length]);
+        if (carbs.length > 0) menu.Desayuno.push(carbs[0 % carbs.length]);
+        if (proteinas.length > 1) menu.Almuerzo.push(proteinas[1 % proteinas.length]);
+        if (carbs.length > 1) menu.Almuerzo.push(carbs[1 % carbs.length]);
+        if (grasas.length > 0) menu.Almuerzo.push(grasas[0 % grasas.length]);
+        if (proteinas.length > 2) menu.Cena.push(proteinas[2 % proteinas.length]);
+        if (carbs.length > 2) menu.Cena.push(carbs[2 % carbs.length]);
         return menu;
     }
 
@@ -522,7 +522,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return html;
     }
 
-    // 6. EVENTOS (CORREGIDO: movido después de la definición de funciones)
+    // =================================================================
+    // 6. ASIGNACIÓN DE EVENTOS Y CARGA INICIAL (CORREGIDO)
+    // =================================================================
+    
     addMeasurementBtn.addEventListener('click', openAddModal);
     closeAddModalBtn.addEventListener('click', () => addModal.classList.remove('show'));
     closeViewModalBtn.addEventListener('click', () => viewModal.classList.remove('show'));
@@ -558,7 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     addForm.addEventListener('input', calculateRealTimeResults);
 
-    // 7. CARGA INICIAL (CORREGIDO: movido al final)
+    // Carga inicial de datos
     loadPatientData();
     loadMeasurementHistory();
     loadFoodLibrary();
