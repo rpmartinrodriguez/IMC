@@ -11,13 +11,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+
+    <!-- Menú de Navegación Desplegable -->
+    <div id="navigation-overlay" class="navigation-overlay">
+        <button id="close-nav-button" class="close-nav-button">&times;</button>
+        <ul class="nav-links">
+            <li><a href="index.html">Pacientes</a></li>
+            <li><a href="menus.html">Menús</a></li>
+            <li><a href="calculadora.html">Calculadora IMC</a></li>
+        </ul>
+    </div>
+
     <div class="container">
         <header>
+            <!-- Botón de Hamburguesa -->
+            <button id="hamburger-button" class="hamburger-button">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
             <h1 id="patientName">Cargando paciente...</h1>
             <div class="header-actions">
-                <!-- BOTÓN DE EXPORTACIÓN -->
                 <button id="exportPdfBtn" class="btn-secondary">Exportar a PDF</button>
-                <a href="index.html" class="link-calculadora">Volver a la Lista</a>
             </div>
         </header>
 
@@ -36,12 +51,9 @@
         <!-- Historial de mediciones del paciente -->
         <div class="historial-container">
             <h2>Historial de Mediciones</h2>
-            <div id="measurementHistoryList">
-                <!-- Las tarjetas de mediciones de este paciente se cargarán aquí -->
-            </div>
+            <div id="measurementHistoryList"></div>
         </div>
 
-        <!-- Botón flotante para agregar nueva medición -->
         <button id="addMeasurementBtn" class="fab">+</button>
     </div>
 
@@ -178,7 +190,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
     
-    <!-- Script para esta página -->
+    <!-- Scripts de la página -->
     <script src="mediciones.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
