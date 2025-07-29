@@ -310,7 +310,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const pdf = new jsPDF('p', 'mm', 'a4');
         let yPos = 20;
 
-        // PÁGINA 1: TÍTULO Y GRÁFICOS
         pdf.setFontSize(22);
         pdf.setFont(undefined, 'bold');
         pdf.text(patientData.nombreCompleto, 105, yPos, { align: 'center' });
@@ -328,11 +327,10 @@ document.addEventListener('DOMContentLoaded', () => {
             pdf.addImage(chart2Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 85);
         } catch (error) { console.error("Error al renderizar gráficos: ", error); }
 
-        // PÁGINA 2: HISTORIAL DE MEDICIONES
         pdf.addPage();
         yPos = 20;
         pdf.setFontSize(16);
-        pdf.text('Historial de Mediciones', 15, yPos);
+        pdf.text('Historial de Mediciones (Últimas 5)', 15, yPos);
         yPos += 12;
 
         const recentHistory = measurementHistory.slice(-5);
@@ -355,11 +353,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         yPos = pdf.autoTable.previous.finalY + 15;
 
-        // PÁGINA 3: ÚLTIMO PLAN INTELIGENTE
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
-            pdf.addPage();
-            yPos = 20;
+            if (yPos > 200) { pdf.addPage(); yPos = 20; }
             pdf.setFontSize(16);
             pdf.text('Plan Inteligente', 15, yPos);
             yPos += 10;
