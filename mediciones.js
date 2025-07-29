@@ -12,82 +12,52 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Globales para almacenar datos clave
+// Globales
 let currentPatientId = null;
 let patientData = null;
 let measurementHistory = [];
-let foodLibrary = []; // Para precargar la biblioteca de alimentos
-// Instancias de los gráficos para poder destruirlos y redibujarlos
+let foodLibrary = [];
 let weightChartInstance = null;
 let fatChartInstance = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 3. OBTENER ID DEL PACIENTE DESDE LA URL
+    // 3. OBTENER ID DEL PACIENTE
     const params = new URLSearchParams(window.location.search);
     currentPatientId = params.get('id');
-
     if (!currentPatientId) {
         document.body.innerHTML = '<h1>Error: No se especificó un ID de paciente.</h1><a href="index.html">Volver a la lista</a>';
         return;
     }
 
-    // 4. REFERENCIAS A ELEMENTOS DEL DOM
+    // 4. REFERENCIAS AL DOM (completas)
     const patientNameEl = document.getElementById('patientName');
-    
-    // Add Modal elements
     const addMeasurementBtn = document.getElementById('addMeasurementBtn');
     const addModal = document.getElementById('addMeasurementModal');
     const closeAddModalBtn = addModal.querySelector('.close-btn');
     const addForm = document.getElementById('addMeasurementForm');
-    
-    // View Modal elements
     const viewModal = document.getElementById('viewMeasurementModal');
     const closeViewModalBtn = viewModal.querySelector('.close-btn');
-    const viewModalTitle = document.getElementById('viewModalTitle');
-    const viewPesoAnterior = document.getElementById('viewPesoAnterior');
-    const viewPesoActual = document.getElementById('viewPesoActual');
-    const viewDiferenciaPeso = document.getElementById('viewDiferenciaPeso');
-    const viewPT = document.getElementById('viewPT');
-    const viewPSE = document.getElementById('viewPSE');
-    const viewPSI = document.getElementById('viewPSI');
-    const viewPA = document.getElementById('viewPA');
-    const viewTejidoGraso = document.getElementById('viewTejidoGraso');
-    const viewKilosGrasa = document.getElementById('viewKilosGrasa');
-    const viewCambioGrasa = document.getElementById('viewCambioGrasa');
-    const viewCambioMasaMagra = document.getElementById('viewCambioMasaMagra');
-    const viewPesoObjetivo = document.getElementById('viewPesoObjetivo');
-    const viewActividadTipo = document.getElementById('viewActividadTipo');
-    const viewActividadDuracion = document.getElementById('viewActividadDuracion');
-    const viewHorasSueno = document.getElementById('viewHorasSueno');
-    const viewNivelEstres = document.getElementById('viewNivelEstres');
-
-    // Export Modal elements
     const exportPdfBtn = document.getElementById('exportPdfBtn');
     const exportModal = document.getElementById('exportPdfModal');
     const closeExportModalBtn = exportModal.querySelector('.close-btn');
     const exportForm = document.getElementById('exportOptionsForm');
-    const includeMenuCheck = document.getElementById('includeMenuCheck');
-    const menuSelectionContainer = document.getElementById('menuSelectionContainer');
-    const menuSelect = document.getElementById('menuSelect');
-    const loadingOverlay = document.getElementById('loading-overlay');
-
-    // Plan Generator elements
     const generatePlanBtn = document.getElementById('generatePlanBtn');
     const planModal = document.getElementById('planResultModal');
     const closePlanModalBtn = planModal.querySelector('.close-btn');
-    const tabs = planModal.querySelectorAll('.tab-link');
-    const tabContents = planModal.querySelectorAll('.tab-content');
-
-    // Add Modal - Objetivos
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const viewSavedPlanContainer = document.getElementById('viewSavedPlanContainer');
+    const viewSavedPlanBtn = document.getElementById('viewSavedPlanBtn');
     const nivelEstresEl = document.getElementById('nivelEstres');
     const nivelEstresValorEl = document.getElementById('nivelEstresValor');
+    const tabs = planModal.querySelectorAll('.tab-link');
+    const tabContents = planModal.querySelectorAll('.tab-content');
 
     // 5. CARGA INICIAL
     loadPatientData();
     loadMeasurementHistory();
     loadFoodLibrary();
 
-    // 6. LÓGICA DE MODALES Y EVENTOS
+    // 6. EVENTOS
     addMeasurementBtn.addEventListener('click', openAddModal);
     closeAddModalBtn.addEventListener('click', () => addModal.classList.remove('show'));
     closeViewModalBtn.addEventListener('click', () => viewModal.classList.remove('show'));
@@ -95,22 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
     closeExportModalBtn.addEventListener('click', () => exportModal.classList.remove('show'));
     generatePlanBtn.addEventListener('click', generateIntelligentPlan);
     closePlanModalBtn.addEventListener('click', () => planModal.classList.remove('show'));
-
-    window.addEventListener('click', (event) => {
-        if (event.target === addModal) addModal.classList.remove('show');
-        if (event.target === viewModal) viewModal.classList.remove('show');
-        if (event.target === exportModal) exportModal.classList.remove('show');
-        if (event.target === planModal) planModal.classList.remove('show');
-    });
-
-    addForm.addEventListener('input', calculateRealTimeResults);
     addForm.addEventListener('submit', saveNewMeasurement);
-    includeMenuCheck.addEventListener('change', (e) => {
-        menuSelectionContainer.style.display = e.target.checked ? 'block' : 'none';
-    });
-    exportForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        generatePDF();
+    exportForm.addEventListener('submit', (e) => { e.preventDefault(); generatePDF(); });
+    viewSavedPlanBtn.addEventListener('click', () => {
+        const measurementId = viewSavedPlanBtn.dataset.measurementId;
+        const measurement = measurementHistory.find(m => m.id === measurementId);
+        if (measurement && measurement.plan) {
+            displayPlanInModal(measurement.plan);
+        }
     });
     nivelEstresEl.addEventListener('input', () => {
         nivelEstresValorEl.textContent = nivelEstresEl.value;
@@ -123,6 +85,13 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(tab.dataset.tab).classList.add('active');
         });
     });
+    window.addEventListener('click', (event) => {
+        if (event.target === addModal) addModal.classList.remove('show');
+        if (event.target === viewModal) viewModal.classList.remove('show');
+        if (event.target === exportModal) exportModal.classList.remove('show');
+        if (event.target === planModal) planModal.classList.remove('show');
+    });
+    addForm.addEventListener('input', calculateRealTimeResults);
 
     // --- FUNCIONES ---
 
@@ -139,12 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadMeasurementHistory() {
         db.collection('pacientes').doc(currentPatientId).collection('mediciones').orderBy('fecha', 'asc').onSnapshot(snapshot => {
             measurementHistory = [];
-            snapshot.forEach(doc => measurementHistory.push(doc.data()));
+            snapshot.forEach(doc => {
+                measurementHistory.push({ id: doc.id, ...doc.data() });
+            });
             renderHistory();
             renderCharts();
         });
     }
-    
+
     async function loadFoodLibrary() {
         const snapshot = await db.collection('alimentos').get();
         foodLibrary = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -165,33 +136,43 @@ document.addEventListener('DOMContentLoaded', () => {
     function openViewModal(medicion) {
         const r = medicion.resultados;
         const i = medicion.indicadores;
+        const viewModalTitle = document.getElementById('viewModalTitle');
         viewModalTitle.textContent = `Detalle de Medición (${medicion.fecha.toDate().toLocaleDateString('es-ES')})`;
-        viewPesoAnterior.textContent = `${r.pesoAnterior} kg`;
-        viewPesoActual.textContent = `${r.pesoActual} kg`;
-        viewDiferenciaPeso.textContent = `${r.diferenciaPeso.toFixed(2)} kg`;
-        viewPT.textContent = i.pt;
-        viewPSE.textContent = i.pse;
-        viewPSI.textContent = i.psi;
-        viewPA.textContent = i.pa;
-        viewTejidoGraso.textContent = `${r.tejidoGrasoPorcentaje.toFixed(2)} %`;
-        viewKilosGrasa.textContent = `${r.kilosGrasaTotal.toFixed(2)} kg`;
-        viewCambioGrasa.innerHTML = r.cambioGrasaGramos > 0 ? `<span class="text-success">-${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>` : `<span class="text-danger">+${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>`;
-        viewCambioMasaMagra.innerHTML = r.cambioMasaMagraGramos > 0 ? `<span class="text-success">+${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>` : `<span class="text-danger">-${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>`;
+        document.getElementById('viewPesoAnterior').textContent = `${r.pesoAnterior} kg`;
+        document.getElementById('viewPesoActual').textContent = `${r.pesoActual} kg`;
+        document.getElementById('viewDiferenciaPeso').textContent = `${r.diferenciaPeso.toFixed(2)} kg`;
+        document.getElementById('viewPT').textContent = i.pt;
+        document.getElementById('viewPSE').textContent = i.pse;
+        document.getElementById('viewPSI').textContent = i.psi;
+        document.getElementById('viewPA').textContent = i.pa;
+        document.getElementById('viewTejidoGraso').textContent = `${r.tejidoGrasoPorcentaje.toFixed(2)} %`;
+        document.getElementById('viewKilosGrasa').textContent = `${r.kilosGrasaTotal.toFixed(2)} kg`;
+        document.getElementById('viewCambioGrasa').innerHTML = r.cambioGrasaGramos > 0 ? `<span class="text-success">-${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>` : `<span class="text-danger">+${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>`;
+        document.getElementById('viewCambioMasaMagra').innerHTML = r.cambioMasaMagraGramos > 0 ? `<span class="text-success">+${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>` : `<span class="text-danger">-${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>`;
+        
         if (medicion.objetivos) {
             const o = medicion.objetivos;
-            viewPesoObjetivo.textContent = `${o.pesoObjetivo} kg`;
-            viewActividadTipo.textContent = o.actividadTipo.replace('-', ' ');
-            viewActividadDuracion.textContent = `${o.actividadDuracion} min`;
-            viewHorasSueno.textContent = `${o.horasSueno} hs`;
-            viewNivelEstres.textContent = `${o.nivelEstres} / 10`;
-            viewModal.querySelector('fieldset:last-of-type').style.display = 'block';
+            document.getElementById('viewPesoObjetivo').textContent = `${o.pesoObjetivo} kg`;
+            document.getElementById('viewActividadTipo').textContent = o.actividadTipo.replace('-', ' ');
+            document.getElementById('viewActividadDuracion').textContent = `${o.actividadDuracion} min`;
+            document.getElementById('viewHorasSueno').textContent = `${o.horasSueno} hs`;
+            document.getElementById('viewNivelEstres').textContent = `${o.nivelEstres} / 10`;
+            viewModal.querySelector('fieldset:nth-of-type(4)').style.display = 'block';
         } else {
-            viewModal.querySelector('fieldset:last-of-type').style.display = 'none';
+            viewModal.querySelector('fieldset:nth-of-type(4)').style.display = 'none';
+        }
+
+        if (medicion.plan) {
+            viewSavedPlanContainer.style.display = 'block';
+            viewSavedPlanBtn.dataset.measurementId = medicion.id;
+        } else {
+            viewSavedPlanContainer.style.display = 'none';
         }
         viewModal.classList.add('show');
     }
 
     async function openExportModal() {
+        const menuSelect = document.getElementById('menuSelect');
         menuSelect.innerHTML = '<option value="">Cargando menús...</option>';
         try {
             const snapshot = await db.collection('menus').get();
@@ -256,7 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tejidoGrasoPorcentaje = ((pt + pse + psi + pa) * 0.153) + 5.783;
         const kilosGrasaTotal = (pesoActual * tejidoGrasoPorcentaje) / 100;
         const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[measurementHistory.length - 1] : null;
-        const kilosGrasaAnterior = ultimaMedicion ? ultimaMedicion.resultados.kilosGrasaTotal : (pesoAnterior * tejidoGrasoPorcentaje) / 100;
+        const kilosGrasaAnterior = ultimaMedicion ? ultimaMedicion.resultados.kilosGrasaTotal : (patientData.ultimoPeso * tejidoGrasoPorcentaje) / 100;
         const cambioGrasaGramos = (kilosGrasaAnterior - kilosGrasaTotal) * 1000;
         const masaMagraActual = pesoActual - kilosGrasaTotal;
         const masaMagraAnterior = pesoAnterior - kilosGrasaAnterior;
@@ -367,25 +348,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
         let yPos = 20;
-        pdf.setFontSize(18);
-        pdf.text('Informe de Evolución Antropométrica', 105, yPos, { align: 'center' });
+        pdf.setFontSize(22);
+        pdf.text(patientData.nombreCompleto, 105, yPos, { align: 'center' });
         yPos += 10;
-        pdf.setFontSize(12);
-        pdf.text(`Paciente: ${patientData.nombreCompleto}`, 15, yPos);
-        pdf.text(`Fecha del Informe: ${new Date().toLocaleDateString('es-ES')}`, 195, yPos, { align: 'right' });
-        yPos += 10;
+        pdf.setFontSize(16);
+        pdf.text('Evolución de Mediciones Antropométricas', 105, yPos, { align: 'center' });
+        yPos += 15;
         try {
             const chart1Canvas = await html2canvas(document.getElementById('weightChart'));
             const chart2Canvas = await html2canvas(document.getElementById('fatPercentageChart'));
-            pdf.addImage(chart1Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 80);
-            yPos += 90;
-            pdf.addImage(chart2Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 80);
-            yPos += 90;
+            pdf.addImage(chart1Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 85);
+            yPos += 95;
+            pdf.addImage(chart2Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 85);
         } catch (error) {
             console.error("Error al renderizar gráficos: ", error);
             pdf.text('No se pudieron generar los gráficos.', 15, yPos);
-            yPos += 10;
         }
+        pdf.addPage();
+        yPos = 20;
+        pdf.setFontSize(16);
+        pdf.text('Historial de Mediciones', 15, yPos);
+        yPos += 10;
+        pdf.setFontSize(10);
         const dateFrom = document.getElementById('dateFrom').value;
         const dateTo = document.getElementById('dateTo').value;
         const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
@@ -394,12 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const mDate = m.fecha.toDate().getTime();
             return mDate >= fromTimestamp && mDate <= toTimestamp;
         });
-        pdf.addPage();
-        yPos = 20;
-        pdf.setFontSize(14);
-        pdf.text('Detalle de Mediciones', 15, yPos);
-        yPos += 10;
-        pdf.setFontSize(10);
         filteredHistory.forEach(medicion => {
             if (yPos > 270) {
                 pdf.addPage();
@@ -410,6 +388,45 @@ document.addEventListener('DOMContentLoaded', () => {
             pdf.text(`Fecha: ${fechaStr} | Peso: ${r.pesoActual} kg | % Grasa: ${r.tejidoGrasoPorcentaje.toFixed(2)}% | Kilos Grasa: ${r.kilosGrasaTotal.toFixed(2)} kg`, 15, yPos);
             yPos += 7;
         });
+        const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
+        if (lastPlanMeasurement) {
+            pdf.addPage();
+            yPos = 20;
+            pdf.setFontSize(16);
+            pdf.text('Último Plan Inteligente Generado', 15, yPos);
+            yPos += 10;
+            const plan = lastPlanMeasurement.plan;
+            pdf.setFontSize(12);
+            pdf.text(`Objetivos Diarios: ${plan.targetCalories.toFixed(0)} kcal (P: ${plan.targetMacros.proteinas.toFixed(0)}g, C: ${plan.targetMacros.carbs.toFixed(0)}g, G: ${plan.targetMacros.grasas.toFixed(0)}g)`, 15, yPos);
+            yPos += 15;
+            pdf.setFontSize(14);
+            pdf.text('Menú Sugerido', 15, yPos);
+            yPos += 8;
+            pdf.setFontSize(10);
+            for (const mealName in plan.menu) {
+                if (yPos > 270) { pdf.addPage(); yPos = 20; }
+                pdf.setFont(undefined, 'bold');
+                pdf.text(mealName.charAt(0).toUpperCase() + mealName.slice(1), 15, yPos);
+                yPos += 6;
+                pdf.setFont(undefined, 'normal');
+                plan.menu[mealName].forEach(food => {
+                    if (yPos > 270) { pdf.addPage(); yPos = 20; }
+                    pdf.text(`  • ${food.quantity || 100}g de ${food.name}`, 17, yPos);
+                    yPos += 6;
+                });
+            }
+            yPos += 10;
+            if (yPos > 250) { pdf.addPage(); yPos = 20; }
+            pdf.setFontSize(14);
+            pdf.text('Recomendaciones de Estilo de Vida', 15, yPos);
+            yPos += 8;
+            pdf.setFontSize(10);
+            const recommendationsText = plan.recommendations.replace(/<h3>.*?<\/h3>|<p>|<\/p>|<strong>|<\/strong>/g, '\n').trim();
+            const textLines = pdf.splitTextToSize(recommendationsText, 180);
+            pdf.text(textLines, 15, yPos);
+        }
+        const includeMenuCheck = document.getElementById('includeMenuCheck');
+        const menuSelect = document.getElementById('menuSelect');
         if (includeMenuCheck.checked && menuSelect.value) {
             try {
                 const menuDoc = await db.collection('menus').doc(menuSelect.value).get();
@@ -432,16 +449,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingOverlay.style.display = 'none';
     }
 
-    function generateIntelligentPlan() {
-        if (measurementHistory.length === 0) {
-            alert("Se necesita al menos una medición para generar un plan.");
-            return;
-        }
-        const ultimaMedicion = measurementHistory[measurementHistory.length - 1];
-        if (!ultimaMedicion.objetivos || !patientData.fechaNacimiento || !patientData.sexo) {
-            alert("La última medición debe tener objetivos y el paciente debe tener fecha de nacimiento y sexo registrados.");
-            return;
-        }
+    function calculateNeeds(ultimaMedicion) {
         const hoy = new Date();
         const nacimiento = patientData.fechaNacimiento.toDate();
         let edad = hoy.getFullYear() - nacimiento.getFullYear();
@@ -450,9 +458,8 @@ document.addEventListener('DOMContentLoaded', () => {
             edad--;
         }
         const pesoActual = ultimaMedicion.resultados.pesoActual;
+        const alturaCm = (patientData.sexo === 'masculino') ? 175 : 165;
         let bmr;
-        // Asumimos una altura promedio. Para mayor precisión, este dato debería registrarse para el paciente.
-        const alturaCm = (patientData.sexo === 'masculino') ? 175 : 165; 
         if (patientData.sexo === 'masculino') {
             bmr = 10 * pesoActual + 6.25 * alturaCm - 5 * edad + 5;
         } else {
@@ -465,28 +472,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (pesoObjetivo < pesoActual) {
             caloriasObjetivo -= 500;
         } else if (pesoObjetivo > pesoActual) {
-            caloriasObjetivo += 300; // Un superávit más moderado
+            caloriasObjetivo += 300;
         }
         const macros = {
             proteinas: (caloriasObjetivo * 0.30) / 4,
             carbs: (caloriasObjetivo * 0.40) / 4,
             grasas: (caloriasObjetivo * 0.30) / 9
         };
-        const menuHTML = buildMenu(macros);
-        const ejercicioHTML = generateExerciseTips(ultimaMedicion.objetivos);
-        document.getElementById('plan-alimentacion').innerHTML = menuHTML;
-        document.getElementById('plan-ejercicio').innerHTML = ejercicioHTML;
-        planModal.classList.add('show');
+        return { caloriasObjetivo, macros };
     }
 
     function buildMenu(targetMacros) {
         let menu = { desayuno: [], almuerzo: [], cena: [] };
-        let remainingMacros = { ...targetMacros };
         const proteinas = foodLibrary.filter(f => f.category === 'proteina' || f.protein > 15);
         const carbs = foodLibrary.filter(f => f.category === 'carbohidrato' || f.carbs > 15);
         const grasas = foodLibrary.filter(f => f.category === 'grasa' || f.fats > 10);
-        
-        // Algoritmo muy simple, se puede mejorar mucho
         if (proteinas.length > 0) menu.desayuno.push(proteinas[0 % proteinas.length]);
         if (carbs.length > 0) menu.desayuno.push(carbs[0 % carbs.length]);
         if (proteinas.length > 1) menu.almuerzo.push(proteinas[1 % proteinas.length]);
@@ -494,16 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (grasas.length > 0) menu.almuerzo.push(grasas[0 % grasas.length]);
         if (proteinas.length > 2) menu.cena.push(proteinas[2 % proteinas.length]);
         if (carbs.length > 2) menu.cena.push(carbs[2 % carbs.length]);
-        
-        let html = `<h4>Objetivos Diarios: ${targetMacros.proteinas.toFixed(0)}g Proteína, ${targetMacros.carbs.toFixed(0)}g Carbs, ${targetMacros.grasas.toFixed(0)}g Grasas</h4><p><small>Este es un menú de ejemplo generado automáticamente. Las cantidades deben ajustarse.</small></p>`;
-        for (const mealName in menu) {
-            html += `<div class="card meal-card-builder"><h4>${mealName.charAt(0).toUpperCase() + mealName.slice(1)}</h4><ul>`;
-            menu[mealName].forEach(food => {
-                if(food) html += `<li>100g de ${food.name}</li>`;
-            });
-            html += `</ul></div>`;
-        }
-        return html;
+        return menu;
     }
 
     function generateExerciseTips(objetivos) {
@@ -518,5 +509,24 @@ document.addEventListener('DOMContentLoaded', () => {
             tips += `<p><strong>Estrés:</strong> ¡Excelente! Tu nivel de estrés de <strong>${objetivos.nivelEstres}/10</strong> es manejable. Sigue así, es un factor clave para tu bienestar general.</p>`
         }
         return tips;
+    }
+
+    function displayPlanInModal(planData) {
+        const menuHTML = formatMenuForDisplay(planData.menu);
+        document.getElementById('plan-alimentacion').innerHTML = menuHTML;
+        document.getElementById('plan-ejercicio').innerHTML = planData.recommendations;
+        planModal.classList.add('show');
+    }
+    
+    function formatMenuForDisplay(menu) {
+        let html = '';
+        for (const mealName in menu) {
+            html += `<div class="card meal-card-builder"><h4>${mealName.charAt(0).toUpperCase() + mealName.slice(1)}</h4><ul>`;
+            menu[mealName].forEach(food => {
+                if(food) html += `<li>${food.quantity || 100}g de ${food.name}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        return html;
     }
 });
