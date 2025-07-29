@@ -8,8 +8,27 @@
 </head>
 <body>
 
+    <!-- Menú de Navegación Desplegable -->
+    <div id="navigation-overlay" class="navigation-overlay">
+        <button id="close-nav-button" class="close-nav-button">&times;</button>
+        <ul class="nav-links">
+            <li><a href="index.html">Pacientes</a></li>
+            <li><a href="menus.html">Menús</a></li>
+            <li><a href="calculadora.html">Calculadora IMC</a></li>
+        </ul>
+    </div>
+
     <div class="container">
-        <h1>Calculadora de IMC</h1>
+        <header>
+            <!-- Botón de Hamburguesa -->
+            <button id="hamburger-button" class="hamburger-button">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <h1>Calculadora de IMC</h1>
+        </header>
+
         <p>Esta es una calculadora genérica. Las mediciones aquí no se guardan para ningún paciente.</p>
         <div class="input-group">
             <label for="peso">Peso (kg)</label>
@@ -19,20 +38,14 @@
             <label for="altura">Altura (cm)</label>
             <input type="number" id="altura" placeholder="Ej: 175" class="input-field">
         </div>
-        <button id="calcularBtn">Calcular IMC</button>
+        <button id="calcularBtn" class="btn-guardar">Calcular IMC</button>
         <div id="resultado" class="resultado-placeholder">
             <!-- El resultado del IMC aparecerá aquí -->
         </div>
-
-        <!-- ENLACE ACTUALIZADO -->
-        <a href="index.html" class="link-pacientes">Volver a la Lista de Pacientes</a>
     </div>
 
-    <!-- SDK de Firebase (Compatibilidad) -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    
-    <!-- SCRIPT ACTUALIZADO -->
+    <!-- Scripts de la página -->
     <script src="calculadora.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
