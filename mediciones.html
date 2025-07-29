@@ -12,7 +12,7 @@
 </head>
 <body>
 
-    <!-- Menú de Navegación (sin cambios) -->
+    <!-- Menú de Navegación -->
     <div id="navigation-overlay" class="navigation-overlay">
         <button id="close-nav-button" class="close-nav-button">&times;</button>
         <ul class="nav-links">
@@ -25,18 +25,31 @@
 
     <div class="container">
         <header>
-            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <button id="hamburger-button" class="hamburger-button">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
             <h1 id="patientName">Cargando paciente...</h1>
             <div class="header-actions">
+                <button id="generatePlanBtn" class="btn-primary">Generar Plan Inteligente</button>
                 <button id="exportPdfBtn" class="btn-secondary">Exportar a PDF</button>
             </div>
         </header>
 
-        <!-- Secciones de Gráficos e Historial (sin cambios) -->
+        <!-- Gráficos -->
         <div id="chartsSection" class="charts-container" style="display: none;">
-            <div class="chart-wrapper"><h3>Variación de Peso y Masa Magra (kg)</h3><canvas id="weightChart"></canvas></div>
-            <div class="chart-wrapper"><h3>Porcentaje de Grasa Corporal (%)</h3><canvas id="fatPercentageChart"></canvas></div>
+            <div class="chart-wrapper">
+                <h3>Variación de Peso y Masa Magra (kg)</h3>
+                <canvas id="weightChart"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <h3>Porcentaje de Grasa Corporal (%)</h3>
+                <canvas id="fatPercentageChart"></canvas>
+            </div>
         </div>
+
+        <!-- Historial -->
         <div class="historial-container">
             <h2>Historial de Mediciones</h2>
             <div id="measurementHistoryList"></div>
@@ -45,188 +58,90 @@
         <button id="addMeasurementBtn" class="fab">+</button>
     </div>
 
-    <!-- MODAL PARA AÑADIR NUEVA MEDICIÓN (ACTUALIZADO) -->
+    <!-- MODAL PARA AÑADIR NUEVA MEDICIÓN -->
     <div id="addMeasurementModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Registrar Nueva Medición y Objetivos</h2>
             <form id="addMeasurementForm">
-                <!-- Sección de Medición (igual que antes) -->
-                <fieldset><legend>Medición Actual</legend><!-- ... --></fieldset>
-                
-                <!-- NUEVA SECCIÓN DE OBJETIVOS -->
+                <fieldset>
+                    <legend>Medición Actual</legend>
+                    <div class="form-row">
+                        <div class="form-group"><label for="fecha">Fecha Actual</label><input type="text" id="fecha" disabled></div>
+                        <div class="form-group"><label for="pesoAnterior">Peso Anterior (kg)</label><input type="number" id="pesoAnterior" disabled></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="pesoActual">Peso Actual (kg)</label><input type="number" id="pesoActual" step="0.1" required></div>
+                        <div class="form-group"><label>Resultado</label><p id="diferenciaPeso" class="result-display">-</p></div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Indicadores (Pliegues)</legend>
+                    <div class="form-row">
+                        <div class="form-group"><label for="pt">PT</label><input type="number" id="pt" class="indicator-input" step="0.1" required></div>
+                        <div class="form-group"><label for="pse">PSE</label><input type="number" id="pse" class="indicator-input" step="0.1" required></div>
+                        <div class="form-group"><label for="psi">PSI</label><input type="number" id="psi" class="indicator-input" step="0.1" required></div>
+                        <div class="form-group"><label for="pa">PA</label><input type="number" id="pa" class="indicator-input" step="0.1" required></div>
+                    </div>
+                    <div class="form-group"><label>Tejido Graso (%)</label><p id="tejidoGraso" class="result-display">-</p></div>
+                </fieldset>
                 <fieldset>
                     <legend>Objetivos y Estilo de Vida (para el próximo período)</legend>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="pesoObjetivo">Peso Objetivo (kg)</label>
-                            <input type="number" id="pesoObjetivo" step="0.1" class="input-field" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="actividadTipo">Tipo de Actividad Física</label>
-                            <select id="actividadTipo" class="input-field" required>
-                                <option value="sedentario">Sedentario (poco o nada)</option>
-                                <option value="ligero">Ejercicio Ligero (1-3 días/sem)</option>
-                                <option value="moderado">Ejercicio Moderado (3-5 días/sem)</option>
-                                <option value="fuerte">Ejercicio Fuerte (6-7 días/sem)</option>
-                                <option value="muy-fuerte">Ejercicio Muy Fuerte (atletas)</option>
-                            </select>
-                        </div>
+                        <div class="form-group"><label for="pesoObjetivo">Peso Objetivo (kg)</label><input type="number" id="pesoObjetivo" step="0.1" class="input-field" required></div>
+                        <div class="form-group"><label for="actividadTipo">Tipo de Actividad Física</label><select id="actividadTipo" class="input-field" required><option value="sedentario">Sedentario (poco o nada)</option><option value="ligero">Ejercicio Ligero (1-3 días/sem)</option><option value="moderado">Ejercicio Moderado (3-5 días/sem)</option><option value="fuerte">Ejercicio Fuerte (6-7 días/sem)</option><option value="muy-fuerte">Ejercicio Muy Fuerte (atletas)</option></select></div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="actividadDuracion">Duración por Sesión (min)</label>
-                            <input type="number" id="actividadDuracion" class="input-field" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="horasSueno">Horas de Sueño (promedio)</label>
-                            <input type="number" id="horasSueno" step="0.5" class="input-field" required>
-                        </div>
+                        <div class="form-group"><label for="actividadDuracion">Duración por Sesión (min)</label><input type="number" id="actividadDuracion" class="input-field" required></div>
+                        <div class="form-group"><label for="horasSueno">Horas de Sueño (promedio)</label><input type="number" id="horasSueno" step="0.5" class="input-field" required></div>
                     </div>
-                    <div class="form-group">
-                        <label for="nivelEstres">Nivel de Estrés (1 al 10)</label>
-                        <input type="range" id="nivelEstres" min="1" max="10" value="5" class="input-range">
-                        <span id="nivelEstresValor">5</span>
-                    </div>
+                    <div class="form-group"><label for="nivelEstres">Nivel de Estrés (1 al 10)</label><input type="range" id="nivelEstres" min="1" max="10" value="5" class="input-range"><span id="nivelEstresValor">5</span></div>
                 </fieldset>
-                
                 <button type="submit" class="btn-guardar">Guardar Medición y Objetivos</button>
             </form>
         </div>
     </div>
     
-    <!-- MODAL PARA VER MEDICIÓN GUARDADA (ACTUALIZADO) -->
+    <!-- MODAL PARA VER MEDICIÓN GUARDADA -->
     <div id="viewMeasurementModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2 id="viewModalTitle">Detalle de Medición</h2>
-            <!-- Secciones de Análisis, Indicadores y Resultados (igual que antes) -->
-            <fieldset><legend>Análisis de Peso</legend><!-- ... --></fieldset>
-            <fieldset><legend>Indicadores (Pliegues)</legend><!-- ... --></fieldset>
-            <fieldset><legend>Resultados Calculados</legend><!-- ... --></fieldset>
-
-            <!-- NUEVA SECCIÓN PARA VER OBJETIVOS GUARDADOS -->
-            <fieldset>
-                <legend>Objetivos y Estilo de Vida Registrados</legend>
-                <div class="data-grid">
-                    <div class="data-item"><strong>Peso Objetivo:</strong> <span id="viewPesoObjetivo"></span></div>
-                    <div class="data-item"><strong>Actividad Física:</strong> <span id="viewActividadTipo"></span></div>
-                    <div class="data-item"><strong>Duración Sesión:</strong> <span id="viewActividadDuracion"></span></div>
-                    <div class="data-item"><strong>Horas de Sueño:</strong> <span id="viewHorasSueno"></span></div>
-                    <div class="data-item"><strong>Nivel de Estrés:</strong> <span id="viewNivelEstres"></span></div>
-                </div>
-            </fieldset>
+            <fieldset><legend>Análisis de Peso</legend><div class="data-grid"><div class="data-item"><strong>Peso Anterior:</strong> <span id="viewPesoAnterior"></span></div><div class="data-item"><strong>Peso Actual:</strong> <span id="viewPesoActual"></span></div><div class="data-item"><strong>Diferencia:</strong> <span id="viewDiferenciaPeso"></span></div></div></fieldset>
+            <fieldset><legend>Indicadores (Pliegues)</legend><div class="data-grid"><div class="data-item"><strong>PT:</strong> <span id="viewPT"></span></div><div class="data-item"><strong>PSE:</strong> <span id="viewPSE"></span></div><div class="data-item"><strong>PSI:</strong> <span id="viewPSI"></span></div><div class="data-item"><strong>PA:</strong> <span id="viewPA"></span></div></div></fieldset>
+            <fieldset><legend>Resultados Calculados</legend><div class="data-grid"><div class="data-item"><strong>% Tejido Graso:</strong> <span id="viewTejidoGraso"></span></div><div class="data-item"><strong>Kilos de Grasa:</strong> <span id="viewKilosGrasa"></span></div><div class="data-item"><strong>Cambio Grasa:</strong> <span id="viewCambioGrasa"></span></div><div class="data-item"><strong>Cambio Masa Magra:</strong> <span id="viewCambioMasaMagra"></span></div></div></fieldset>
+            <fieldset><legend>Objetivos y Estilo de Vida Registrados</legend><div class="data-grid"><div class="data-item"><strong>Peso Objetivo:</strong> <span id="viewPesoObjetivo"></span></div><div class="data-item"><strong>Actividad Física:</strong> <span id="viewActividadTipo"></span></div><div class="data-item"><strong>Duración Sesión:</strong> <span id="viewActividadDuracion"></span></div><div class="data-item"><strong>Horas de Sueño:</strong> <span id="viewHorasSueno"></span></div><div class="data-item"><strong>Nivel de Estrés:</strong> <span id="viewNivelEstres"></span></div></div></fieldset>
         </div>
     </div>
 
-    <!-- ... (resto de modales y scripts sin cambios) ... -->
+    <!-- MODAL PARA OPCIONES DE EXPORTACIÓN A PDF -->
+    <div id="exportPdfModal" class="modal">
+        <div class="modal-content"><span class="close-btn">&times;</span><h2>Opciones de Exportación a PDF</h2><form id="exportOptionsForm"><p>Selecciona el rango de mediciones a incluir en el informe.</p><div class="form-row"><div class="form-group"><label for="dateFrom">Desde la fecha:</label><input type="date" id="dateFrom" class="input-field"></div><div class="form-group"><label for="dateTo">Hasta la fecha:</label><input type="date" id="dateTo" class="input-field"></div></div><div class="form-group-checkbox"><input type="checkbox" id="includeMenuCheck"><label for="includeMenuCheck">Adjuntar menú al informe</label></div><div id="menuSelectionContainer" class="form-group" style="display: none;"><label for="menuSelect">Selecciona un menú</label><select id="menuSelect" class="input-field"></select></div><button type="submit" class="btn-guardar">Generar PDF</button></form></div>
+    </div>
+    
+    <!-- MODAL PARA MOSTRAR EL PLAN GENERADO -->
+    <div id="planResultModal" class="modal">
+        <div class="modal-content large">
+            <span class="close-btn">&times;</span>
+            <h2>Plan Inteligente Sugerido</h2>
+            <div class="tabs">
+                <button class="tab-link active" data-tab="plan-alimentacion">Plan de Alimentación</button>
+                <button class="tab-link" data-tab="plan-ejercicio">Recomendaciones de Estilo de Vida</button>
+            </div>
+            <div id="plan-alimentacion" class="tab-content active"></div>
+            <div id="plan-ejercicio" class="tab-content"></div>
+        </div>
+    </div>
+
+    <!-- OVERLAY DE CARGA PARA PDF -->
+    <div id="loading-overlay" class="loading-overlay" style="display: none;"><div class="spinner"></div><p>Generando PDF, por favor espera...</p></div>
+
+    <!-- SDKs de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    
+    <!-- Scripts de la página -->
+    <script src="mediciones.js"></script>
+    <script src="main.js"></script>
 </body>
 </html>
-```
-
-### **Paso 2: `mediciones.js` (Lógica para Guardar y Ver Objetivos)**
-
-Actualizamos las funciones `saveNewMeasurement` y `openViewModal` para que manejen los nuevos campos.
-
-
-```javascript
-// ... (Configuración de Firebase y variables globales sin cambios) ...
-
-document.addEventListener('DOMContentLoaded', () => {
-    // ... (Referencias al DOM existentes) ...
-
-    // NUEVAS REFERENCIAS PARA OBJETIVOS EN EL MODAL DE AÑADIR
-    const pesoObjetivoEl = document.getElementById('pesoObjetivo');
-    const actividadTipoEl = document.getElementById('actividadTipo');
-    const actividadDuracionEl = document.getElementById('actividadDuracion');
-    const horasSuenoEl = document.getElementById('horasSueno');
-    const nivelEstresEl = document.getElementById('nivelEstres');
-    const nivelEstresValorEl = document.getElementById('nivelEstresValor');
-
-    // NUEVAS REFERENCIAS PARA OBJETIVOS EN EL MODAL DE VER
-    const viewPesoObjetivo = document.getElementById('viewPesoObjetivo');
-    const viewActividadTipo = document.getElementById('viewActividadTipo');
-    const viewActividadDuracion = document.getElementById('viewActividadDuracion');
-    const viewHorasSueno = document.getElementById('viewHorasSueno');
-    const viewNivelEstres = document.getElementById('viewNivelEstres');
-
-    // ... (Carga de datos y lógica de modales sin cambios) ...
-    
-    // EVENTO PARA EL SLIDER DE ESTRÉS
-    nivelEstresEl.addEventListener('input', () => {
-        nivelEstresValorEl.textContent = nivelEstresEl.value;
-    });
-
-    // --- FUNCIONES ---
-
-    // ... (loadPatientData, loadMeasurementHistory, openAddModal, calculateRealTimeResults, renderCharts, generatePDF sin cambios) ...
-
-    function openViewModal(medicion) {
-        // ... (código existente para poblar resultados e indicadores) ...
-        
-        // NUEVO: Poblar la sección de objetivos
-        if (medicion.objetivos) {
-            const o = medicion.objetivos;
-            viewPesoObjetivo.textContent = `${o.pesoObjetivo} kg`;
-            viewActividadTipo.textContent = o.actividadTipo.replace('-', ' ');
-            viewActividadDuracion.textContent = `${o.actividadDuracion} min`;
-            viewHorasSueno.textContent = `${o.horasSueno} hs`;
-            viewNivelEstres.textContent = `${o.nivelEstres} / 10`;
-            viewModal.querySelector('fieldset:last-of-type').style.display = 'block';
-        } else {
-            // Ocultar la sección si la medición es antigua y no tiene objetivos
-            viewModal.querySelector('fieldset:last-of-type').style.display = 'none';
-        }
-
-        viewModal.classList.add('show');
-    }
-
-    async function saveNewMeasurement(e) {
-        e.preventDefault();
-        
-        // --- Recolectar datos de medición (sin cambios) ---
-        const pesoAnterior = parseFloat(document.getElementById('pesoAnterior').value);
-        // ... (resto de variables de medición) ...
-
-        // --- NUEVO: Recolectar datos de objetivos ---
-        const objetivosData = {
-            pesoObjetivo: parseFloat(pesoObjetivoEl.value),
-            actividadTipo: actividadTipoEl.value,
-            actividadDuracion: parseInt(actividadDuracionEl.value),
-            horasSueno: parseFloat(horasSuenoEl.value),
-            nivelEstres: parseInt(nivelEstresEl.value)
-        };
-
-        // --- Realizar cálculos finales (sin cambios) ---
-        // ... (cálculos de grasa, masa magra, etc.) ...
-
-        // --- Crear objeto para guardar (ACTUALIZADO) ---
-        const nuevaMedicion = {
-            fecha: new Date(),
-            indicadores: { pt, pse, psi, pa },
-            resultados: { /* ... */ },
-            objetivos: objetivosData // Objeto añadido
-        };
-
-        try {
-            // --- Guardar en Firestore (sin cambios en la lógica, solo en el objeto) ---
-            const patientRef = db.collection('pacientes').doc(currentPatientId);
-            await patientRef.collection('mediciones').add(nuevaMedicion);
-            await patientRef.update({
-                ultimoPeso: pesoActual,
-                fechaUltimoRegistro: nuevaMedicion.fecha
-            });
-            
-            console.log('Medición y objetivos guardados.');
-            addModal.classList.remove('show');
-
-        } catch (error) {
-            console.error("Error al guardar la medición: ", error);
-            alert("Error al guardar. Revise la consola.");
-        }
-    }
-    
-    function renderHistory() {
-        // ... (código de renderHistory sin cambios, ya que solo muestra los resultados en la tarjeta) ...
-    }
-});
