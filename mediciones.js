@@ -55,6 +55,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const viewCambioGrasa = document.getElementById('viewCambioGrasa');
     const viewCambioMasaMagra = document.getElementById('viewCambioMasaMagra');
 
+    // Export Modal elements
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    const exportModal = document.getElementById('exportPdfModal');
+    const closeExportModalBtn = exportModal.querySelector('.close-btn');
+    const exportForm = document.getElementById('exportOptionsForm');
+    const includeMenuCheck = document.getElementById('includeMenuCheck');
+    const menuSelectionContainer = document.getElementById('menuSelectionContainer');
+    const menuSelect = document.getElementById('menuSelect');
+    const loadingOverlay = document.getElementById('loading-overlay');
+
     // 5. CARGAR DATOS INICIALES
     loadPatientData();
     loadMeasurementHistory();
@@ -63,16 +73,25 @@ document.addEventListener('DOMContentLoaded', () => {
     addMeasurementBtn.addEventListener('click', openAddModal);
     closeAddModalBtn.addEventListener('click', () => addModal.classList.remove('show'));
     closeViewModalBtn.addEventListener('click', () => viewModal.classList.remove('show'));
+    exportPdfBtn.addEventListener('click', openExportModal);
+    closeExportModalBtn.addEventListener('click', () => exportModal.classList.remove('show'));
+
     window.addEventListener('click', (event) => {
         if (event.target === addModal) addModal.classList.remove('show');
         if (event.target === viewModal) viewModal.classList.remove('show');
+        if (event.target === exportModal) exportModal.classList.remove('show');
     });
 
-    // 7. CÁLCULOS EN TIEMPO REAL DENTRO DEL MODAL DE AÑADIR
+    // 7. LÓGICA DE FORMULARIOS
     addForm.addEventListener('input', calculateRealTimeResults);
-
-    // 8. GUARDAR NUEVA MEDICIÓN
     addForm.addEventListener('submit', saveNewMeasurement);
+    includeMenuCheck.addEventListener('change', (e) => {
+        menuSelectionContainer.style.display = e.target.checked ? 'block' : 'none';
+    });
+    exportForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generatePDF();
+    });
 
     // --- FUNCIONES ---
 
@@ -99,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function openAddModal() {
         addForm.reset();
         document.getElementById('fecha').value = new Date().toLocaleDateString('es-ES');
-        const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[measurementHistory.length - 1] : null; // La última en orden cronológico
+        const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[measurementHistory.length - 1] : null;
         document.getElementById('pesoAnterior').value = ultimaMedicion ? ultimaMedicion.resultados.pesoActual : patientData.ultimoPeso;
         document.getElementById('diferenciaPeso').textContent = '-';
         document.getElementById('diferenciaPeso').className = 'result-display';
@@ -110,9 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function openViewModal(medicion) {
         const r = medicion.resultados;
         const i = medicion.indicadores;
-
         viewModalTitle.textContent = `Detalle de Medición (${medicion.fecha.toDate().toLocaleDateString('es-ES')})`;
-        
         viewPesoAnterior.textContent = `${r.pesoAnterior} kg`;
         viewPesoActual.textContent = `${r.pesoActual} kg`;
         viewDiferenciaPeso.textContent = `${r.diferenciaPeso.toFixed(2)} kg`;
@@ -124,8 +141,29 @@ document.addEventListener('DOMContentLoaded', () => {
         viewKilosGrasa.textContent = `${r.kilosGrasaTotal.toFixed(2)} kg`;
         viewCambioGrasa.innerHTML = r.cambioGrasaGramos > 0 ? `<span class="text-success">-${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>` : `<span class="text-danger">+${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>`;
         viewCambioMasaMagra.innerHTML = r.cambioMasaMagraGramos > 0 ? `<span class="text-success">+${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>` : `<span class="text-danger">-${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>`;
-
         viewModal.classList.add('show');
+    }
+
+    async function openExportModal() {
+        menuSelect.innerHTML = '<option value="">Cargando menús...</option>';
+        try {
+            const snapshot = await db.collection('menus').get();
+            menuSelect.innerHTML = '';
+            if (snapshot.empty) {
+                menuSelect.innerHTML = '<option value="">No hay menús disponibles</option>';
+            } else {
+                snapshot.forEach(doc => {
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = doc.data().title;
+                    menuSelect.appendChild(option);
+                });
+            }
+        } catch (error) {
+            console.error("Error cargando menús: ", error);
+            menuSelect.innerHTML = '<option value="">Error al cargar</option>';
+        }
+        exportModal.classList.add('show');
     }
 
     function calculateRealTimeResults() {
@@ -139,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
             else if (diff < 0) diferenciaPesoEl.className = 'result-display text-danger';
             else diferenciaPesoEl.className = 'result-display';
         }
-
         let sumIndicadores = 0;
         let allIndicatorsFilled = true;
         document.querySelectorAll('.indicator-input').forEach(input => {
@@ -147,7 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isNaN(val)) allIndicatorsFilled = false;
             sumIndicadores += val || 0;
         });
-
         if (allIndicatorsFilled) {
             const tejidoGraso = (sumIndicadores * 0.153) + 5.783;
             document.getElementById('tejidoGraso').textContent = `${tejidoGraso.toFixed(2)} %`;
@@ -171,13 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const masaMagraActual = pesoActual - kilosGrasaTotal;
         const masaMagraAnterior = pesoAnterior - kilosGrasaAnterior;
         const cambioMasaMagraGramos = (masaMagraActual - masaMagraAnterior) * 1000;
-
         const nuevaMedicion = {
             fecha: new Date(),
             indicadores: { pt, pse, psi, pa },
             resultados: { pesoAnterior, pesoActual, diferenciaPeso, tejidoGrasoPorcentaje, kilosGrasaTotal, cambioGrasaGramos, cambioMasaMagraGramos }
         };
-
         try {
             const patientRef = db.collection('pacientes').doc(currentPatientId);
             await patientRef.collection('mediciones').add(nuevaMedicion);
@@ -198,15 +232,12 @@ document.addEventListener('DOMContentLoaded', () => {
             measurementHistoryListEl.innerHTML = '<p>No hay mediciones registradas para este paciente.</p>';
             return;
         }
-
         reversedHistory.forEach(medicion => {
             const r = medicion.resultados;
             const card = document.createElement('div');
             card.className = 'card measurement-card';
-            
             const grasaMsg = r.cambioGrasaGramos > 0 ? `<span class="text-success">Quemados ${r.cambioGrasaGramos.toFixed(0)} gr</span>` : `<span class="text-danger">Ganados ${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>`;
             const masaMagraMsg = r.cambioMasaMagraGramos > 0 ? `<span class="text-success">Ganados ${r.cambioMasaMagraGramos.toFixed(0)} gr</span>` : `<span class="text-danger">Perdidos ${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>`;
-
             card.innerHTML = `
                 <div class="card-header">
                     <strong>Fecha: ${medicion.fecha.toDate().toLocaleDateString('es-ES')}</strong>
@@ -218,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>Masa Magra (vs ant.):</strong> ${masaMagraMsg}</p>
                 </div>
             `;
-            
             card.addEventListener('click', () => openViewModal(medicion));
             measurementHistoryListEl.appendChild(card);
         });
@@ -231,15 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         chartsSection.style.display = 'grid';
-
         const labels = measurementHistory.map(m => m.fecha.toDate().toLocaleDateString('es-ES'));
         const weightData = measurementHistory.map(m => m.resultados.pesoActual);
         const fatPercentageData = measurementHistory.map(m => m.resultados.tejidoGrasoPorcentaje.toFixed(2));
         const leanMassData = measurementHistory.map(m => (m.resultados.pesoActual - m.resultados.kilosGrasaTotal).toFixed(2));
-
         if (weightChartInstance) weightChartInstance.destroy();
         if (fatChartInstance) fatChartInstance.destroy();
-
         const weightCtx = document.getElementById('weightChart').getContext('2d');
         weightChartInstance = new Chart(weightCtx, {
             type: 'line',
@@ -259,12 +286,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     tension: 0.1
                 }]
             },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: false } }
-            }
+            options: { responsive: true, scales: { y: { beginAtZero: false } } }
         });
-
         const fatCtx = document.getElementById('fatPercentageChart').getContext('2d');
         fatChartInstance = new Chart(fatCtx, {
             type: 'line',
@@ -279,10 +302,86 @@ document.addEventListener('DOMContentLoaded', () => {
                     fill: true
                 }]
             },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: false } }
-            }
+            options: { responsive: true, scales: { y: { beginAtZero: false } } }
         });
+    }
+
+    async function generatePDF() {
+        loadingOverlay.style.display = 'flex';
+        exportModal.classList.remove('show');
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        let yPos = 20;
+
+        pdf.setFontSize(18);
+        pdf.text('Informe de Evolución Antropométrica', 105, yPos, { align: 'center' });
+        yPos += 10;
+        pdf.setFontSize(12);
+        pdf.text(`Paciente: ${patientData.nombreCompleto}`, 15, yPos);
+        pdf.text(`Fecha del Informe: ${new Date().toLocaleDateString('es-ES')}`, 195, yPos, { align: 'right' });
+        yPos += 10;
+
+        try {
+            const chart1Canvas = await html2canvas(document.getElementById('weightChart'));
+            const chart2Canvas = await html2canvas(document.getElementById('fatPercentageChart'));
+            pdf.addImage(chart1Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 80);
+            yPos += 90;
+            pdf.addImage(chart2Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 80);
+            yPos += 90;
+        } catch (error) {
+            console.error("Error al renderizar gráficos: ", error);
+            pdf.text('No se pudieron generar los gráficos.', 15, yPos);
+            yPos += 10;
+        }
+
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+        const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
+        const toTimestamp = dateTo ? new Date(dateTo).setHours(23, 59, 59, 999) : new Date().getTime();
+        const filteredHistory = measurementHistory.filter(m => {
+            const mDate = m.fecha.toDate().getTime();
+            return mDate >= fromTimestamp && mDate <= toTimestamp;
+        });
+
+        pdf.addPage();
+        yPos = 20;
+        pdf.setFontSize(14);
+        pdf.text('Detalle de Mediciones', 15, yPos);
+        yPos += 10;
+        pdf.setFontSize(10);
+
+        filteredHistory.forEach(medicion => {
+            if (yPos > 270) {
+                pdf.addPage();
+                yPos = 20;
+            }
+            const r = medicion.resultados;
+            const fechaStr = medicion.fecha.toDate().toLocaleDateString('es-ES');
+            pdf.text(`Fecha: ${fechaStr} | Peso: ${r.pesoActual} kg | % Grasa: ${r.tejidoGrasoPorcentaje.toFixed(2)}% | Kilos Grasa: ${r.kilosGrasaTotal.toFixed(2)} kg`, 15, yPos);
+            yPos += 7;
+        });
+
+        if (includeMenuCheck.checked && menuSelect.value) {
+            try {
+                const menuDoc = await db.collection('menus').doc(menuSelect.value).get();
+                if (menuDoc.exists) {
+                    const menu = menuDoc.data();
+                    pdf.addPage();
+                    yPos = 20;
+                    pdf.setFontSize(16);
+                    pdf.text(`Menú Adjunto: ${menu.title}`, 105, yPos, { align: 'center' });
+                    yPos += 15;
+                    pdf.setFontSize(10);
+                    const menuLines = pdf.splitTextToSize(menu.content, 180);
+                    pdf.text(menuLines, 15, yPos);
+                }
+            } catch (error) {
+                console.error("Error adjuntando menú: ", error);
+            }
+        }
+        
+        pdf.save(`informe-${patientData.nombreCompleto.replace(/\s/g, '_')}-${new Date().toISOString().slice(0,10)}.pdf`);
+        loadingOverlay.style.display = 'none';
     }
 });
