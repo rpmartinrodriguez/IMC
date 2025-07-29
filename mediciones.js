@@ -329,8 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
         yPos = 20;
         pdf.setFontSize(16);
         pdf.text('Historial de Mediciones', 15, yPos);
-        yPos += 10;
-        pdf.setFontSize(10);
+        yPos += 12;
         const dateFrom = document.getElementById('dateFrom').value;
         const dateTo = document.getElementById('dateTo').value;
         const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
@@ -339,16 +338,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const mDate = m.fecha.toDate().getTime();
             return mDate >= fromTimestamp && mDate <= toTimestamp;
         });
-        filteredHistory.forEach(medicion => {
-            if (yPos > 270) {
-                pdf.addPage();
-                yPos = 20;
-            }
-            const r = medicion.resultados;
-            const fechaStr = medicion.fecha.toDate().toLocaleDateString('es-ES');
-            pdf.text(`Fecha: ${fechaStr} | Peso: ${r.pesoActual} kg | % Grasa: ${r.tejidoGrasoPorcentaje.toFixed(2)}% | Kilos Grasa: ${r.kilosGrasaTotal.toFixed(2)} kg`, 15, yPos);
-            yPos += 7;
+        pdf.autoTable({
+            startY: yPos,
+            head: [['Fecha', 'Peso (kg)', '% Grasa', 'Kg Grasa', 'Kg M. Magra']],
+            body: filteredHistory.map(m => {
+                const r = m.resultados;
+                const masaMagra = r.pesoActual - r.kilosGrasaTotal;
+                return [
+                    m.fecha.toDate().toLocaleDateString('es-ES'),
+                    r.pesoActual.toFixed(2),
+                    r.tejidoGrasoPorcentaje.toFixed(2),
+                    r.kilosGrasaTotal.toFixed(2),
+                    masaMagra.toFixed(2)
+                ];
+            }),
+            theme: 'grid',
+            headStyles: { fillColor: [44, 62, 80] }
         });
+        yPos = pdf.autoTable.previous.finalY + 15;
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
             pdf.addPage();
@@ -445,29 +452,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function buildMenu(targetMacros) {
         let menu = { Desayuno: [], Almuerzo: [], Cena: [] };
-        const proteinas = foodLibrary.filter(f => f.category === 'proteina' || f.protein > 15);
-        const carbs = foodLibrary.filter(f => f.category === 'carbohidrato' || f.carbs > 15);
-        const grasas = foodLibrary.filter(f => f.category === 'grasa' || f.fats > 10);
-        if (proteinas.length > 0) menu.Desayuno.push(proteinas[0 % proteinas.length]);
-        if (carbs.length > 0) menu.Desayuno.push(carbs[0 % carbs.length]);
-        if (proteinas.length > 1) menu.Almuerzo.push(proteinas[1 % proteinas.length]);
-        if (carbs.length > 1) menu.Almuerzo.push(carbs[1 % carbs.length]);
-        if (grasas.length > 0) menu.Almuerzo.push(grasas[0 % grasas.length]);
-        if (proteinas.length > 2) menu.Cena.push(proteinas[2 % proteinas.length]);
-        if (carbs.length > 2) menu.Cena.push(carbs[2 % carbs.length]);
+        const shuffle = (array) => [...array].sort(() => 0.5 - Math.random());
+        let availableProteins = shuffle(foodLibrary.filter(f => f.protein > 15 && f.carbs < f.protein));
+        let availableCarbs = shuffle(foodLibrary.filter(f => f.carbs > 15 && f.protein < f.carbs));
+        let availableFats = shuffle(foodLibrary.filter(f => f.fats > 10));
+        for (const mealName in menu) {
+            if (availableProteins.length > 0) menu[mealName].push({ name: availableProteins.pop().name, quantity: 150 });
+            if (availableCarbs.length > 0) menu[mealName].push({ name: availableCarbs.pop().name, quantity: 100 });
+            if (mealName === 'Almuerzo' && availableFats.length > 0) menu[mealName].push({ name: availableFats.pop().name, quantity: 20 });
+        }
         return menu;
     }
 
     function generateExerciseTips(objetivos) {
         let tips = '<h3>Recomendaciones Personalizadas</h3>';
-        tips += `<p><strong>Actividad Física:</strong> Con un nivel de actividad <strong>${objetivos.actividadTipo.replace('-', ' ')}</strong>, se recomienda mantener la consistencia. Para acelerar tu objetivo de peso, considera aumentar la duración a ${objetivos.actividadDuracion + 15} minutos por sesión o añadir una sesión extra a la semana.</p>`;
+        switch(objetivos.actividadTipo) {
+            case 'sedentario': tips += `<p><strong>Actividad Física:</strong> Tu punto de partida es crucial. Comienza con caminatas de 30 minutos, 3 veces por semana. El objetivo es crear el hábito. ¡Cada paso cuenta!</p>`; break;
+            case 'ligero': tips += `<p><strong>Actividad Física:</strong> ¡Vas por buen camino! Para potenciar tus resultados, intenta aumentar la duración de tus sesiones a ${objetivos.actividadDuracion + 10} minutos o añade un día más de actividad a tu semana.</p>`; break;
+            default: tips += `<p><strong>Actividad Física:</strong> Mantienes un excelente nivel de actividad (${objetivos.actividadTipo.replace('-', ' ')}). Asegúrate de incluir días de descanso activo (como caminatas suaves o estiramientos) para optimizar la recuperación y prevenir lesiones.</p>`;
+        }
         if (objetivos.horasSueno < 7) {
-            tips += `<p><strong>Sueño:</strong> Tus <strong>${objetivos.horasSueno} horas</strong> de sueño son un punto a mejorar. Un descanso adecuado (7-8 horas) es crucial para la recuperación muscular y la regulación hormonal, lo que impacta directamente en tu peso y energía.</p>`;
+            tips += `<p><strong>Sueño:</strong> El descanso es un pilar fundamental. Dormir solo ${objetivos.horasSueno} horas puede limitar tu recuperación y afectar tus hormonas del apetito. Intenta establecer una rutina para acostarte 30 minutos antes, evitando pantallas una hora antes de dormir.</p>`;
+        } else {
+            tips += `<p><strong>Sueño:</strong> ¡Excelente! Tus ${objetivos.horasSueno} horas de sueño son ideales para la recuperación muscular, la claridad mental y la regulación hormonal. Sigue priorizando tu descanso.</p>`;
         }
         if (objetivos.nivelEstres > 6) {
-            tips += `<p><strong>Estrés:</strong> Un nivel de estrés de <strong>${objetivos.nivelEstres}/10</strong> es elevado. El estrés crónico puede dificultar la pérdida de grasa. Considera incorporar actividades relajantes como caminatas, meditación o yoga en tus días de descanso.</p>`;
-        } else {
-            tips += `<p><strong>Estrés:</strong> ¡Excelente! Tu nivel de estrés de <strong>${objetivos.nivelEstres}/10</strong> es manejable. Sigue así, es un factor clave para tu bienestar general.</p>`
+            tips += `<p><strong>Estrés:</strong> Un nivel de estrés de ${objetivos.nivelEstres}/10 es una señal de alerta. El estrés crónico eleva el cortisol, lo que puede promover el almacenamiento de grasa abdominal. Dedica 10-15 minutos al día a una actividad relajante: meditación, lectura, escuchar música o simplemente respirar profundamente.</p>`;
         }
         return tips;
     }
@@ -504,16 +514,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function displayPlanInModal(planData) {
-        const menuHTML = formatMenuForDisplay(planData.menu);
+        const menuHTML = formatMenuForDisplay(planData.menu, planData.targetMacros);
         document.getElementById('plan-alimentacion').innerHTML = menuHTML;
         document.getElementById('plan-ejercicio').innerHTML = planData.recommendations;
         planModal.classList.add('show');
     }
     
-    function formatMenuForDisplay(menu) {
-        let html = '';
+    function formatMenuForDisplay(menu, macros) {
+        let html = `<h4>Objetivos Diarios: ${macros.proteinas.toFixed(0)}g Proteína, ${macros.carbs.toFixed(0)}g Carbs, ${macros.grasas.toFixed(0)}g Grasas</h4><p><small>Este es un menú de ejemplo generado automáticamente.</small></p>`;
         for (const mealName in menu) {
-            html += `<div class="card meal-card-builder"><h4>${mealName.charAt(0).toUpperCase() + mealName.slice(1)}</h4><ul>`;
+            html += `<div class="card meal-card-builder"><h4>${mealName}</h4><ul>`;
             menu[mealName].forEach(food => {
                 if(food) html += `<li>${food.quantity || 100}g de ${food.name}</li>`;
             });
@@ -523,7 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // =================================================================
-    // 6. ASIGNACIÓN DE EVENTOS Y CARGA INICIAL (CORREGIDO)
+    // 6. ASIGNACIÓN DE EVENTOS Y CARGA INICIAL
     // =================================================================
     
     addMeasurementBtn.addEventListener('click', openAddModal);
