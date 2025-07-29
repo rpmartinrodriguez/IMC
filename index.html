@@ -1,90 +1,169 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Pacientes</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+// 1. CONFIGURACIÓN DE FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
+  authDomain: "medicion-imc.firebaseapp.com",
+  projectId: "medicion-imc",
+  storageBucket: "medicion-imc.appspot.com",
+  messagingSenderId: "544674177518",
+  appId: "1:544674177518:web:c060519e65a2913e0beeff"
+};
 
-    <!-- Menú de Navegación -->
-    <div id="navigation-overlay" class="navigation-overlay">
-        <button id="close-nav-button" class="close-nav-button">&times;</button>
-        <ul class="nav-links">
-            <li><a href="index.html">Pacientes</a></li>
-            <li><a href="menus.html">Menús</a></li>
-            <li><a href="alimentos.html">Alimentos</a></li>
-            <li><a href="calculadora.html">Calculadora IMC</a></li>
-        </ul>
-    </div>
+// 2. INICIALIZACIÓN DE SERVICIOS
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    <div class="container">
-        <header>
-            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
-            <h1>Gestión de Pacientes</h1>
-        </header>
+// Variable global para la búsqueda
+let allPatients = [];
 
-        <div class="search-container">
-            <input type="search" id="searchInput" placeholder="Buscar paciente por nombre...">
-        </div>
+document.addEventListener('DOMContentLoaded', () => {
+    // 3. REFERENCIAS A ELEMENTOS DEL DOM
+    const addPatientBtn = document.getElementById('addPatientBtn');
+    const modal = document.getElementById('addPatientModal');
+    const closeModalBtn = modal.querySelector('.close-btn');
+    const addPatientForm = document.getElementById('addPatientForm');
+    const searchInput = document.getElementById('searchInput');
+    const patientListBody = document.getElementById('patientListBody');
+    const patientModalTitle = document.getElementById('patientModalTitle');
+    const patientIdInput = document.getElementById('patientId');
 
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre y Apellido</th>
-                        <th>Teléfono</th>
-                        <th>Primer Registro</th>
-                        <th>Último Registro</th>
-                        <th>Acciones</th> <!-- NUEVA COLUMNA -->
-                    </tr>
-                </thead>
-                <tbody id="patientListBody">
-                    <!-- Los pacientes se cargarán aquí -->
-                </tbody>
-            </table>
-        </div>
+    // 4. LÓGICA DE MODALES
+    addPatientBtn.addEventListener('click', openAddModal);
+    closeModalBtn.addEventListener('click', () => modal.classList.remove('show'));
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) { modal.classList.remove('show'); }
+    });
 
-        <button id="addPatientBtn" class="fab">+</button>
-    </div>
+    // 5. GUARDAR O ACTUALIZAR PACIENTE
+    addPatientForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        
+        const patientId = patientIdInput.value;
+        const patientData = {
+            nombreCompleto: document.getElementById('nombre').value,
+            telefono: document.getElementById('telefono').value,
+            sexo: document.getElementById('sexo').value,
+            fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('fechaNacimiento').value)),
+            ultimoPeso: parseFloat(document.getElementById('peso').value),
+            fechaIngreso: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('fechaIngreso').value)),
+        };
 
-    <!-- Modal para agregar/editar pacientes -->
-    <div id="addPatientModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="patientModalTitle">Registrar Nuevo Paciente</h2> <!-- Título dinámico -->
-            <form id="addPatientForm">
-                <!-- CAMPO OCULTO PARA GUARDAR EL ID DEL PACIENTE EN MODO EDICIÓN -->
-                <input type="hidden" id="patientId">
+        try {
+            if (patientId) {
+                // MODO EDICIÓN: Actualizar el documento existente
+                // No actualizamos el peso inicial ni la fecha de primer registro
+                const { ultimoPeso, fechaIngreso, ...updateData } = patientData;
+                await db.collection("pacientes").doc(patientId).update(updateData);
+                console.log("Paciente actualizado con éxito");
+            } else {
+                // MODO AÑADIR: Crear un nuevo documento
+                patientData.fechaPrimerRegistro = patientData.fechaIngreso;
+                patientData.fechaUltimoRegistro = patientData.fechaIngreso;
+                await db.collection("pacientes").add(patientData);
+                console.log("Paciente registrado con éxito");
+            }
+            modal.classList.remove('show');
+        } catch (error) {
+            console.error("Error guardando paciente: ", error);
+            alert("Hubo un error al guardar los datos del paciente.");
+        }
+    });
+
+    // 6. LÓGICA DE BÚSQUEDA
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredPatients = allPatients.filter(patient => 
+            patient.data.nombreCompleto.toLowerCase().includes(searchTerm)
+        );
+        renderPatients(filteredPatients);
+    });
+
+    // 7. CARGAR PACIENTES DESDE FIREBASE
+    db.collection("pacientes").orderBy("fechaPrimerRegistro", "desc").onSnapshot(querySnapshot => {
+        allPatients = [];
+        querySnapshot.forEach(doc => {
+            allPatients.push({ id: doc.id, data: doc.data() });
+        });
+        renderPatients(allPatients);
+    });
+
+    // 8. EVENT DELEGATION PARA BOTONES DE ACCIONES
+    patientListBody.addEventListener('click', (e) => {
+        const target = e.target.closest('.btn-edit');
+        if (target) {
+            const patientId = target.dataset.id;
+            openEditModal(patientId);
+        }
+    });
+
+    // --- FUNCIONES AUXILIARES ---
+
+    function openAddModal() {
+        addPatientForm.reset();
+        patientIdInput.value = ''; // Asegurarse de que no hay ID
+        patientModalTitle.textContent = 'Registrar Nuevo Paciente';
+        document.getElementById('peso').disabled = false; // Habilitar el campo de peso
+        modal.classList.add('show');
+    }
+
+    async function openEditModal(patientId) {
+        try {
+            const doc = await db.collection('pacientes').doc(patientId).get();
+            if (doc.exists) {
+                const data = doc.data();
                 
-                <div class="form-group"><label for="nombre">Nombre y Apellido</label><input type="text" id="nombre" class="input-field" required></div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="fechaNacimiento">Fecha de Nacimiento</label>
-                        <input type="date" id="fechaNacimiento" class="input-field" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="sexo">Sexo</label>
-                        <select id="sexo" class="input-field" required>
-                            <option value="" disabled selected>Seleccionar...</option>
-                            <option value="femenino">Femenino</option>
-                            <option value="masculino">Masculino</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group"><label for="telefono">Teléfono</label><input type="tel" id="telefono" class="input-field" required></div>
-                <div class="form-group"><label for="peso">Peso Inicial (kg)</label><input type="number" id="peso" step="0.1" class="input-field" required></div>
-                <div class="form-group"><label for="fechaIngreso">Fecha de Ingreso</label><input type="date" id="fechaIngreso" class="input-field" required></div>
-                <button type="submit" class="btn-guardar">Guardar Cambios</button>
-            </form>
-        </div>
-    </div>
+                patientModalTitle.textContent = 'Editar Paciente';
+                patientIdInput.value = doc.id;
+                document.getElementById('nombre').value = data.nombreCompleto;
+                document.getElementById('telefono').value = data.telefono;
+                document.getElementById('sexo').value = data.sexo;
+                document.getElementById('fechaNacimiento').value = data.fechaNacimiento.toDate().toISOString().split('T')[0];
+                
+                // Usar fecha de ingreso si existe, si no, usar la de primer registro por compatibilidad con datos antiguos
+                const fechaIngreso = data.fechaIngreso ? data.fechaIngreso.toDate() : data.fechaPrimerRegistro.toDate();
+                document.getElementById('fechaIngreso').value = fechaIngreso.toISOString().split('T')[0];
+                
+                const pesoInput = document.getElementById('peso');
+                pesoInput.value = data.ultimoPeso;
+                pesoInput.disabled = true; // El peso inicial no se edita, se actualiza con mediciones
+                
+                modal.classList.add('show');
+            }
+        } catch (error) {
+            console.error("Error al obtener datos del paciente: ", error);
+        }
+    }
+});
 
-    <!-- SDKs y Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    <script src="index.js"></script>
-    <script src="main.js"></script>
-</body>
-</html>
+function renderPatients(patients) {
+    const patientListBody = document.getElementById('patientListBody');
+    patientListBody.innerHTML = '';
+
+    if (patients.length === 0) {
+        patientListBody.innerHTML = '<tr><td colspan="5">No se encontraron pacientes.</td></tr>';
+        return;
+    }
+
+    patients.forEach(patient => {
+        const doc = patient.data;
+        const tr = document.createElement('tr');
+        
+        // El clic en la fila entera lleva a las mediciones
+        tr.addEventListener('click', (e) => {
+            // Evitar que el clic en el botón de editar navegue
+            if (e.target.closest('.btn-edit')) return;
+            window.location.href = `mediciones.html?id=${patient.id}`;
+        });
+        
+        tr.innerHTML = `
+            <td data-label="Nombre">${doc.nombreCompleto}</td>
+            <td data-label="Teléfono">${doc.telefono}</td>
+            <td data-label="Primer Registro">${doc.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES')}</td>
+            <td data-label="Último Registro">${doc.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES')}</td>
+            <td>
+                <button class="btn-edit" data-id="${patient.id}">Editar</button>
+            </td>
+        `;
+        
+        patientListBody.appendChild(tr);
+    });
+}
