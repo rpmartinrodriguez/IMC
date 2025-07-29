@@ -20,6 +20,7 @@
             <li><a href="index.html">Pacientes</a></li>
             <li><a href="menus.html">Menús</a></li>
             <li><a href="alimentos.html">Alimentos</a></li>
+            <li><a href="ejercicios.html">Ejercicios</a></li>
             <li><a href="calculadora.html">Calculadora IMC</a></li>
         </ul>
     </div>
@@ -59,16 +60,59 @@
         <button id="addMeasurementBtn" class="fab">+</button>
     </div>
 
-    <!-- MODAL PARA AÑADIR NUEVA MEDICIÓN -->
+    <!-- MODAL PARA AÑADIR/EDITAR MEDICIÓN -->
     <div id="addMeasurementModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
-            <h2>Registrar Nueva Medición y Objetivos</h2>
+            <h2 id="measurementModalTitle">Registrar Nueva Medición</h2>
             <form id="addMeasurementForm">
-                <fieldset><legend>Medición Actual</legend><div class="form-row"><div class="form-group"><label for="fecha">Fecha Actual</label><input type="text" id="fecha" disabled></div><div class="form-group"><label for="pesoAnterior">Peso Anterior (kg)</label><input type="number" id="pesoAnterior" disabled></div></div><div class="form-row"><div class="form-group"><label for="pesoActual">Peso Actual (kg)</label><input type="number" id="pesoActual" step="0.1" required></div><div class="form-group"><label>Resultado</label><p id="diferenciaPeso" class="result-display">-</p></div></div></fieldset>
-                <fieldset><legend>Indicadores (Pliegues)</legend><div class="form-row"><div class="form-group"><label for="pt">PT</label><input type="number" id="pt" class="indicator-input" step="0.1" required></div><div class="form-group"><label for="pse">PSE</label><input type="number" id="pse" class="indicator-input" step="0.1" required></div><div class="form-group"><label for="psi">PSI</label><input type="number" id="psi" class="indicator-input" step="0.1" required></div><div class="form-group"><label for="pa">PA</label><input type="number" id="pa" class="indicator-input" step="0.1" required></div></div><div class="form-group"><label>Tejido Graso (%)</label><p id="tejidoGraso" class="result-display">-</p></div></fieldset>
-                <fieldset><legend>Objetivos y Estilo de Vida (para el próximo período)</legend><div class="form-row"><div class="form-group"><label for="pesoObjetivo">Peso Objetivo (kg)</label><input type="number" id="pesoObjetivo" step="0.1" class="input-field" required></div><div class="form-group"><label for="actividadTipo">Tipo de Actividad Física</label><select id="actividadTipo" class="input-field" required><option value="sedentario">Sedentario (poco o nada)</option><option value="ligero">Ejercicio Ligero (1-3 días/sem)</option><option value="moderado">Ejercicio Moderado (3-5 días/sem)</option><option value="fuerte">Ejercicio Fuerte (6-7 días/sem)</option><option value="muy-fuerte">Ejercicio Muy Fuerte (atletas)</option></select></div></div><div class="form-row"><div class="form-group"><label for="actividadDuracion">Duración por Sesión (min)</label><input type="number" id="actividadDuracion" class="input-field" required></div><div class="form-group"><label for="horasSueno">Horas de Sueño (promedio)</label><input type="number" id="horasSueno" step="0.5" class="input-field" required></div></div><div class="form-group"><label for="nivelEstres">Nivel de Estrés (1 al 10)</label><input type="range" id="nivelEstres" min="1" max="10" value="5" class="input-range"><span id="nivelEstresValor">5</span></div></fieldset>
-                <button type="submit" class="btn-guardar">Guardar Medición y Objetivos</button>
+                <input type="hidden" id="measurementId">
+                <fieldset>
+                    <legend>Medición Actual</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fecha">Fecha de la Medición</label>
+                            <input type="date" id="fecha" class="input-field" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pesoAnterior">Peso Anterior (kg)</label>
+                            <input type="number" id="pesoAnterior" class="input-field" disabled>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="pesoActual">Peso Actual (kg)</label>
+                            <input type="number" id="pesoActual" step="0.1" class="input-field" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Resultado</label>
+                            <p id="diferenciaPeso" class="result-display">-</p>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>Indicadores (Pliegues)</legend>
+                    <div class="form-row">
+                        <div class="form-group"><label for="pt">PT</label><input type="number" id="pt" class="indicator-input" step="0.1" required></div>
+                        <div class="form-group"><label for="pse">PSE</label><input type="number" id="pse" class="indicator-input" step="0.1" required></div>
+                        <div class="form-group"><label for="psi">PSI</label><input type="number" id="psi" class="indicator-input" step="0.1" required></div>
+                        <div class="form-group"><label for="pa">PA</label><input type="number" id="pa" class="indicator-input" step="0.1" required></div>
+                    </div>
+                    <div class="form-group"><label>Tejido Graso (%)</label><p id="tejidoGraso" class="result-display">-</p></div>
+                </fieldset>
+                <fieldset>
+                    <legend>Objetivos y Estilo de Vida</legend>
+                    <div class="form-row">
+                        <div class="form-group"><label for="pesoObjetivo">Peso Objetivo (kg)</label><input type="number" id="pesoObjetivo" step="0.1" class="input-field" required></div>
+                        <div class="form-group"><label for="actividadTipo">Tipo de Actividad Física</label><select id="actividadTipo" class="input-field" required><option value="sedentario">Sedentario</option><option value="ligero">Ligero</option><option value="moderado">Moderado</option><option value="fuerte">Fuerte</option><option value="muy-fuerte">Muy Fuerte</option></select></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="actividadDuracion">Duración por Sesión (min)</label><input type="number" id="actividadDuracion" class="input-field" required></div>
+                        <div class="form-group"><label for="horasSueno">Horas de Sueño (promedio)</label><input type="number" id="horasSueno" step="0.5" class="input-field" required></div>
+                    </div>
+                    <div class="form-group"><label for="nivelEstres">Nivel de Estrés (1 al 10)</label><input type="range" id="nivelEstres" min="1" max="10" value="5" class="input-range"><span id="nivelEstresValor">5</span></div>
+                </fieldset>
+                <button type="submit" class="btn-guardar">Guardar</button>
             </form>
         </div>
     </div>
@@ -95,14 +139,8 @@
             <h2>Opciones de Exportación a PDF</h2>
             <form id="exportOptionsForm">
                 <p>El informe incluirá los gráficos de evolución, las últimas 5 mediciones y el plan inteligente más reciente.</p>
-                <div class="form-group-checkbox">
-                    <input type="checkbox" id="includeMenuCheck">
-                    <label for="includeMenuCheck">Adjuntar un menú manual adicional</label>
-                </div>
-                <div id="menuSelectionContainer" class="form-group" style="display: none;">
-                    <label for="menuSelect">Selecciona un menú</label>
-                    <select id="menuSelect" class="input-field"></select>
-                </div>
+                <div class="form-group-checkbox"><input type="checkbox" id="includeMenuCheck"><label for="includeMenuCheck">Adjuntar un menú manual adicional</label></div>
+                <div id="menuSelectionContainer" class="form-group" style="display: none;"><label for="menuSelect">Selecciona un menú</label><select id="menuSelect" class="input-field"></select></div>
                 <button type="submit" class="btn-guardar">Generar PDF</button>
             </form>
         </div>
