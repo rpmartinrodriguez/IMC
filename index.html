@@ -8,28 +8,23 @@
 </head>
 <body>
 
-    <!-- Menú de Navegación Desplegable -->
+    <!-- Menú de Navegación -->
     <div id="navigation-overlay" class="navigation-overlay">
         <button id="close-nav-button" class="close-nav-button">&times;</button>
         <ul class="nav-links">
             <li><a href="index.html">Pacientes</a></li>
             <li><a href="menus.html">Menús</a></li>
+            <li><a href="alimentos.html">Alimentos</a></li>
             <li><a href="calculadora.html">Calculadora IMC</a></li>
         </ul>
     </div>
 
     <div class="container">
         <header>
-            <!-- Botón de Hamburguesa -->
-            <button id="hamburger-button" class="hamburger-button">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
+            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
             <h1>Gestión de Pacientes</h1>
         </header>
 
-        <!-- Barra de Búsqueda -->
         <div class="search-container">
             <input type="search" id="searchInput" placeholder="Buscar paciente por nombre...">
         </div>
@@ -44,35 +39,45 @@
                         <th>Último Registro</th>
                     </tr>
                 </thead>
-                <tbody id="patientListBody">
-                    <!-- Los pacientes se cargarán aquí desde Firebase -->
-                </tbody>
+                <tbody id="patientListBody"></tbody>
             </table>
         </div>
 
         <button id="addPatientBtn" class="fab">+</button>
     </div>
 
-    <!-- Modal para agregar pacientes -->
+    <!-- Modal para agregar pacientes (ACTUALIZADO) -->
     <div id="addPatientModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Registrar Nuevo Paciente</h2>
             <form id="addPatientForm">
                 <div class="form-group"><label for="nombre">Nombre y Apellido</label><input type="text" id="nombre" required></div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                        <input type="date" id="fechaNacimiento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sexo">Sexo</label>
+                        <select id="sexo" required>
+                            <option value="" disabled selected>Seleccionar...</option>
+                            <option value="femenino">Femenino</option>
+                            <option value="masculino">Masculino</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="form-group"><label for="telefono">Teléfono</label><input type="tel" id="telefono" required></div>
-                <div class="form-group"><label for="peso">Peso Actual (kg)</label><input type="number" id="peso" step="0.1" required></div>
+                <div class="form-group"><label for="peso">Peso Inicial (kg)</label><input type="number" id="peso" step="0.1" required></div>
                 <div class="form-group"><label for="fechaIngreso">Fecha de Ingreso</label><input type="date" id="fechaIngreso" required></div>
                 <button type="submit" class="btn-guardar">Guardar Paciente</button>
             </form>
         </div>
     </div>
 
-    <!-- SDKs de Firebase -->
+    <!-- SDKs y Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    
-    <!-- Scripts de la página -->
     <script src="index.js"></script>
     <script src="main.js"></script>
 </body>
