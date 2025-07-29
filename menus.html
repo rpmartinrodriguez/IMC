@@ -8,59 +8,34 @@
 </head>
 <body>
 
-    <!-- Menú de Navegación Desplegable -->
+    <!-- Menú de Navegación -->
     <div id="navigation-overlay" class="navigation-overlay">
         <button id="close-nav-button" class="close-nav-button">&times;</button>
         <ul class="nav-links">
             <li><a href="index.html">Pacientes</a></li>
             <li><a href="menus.html">Menús</a></li>
+            <li><a href="alimentos.html">Alimentos</a></li>
             <li><a href="calculadora.html">Calculadora IMC</a></li>
         </ul>
     </div>
 
     <div class="container">
         <header>
-            <!-- Botón de Hamburguesa -->
-            <button id="hamburger-button" class="hamburger-button">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
-            <h1>Gestión de Menús</h1>
+            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <h1>Mis Planes de Menú</h1>
         </header>
 
-        <div id="menuList" class="menu-list-container">
-            <!-- Las tarjetas de los menús se cargarán aquí -->
+        <div id="menuListContainer" class="menu-list-container">
+            <!-- Aquí se cargarán los menús guardados -->
         </div>
 
-        <button id="addMenuBtn" class="fab">+</button>
+        <!-- Este botón ahora llevará a la página de creación -->
+        <a href="constructor-menu.html" class="fab">+</a>
     </div>
 
-    <!-- Modal para agregar/editar menú -->
-    <div id="menuModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="menuModalTitle">Crear Nuevo Menú</h2>
-            <form id="menuForm">
-                <input type="hidden" id="menuId">
-                <div class="form-group">
-                    <label for="menuTitle">Título del Menú</label>
-                    <input type="text" id="menuTitle" class="input-field" required>
-                </div>
-                <div class="form-group">
-                    <label for="menuContent">Contenido del Menú (Plan de alimentación)</label>
-                    <textarea id="menuContent" rows="15" class="input-field" required></textarea>
-                </div>
-                <button type="submit" class="btn-guardar">Guardar Menú</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- SDKs de Firebase -->
+    <!-- Scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    
-    <!-- Scripts de la página -->
     <script src="menus.js"></script>
     <script src="main.js"></script>
 </body>
