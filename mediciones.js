@@ -340,24 +340,51 @@ document.addEventListener('DOMContentLoaded', () => {
             return mDate >= fromTimestamp && mDate <= toTimestamp;
         });
 
-        pdf.autoTable({
-            startY: yPos,
-            head: [['Fecha', 'Peso (kg)', '% Grasa', 'Kg Grasa', 'Kg M. Magra']],
-            body: filteredHistory.map(m => {
-                const r = m.resultados;
-                const masaMagra = r.pesoActual - r.kilosGrasaTotal;
-                return [
-                    m.fecha.toDate().toLocaleDateString('es-ES'),
-                    r.pesoActual.toFixed(2),
-                    r.tejidoGrasoPorcentaje.toFixed(2),
-                    r.kilosGrasaTotal.toFixed(2),
-                    masaMagra.toFixed(2)
-                ];
-            }),
-            theme: 'grid',
-            headStyles: { fillColor: [44, 62, 80] }
+        // REEMPLAZAMOS LA TABLA POR EL FORMATO DE TARJETAS
+        filteredHistory.forEach(medicion => {
+            if (yPos > 260) { // Chequeo de espacio para la tarjeta completa
+                pdf.addPage();
+                yPos = 20;
+            }
+            const r = medicion.resultados;
+            const fechaStr = medicion.fecha.toDate().toLocaleDateString('es-ES');
+            
+            // Dibuja el contenedor de la tarjeta
+            pdf.setDrawColor(221, 221, 221); // Gris claro
+            pdf.setFillColor(248, 249, 250); // Gris muy claro
+            pdf.roundedRect(14, yPos - 5, 182, 32, 3, 3, 'FD');
+
+            // Header de la tarjeta
+            pdf.setFontSize(11);
+            pdf.setFont(undefined, 'bold');
+            pdf.text(`Fecha: ${fechaStr}`, 20, yPos + 2);
+            pdf.setFont(undefined, 'normal');
+            pdf.text(`Peso: ${r.pesoActual} kg`, 190, yPos + 2, { align: 'right' });
+            yPos += 8;
+            pdf.setDrawColor(221, 221, 221);
+            pdf.line(20, yPos, 190, yPos); // Línea divisoria
+            yPos += 8;
+
+            // Cuerpo de la tarjeta
+            pdf.setFontSize(10);
+            pdf.text('Kilos de Grasa Total:', 20, yPos);
+            pdf.text(`${r.kilosGrasaTotal.toFixed(2)} kg`, 190, yPos, { align: 'right' });
+            yPos += 7;
+
+            pdf.text('Grasa (vs ant.):', 20, yPos);
+            const grasaMsg = r.cambioGrasaGramos > 0 ? `Quemados ${r.cambioGrasaGramos.toFixed(0)} gr` : `Ganados ${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr`;
+            pdf.setTextColor(r.cambioGrasaGramos > 0 ? '#28a745' : '#dc3545');
+            pdf.text(grasaMsg, 190, yPos, { align: 'right' });
+            pdf.setTextColor('#000000'); // Resetear color
+            yPos += 7;
+
+            pdf.text('Masa Magra (vs ant.):', 20, yPos);
+            const masaMagraMsg = r.cambioMasaMagraGramos > 0 ? `Ganados ${r.cambioMasaMagraGramos.toFixed(0)} gr` : `Perdidos ${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr`;
+            pdf.setTextColor(r.cambioMasaMagraGramos > 0 ? '#28a745' : '#dc3545');
+            pdf.text(masaMagraMsg, 190, yPos, { align: 'right' });
+            pdf.setTextColor('#000000'); // Resetear color
+            yPos += 15; // Espacio entre tarjetas
         });
-        yPos = pdf.autoTable.previous.finalY + 15;
 
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
