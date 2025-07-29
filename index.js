@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     addPatientBtn.addEventListener('click', openAddModal);
     closeModalBtn.addEventListener('click', () => modal.classList.remove('show'));
     window.addEventListener('click', (event) => {
-        if (event.target === modal) modal.classList.remove('show');
+        if (event.target === modal) { modal.classList.remove('show'); }
     });
 
     // 5. GUARDAR O ACTUALIZAR PACIENTE
@@ -50,7 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (patientId) {
                 // MODO EDICIÓN: Actualizar el documento existente
-                await db.collection("pacientes").doc(patientId).update(patientData);
+                // No actualizamos el peso inicial ni la fecha de primer registro
+                const { ultimoPeso, fechaIngreso, ...updateData } = patientData;
+                await db.collection("pacientes").doc(patientId).update(updateData);
                 console.log("Paciente actualizado con éxito");
             } else {
                 // MODO AÑADIR: Crear un nuevo documento
@@ -86,11 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 8. EVENT DELEGATION PARA BOTONES DE ACCIONES
     patientListBody.addEventListener('click', (e) => {
-        if (e.target.classList.contains('btn-edit')) {
-            const patientId = e.target.dataset.id;
+        const target = e.target.closest('.btn-edit');
+        if (target) {
+            const patientId = target.dataset.id;
             openEditModal(patientId);
         }
-        // Aquí se podría añadir la lógica para un botón de borrar en el futuro
     });
 
     // --- FUNCIONES AUXILIARES ---
@@ -109,15 +111,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (doc.exists) {
                 const data = doc.data();
                 
-                // Rellenar el formulario
                 patientModalTitle.textContent = 'Editar Paciente';
                 patientIdInput.value = doc.id;
                 document.getElementById('nombre').value = data.nombreCompleto;
                 document.getElementById('telefono').value = data.telefono;
                 document.getElementById('sexo').value = data.sexo;
-                // Formatear la fecha para el input type="date"
                 document.getElementById('fechaNacimiento').value = data.fechaNacimiento.toDate().toISOString().split('T')[0];
-                document.getElementById('fechaIngreso').value = data.fechaIngreso.toDate().toISOString().split('T')[0];
+                
+                // Usar fecha de ingreso si existe, si no, usar la de primer registro por compatibilidad con datos antiguos
+                const fechaIngreso = data.fechaIngreso ? data.fechaIngreso.toDate() : data.fechaPrimerRegistro.toDate();
+                document.getElementById('fechaIngreso').value = fechaIngreso.toISOString().split('T')[0];
+                
                 const pesoInput = document.getElementById('peso');
                 pesoInput.value = data.ultimoPeso;
                 pesoInput.disabled = true; // El peso inicial no se edita, se actualiza con mediciones
@@ -130,7 +134,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// FUNCIÓN PARA RENDERIZAR LA TABLA (ACTUALIZADA)
 function renderPatients(patients) {
     const patientListBody = document.getElementById('patientListBody');
     patientListBody.innerHTML = '';
@@ -143,18 +146,19 @@ function renderPatients(patients) {
     patients.forEach(patient => {
         const doc = patient.data;
         const tr = document.createElement('tr');
-        // El clic en la fila entera sigue llevando a las mediciones
+        
+        // El clic en la fila entera lleva a las mediciones
         tr.addEventListener('click', (e) => {
             // Evitar que el clic en el botón de editar navegue
-            if (e.target.classList.contains('btn-edit')) return;
+            if (e.target.closest('.btn-edit')) return;
             window.location.href = `mediciones.html?id=${patient.id}`;
         });
         
         tr.innerHTML = `
-            <td class="patient-row">${doc.nombreCompleto}</td>
-            <td class="patient-row">${doc.telefono}</td>
-            <td class="patient-row">${doc.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES')}</td>
-            <td class="patient-row">${doc.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES')}</td>
+            <td data-label="Nombre">${doc.nombreCompleto}</td>
+            <td data-label="Teléfono">${doc.telefono}</td>
+            <td data-label="Primer Registro">${doc.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES')}</td>
+            <td data-label="Último Registro">${doc.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES')}</td>
             <td>
                 <button class="btn-edit" data-id="${patient.id}">Editar</button>
             </td>
