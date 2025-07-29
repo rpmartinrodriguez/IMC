@@ -552,3 +552,17 @@ legend {
     border-top: 1px solid #ddd;
     text-align: right;
 }
+
+/* =================================================================
+   ESTILOS PARA OBJETIVOS (mediciones.html)
+   ================================================================= */
+.input-range {
+    width: 100%;
+    cursor: pointer;
+}
+
+#nivelEstresValor {
+    font-weight: bold;
+    color: #007bff;
+    margin-left: 10px;
+}
