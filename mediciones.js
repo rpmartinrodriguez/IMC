@@ -274,7 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderHistory(historyData) {
-        const measurementHistoryListEl = document.getElementById('measurementHistoryList');
         measurementHistoryListEl.innerHTML = '';
         const reversedHistory = [...historyData].reverse();
         if (reversedHistory.length === 0) {
@@ -285,8 +284,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const r = medicion.resultados;
             const card = document.createElement('div');
             card.className = 'card measurement-card';
+            card.dataset.measurementId = medicion.id;
             const grasaMsg = r.cambioGrasaGramos > 0 ? `<span class="text-success">Quemados ${r.cambioGrasaGramos.toFixed(0)} gr</span>` : `<span class="text-danger">Ganados ${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr</span>`;
             const masaMagraMsg = r.cambioMasaMagraGramos > 0 ? `<span class="text-success">Ganados ${r.cambioMasaMagraGramos.toFixed(0)} gr</span>` : `<span class="text-danger">Perdidos ${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr</span>`;
+            
             card.innerHTML = `
                 <div class="card-header">
                     <strong>Fecha: ${medicion.fecha.toDate().toLocaleDateString('es-ES')}</strong>
@@ -605,6 +606,25 @@ document.addEventListener('DOMContentLoaded', () => {
     closePlanModalBtn.addEventListener('click', () => planModal.classList.remove('show'));
     addForm.addEventListener('submit', saveNewMeasurement);
     exportForm.addEventListener('submit', (e) => { e.preventDefault(); generatePDF(); });
+    
+    measurementHistoryListEl.addEventListener('click', (e) => {
+        const editButton = e.target.closest('.btn-edit-measurement');
+        if (editButton) {
+            const measurementId = editButton.dataset.id;
+            openEditModal(measurementId);
+            return;
+        }
+        
+        const card = e.target.closest('.measurement-card');
+        if (card) {
+            const measurementId = card.dataset.measurementId;
+            const medicion = measurementHistory.find(m => m.id === measurementId);
+            if (medicion) {
+                openViewModal(medicion);
+            }
+        }
+    });
+
     viewSavedPlanBtn.addEventListener('click', () => {
         const measurementId = viewSavedPlanBtn.dataset.measurementId;
         const measurement = measurementHistory.find(m => m.id === measurementId);
