@@ -335,26 +335,19 @@ document.addEventListener('DOMContentLoaded', () => {
         pdf.text('Historial de Mediciones', 15, yPos);
         yPos += 12;
 
-        const dateFrom = document.getElementById('dateFrom').value;
-        const dateTo = document.getElementById('dateTo').value;
-        const fromTimestamp = dateFrom ? new Date(dateFrom).getTime() : 0;
-        const toTimestamp = dateTo ? new Date(dateTo).setHours(23, 59, 59, 999) : new Date().getTime();
-        const filteredHistory = measurementHistory.filter(m => {
-            const mDate = m.fecha.toDate().getTime();
-            return mDate >= fromTimestamp && mDate <= toTimestamp;
-        });
+        const recentHistory = measurementHistory.slice(-5);
 
         pdf.autoTable({
             startY: yPos,
-            head: [['Fecha', 'Peso (kg)', '% Graso', 'Kg de Masa Magra']],
-            body: filteredHistory.map(m => {
+            head: [['Fecha', 'Peso', '% Graso', 'Kg Masa Magra']],
+            body: recentHistory.map(m => {
                 const r = m.resultados;
                 const masaMagra = r.pesoActual - r.kilosGrasaTotal;
                 return [
                     m.fecha.toDate().toLocaleDateString('es-ES'),
-                    r.pesoActual.toFixed(2),
-                    r.tejidoGrasoPorcentaje.toFixed(2),
-                    masaMagra.toFixed(2)
+                    `${r.pesoActual.toFixed(2)} kg`,
+                    `${r.tejidoGrasoPorcentaje.toFixed(2)} %`,
+                    `${masaMagra.toFixed(2)} kg`
                 ];
             }),
             theme: 'grid',
