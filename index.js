@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             telefono: document.getElementById('telefono').value,
             sexo: document.getElementById('sexo').value,
             fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('fechaNacimiento').value)),
+            altura: parseFloat(document.getElementById('altura').value), // AÑADIDO
             ultimoPeso: parseFloat(document.getElementById('peso').value),
             fechaIngreso: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('fechaIngreso').value)),
         };
@@ -101,6 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         patientIdInput.value = '';
         patientModalTitle.textContent = 'Registrar Nuevo Paciente';
         document.getElementById('peso').disabled = false;
+        document.getElementById('altura').disabled = false; // Habilitar altura
         modal.classList.add('show');
     }
 
@@ -116,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('telefono').value = data.telefono;
                 document.getElementById('sexo').value = data.sexo;
                 document.getElementById('fechaNacimiento').value = data.fechaNacimiento.toDate().toISOString().split('T')[0];
+                document.getElementById('altura').value = data.altura || ''; // AÑADIDO
                 
                 const fechaIngreso = data.fechaIngreso ? data.fechaIngreso.toDate() : data.fechaPrimerRegistro.toDate();
                 document.getElementById('fechaIngreso').value = fechaIngreso.toISOString().split('T')[0];
