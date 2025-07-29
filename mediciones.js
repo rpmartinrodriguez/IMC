@@ -52,47 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabs = planModal.querySelectorAll('.tab-link');
     const tabContents = planModal.querySelectorAll('.tab-content');
 
-    // 5. CARGA INICIAL
-    loadPatientData();
-    loadMeasurementHistory();
-    loadFoodLibrary();
-
-    // 6. EVENTOS
-    addMeasurementBtn.addEventListener('click', openAddModal);
-    closeAddModalBtn.addEventListener('click', () => addModal.classList.remove('show'));
-    closeViewModalBtn.addEventListener('click', () => viewModal.classList.remove('show'));
-    exportPdfBtn.addEventListener('click', openExportModal);
-    closeExportModalBtn.addEventListener('click', () => exportModal.classList.remove('show'));
-    generatePlanBtn.addEventListener('click', generateIntelligentPlan);
-    closePlanModalBtn.addEventListener('click', () => planModal.classList.remove('show'));
-    addForm.addEventListener('submit', saveNewMeasurement);
-    exportForm.addEventListener('submit', (e) => { e.preventDefault(); generatePDF(); });
-    viewSavedPlanBtn.addEventListener('click', () => {
-        const measurementId = viewSavedPlanBtn.dataset.measurementId;
-        const measurement = measurementHistory.find(m => m.id === measurementId);
-        if (measurement && measurement.plan) {
-            displayPlanInModal(measurement.plan);
-        }
-    });
-    nivelEstresEl.addEventListener('input', () => {
-        nivelEstresValorEl.textContent = nivelEstresEl.value;
-    });
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            tabs.forEach(t => t.classList.remove('active'));
-            tabContents.forEach(c => c.classList.remove('active'));
-            tab.classList.add('active');
-            document.getElementById(tab.dataset.tab).classList.add('active');
-        });
-    });
-    window.addEventListener('click', (event) => {
-        if (event.target === addModal) addModal.classList.remove('show');
-        if (event.target === viewModal) viewModal.classList.remove('show');
-        if (event.target === exportModal) exportModal.classList.remove('show');
-        if (event.target === planModal) planModal.classList.remove('show');
-    });
-    addForm.addEventListener('input', calculateRealTimeResults);
-
     // --- FUNCIONES ---
 
     async function loadPatientData() {
@@ -509,6 +468,37 @@ document.addEventListener('DOMContentLoaded', () => {
             tips += `<p><strong>Estrés:</strong> ¡Excelente! Tu nivel de estrés de <strong>${objetivos.nivelEstres}/10</strong> es manejable. Sigue así, es un factor clave para tu bienestar general.</p>`
         }
         return tips;
+    }
+
+    async function generateIntelligentPlan() {
+        if (measurementHistory.length === 0) {
+            alert("Se necesita al menos una medición para generar un plan.");
+            return;
+        }
+        const ultimaMedicionDoc = measurementHistory[measurementHistory.length - 1];
+        if (!ultimaMedicionDoc.objetivos || !patientData.fechaNacimiento || !patientData.sexo) {
+            alert("La última medición debe tener objetivos y el paciente debe tener fecha de nacimiento y sexo registrados.");
+            return;
+        }
+        const { caloriasObjetivo, macros } = calculateNeeds(ultimaMedicionDoc);
+        const menuPlan = buildMenu(macros);
+        const ejercicioPlan = generateExerciseTips(ultimaMedicionDoc.objetivos);
+        const planData = {
+            generatedAt: new Date(),
+            targetCalories: caloriasObjetivo,
+            targetMacros: macros,
+            menu: menuPlan,
+            recommendations: ejercicioPlan
+        };
+        try {
+            const measurementRef = db.collection('pacientes').doc(currentPatientId).collection('mediciones').doc(ultimaMedicionDoc.id);
+            await measurementRef.update({ plan: planData });
+            console.log("Plan inteligente guardado con éxito en la medición.");
+            displayPlanInModal(planData);
+        } catch (error) {
+            console.error("Error al guardar el plan inteligente: ", error);
+            alert("Hubo un error al guardar el plan.");
+        }
     }
 
     function displayPlanInModal(planData) {
