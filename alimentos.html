@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Alimentos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Menú de Navegación -->
+    <div id="navigation-overlay" class="navigation-overlay">
+        <button id="close-nav-button" class="close-nav-button">&times;</button>
+        <ul class="nav-links">
+            <li><a href="index.html">Pacientes</a></li>
+            <li><a href="menus.html">Menús</a></li>
+            <li><a href="alimentos.html">Alimentos</a></li>
+            <li><a href="calculadora.html">Calculadora IMC</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <header>
+            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <h1>Biblioteca de Alimentos</h1>
+        </header>
+
+        <div id="foodListContainer" class="food-list-container">
+            <!-- Las tarjetas de alimentos se cargarán aquí -->
+        </div>
+
+        <button id="addFoodBtn" class="fab">+</button>
+    </div>
+
+    <!-- Modal para agregar/editar alimento -->
+    <div id="foodModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="foodModalTitle">Añadir Nuevo Alimento</h2>
+            <form id="foodForm">
+                <input type="hidden" id="foodId">
+                <div class="form-group">
+                    <label for="foodName">Nombre del Alimento</label>
+                    <input type="text" id="foodName" class="input-field" required>
+                </div>
+                <div class="form-group">
+                    <label for="foodCategory">Categoría</label>
+                    <select id="foodCategory" class="input-field" required>
+                        <option value="" disabled selected>Selecciona una categoría...</option>
+                        <option value="keto">Keto</option>
+                        <option value="low-hc">Baja en Carbohidratos</option>
+                        <option value="anti-inflammatory">Antiinflamatoria</option>
+                        <option value="proteina">Fuente de Proteína</option>
+                        <option value="grasa">Fuente de Grasa</option>
+                        <option value="carbohidrato">Fuente de Carbohidrato</option>
+                        <option value="general">General</option>
+                    </select>
+                </div>
+                <fieldset>
+                    <legend>Información Nutricional (por 100g)</legend>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="foodProtein">Proteínas (g)</label>
+                            <input type="number" id="foodProtein" step="0.1" class="input-field" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="foodCarbs">Carbohidratos (g)</label>
+                            <input type="number" id="foodCarbs" step="0.1" class="input-field" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="foodFats">Grasas (g)</label>
+                            <input type="number" id="foodFats" step="0.1" class="input-field" required>
+                        </div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="btn-guardar">Guardar Alimento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SDKs y Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="alimentos.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
