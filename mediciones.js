@@ -17,6 +17,7 @@ let currentPatientId = null;
 let patientData = null;
 let measurementHistory = [];
 let foodLibrary = [];
+let exerciseLibrary = [];
 let weightChartInstance = null;
 let fatChartInstance = null;
 
@@ -35,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const addModal = document.getElementById('addMeasurementModal');
     const closeAddModalBtn = addModal.querySelector('.close-btn');
     const addForm = document.getElementById('addMeasurementForm');
+    const measurementModalTitle = document.getElementById('measurementModalTitle');
+    const measurementIdInput = document.getElementById('measurementId');
+    const measurementHistoryListEl = document.getElementById('measurementHistoryList');
     const viewModal = document.getElementById('viewMeasurementModal');
     const closeViewModalBtn = viewModal.querySelector('.close-btn');
     const exportPdfBtn = document.getElementById('exportPdfBtn');
@@ -82,15 +86,23 @@ document.addEventListener('DOMContentLoaded', () => {
         foodLibrary = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
 
+    async function loadExerciseLibrary() {
+        const snapshot = await db.collection('ejercicios').get();
+        exerciseLibrary = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    }
+
     function openAddModal() {
         addForm.reset();
-        document.getElementById('fecha').value = new Date().toLocaleDateString('es-ES');
+        measurementIdInput.value = '';
+        measurementModalTitle.textContent = 'Registrar Nueva Medición';
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('fecha').value = today;
         const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[measurementHistory.length - 1] : null;
         document.getElementById('pesoAnterior').value = ultimaMedicion ? ultimaMedicion.resultados.pesoActual : patientData.ultimoPeso;
         document.getElementById('diferenciaPeso').textContent = '-';
         document.getElementById('diferenciaPeso').className = 'result-display';
         document.getElementById('tejidoGraso').textContent = '-';
-        nivelEstresValorEl.textContent = '5';
+        document.getElementById('nivelEstresValor').textContent = '5';
         addModal.classList.add('show');
     }
 
@@ -130,6 +142,39 @@ document.addEventListener('DOMContentLoaded', () => {
             viewSavedPlanContainer.style.display = 'none';
         }
         viewModal.classList.add('show');
+    }
+
+    async function openEditModal(measurementId) {
+        const medicion = measurementHistory.find(m => m.id === measurementId);
+        if (!medicion) {
+            alert("No se encontró la medición para editar.");
+            return;
+        }
+
+        addForm.reset();
+        measurementModalTitle.textContent = 'Editar Medición';
+        measurementIdInput.value = medicion.id;
+
+        document.getElementById('fecha').value = medicion.fecha.toDate().toISOString().split('T')[0];
+        document.getElementById('pesoAnterior').value = medicion.resultados.pesoAnterior;
+        document.getElementById('pesoActual').value = medicion.resultados.pesoActual;
+        
+        document.getElementById('pt').value = medicion.indicadores.pt;
+        document.getElementById('pse').value = medicion.indicadores.pse;
+        document.getElementById('psi').value = medicion.indicadores.psi;
+        document.getElementById('pa').value = medicion.indicadores.pa;
+
+        if (medicion.objetivos) {
+            document.getElementById('pesoObjetivo').value = medicion.objetivos.pesoObjetivo;
+            document.getElementById('actividadTipo').value = medicion.objetivos.actividadTipo;
+            document.getElementById('actividadDuracion').value = medicion.objetivos.actividadDuracion;
+            document.getElementById('horasSueno').value = medicion.objetivos.horasSueno;
+            document.getElementById('nivelEstres').value = medicion.objetivos.nivelEstres;
+            document.getElementById('nivelEstresValor').textContent = medicion.objetivos.nivelEstres;
+        }
+
+        calculateRealTimeResults();
+        addModal.classList.add('show');
     }
 
     async function openExportModal() {
@@ -181,6 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function saveNewMeasurement(e) {
         e.preventDefault();
+        const measurementId = measurementIdInput.value;
+        const fecha = new Date(document.getElementById('fecha').value);
         const pesoAnterior = parseFloat(document.getElementById('pesoAnterior').value);
         const pesoActual = parseFloat(document.getElementById('pesoActual').value);
         const pt = parseFloat(document.getElementById('pt').value);
@@ -197,23 +244,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const diferenciaPeso = pesoAnterior - pesoActual;
         const tejidoGrasoPorcentaje = ((pt + pse + psi + pa) * 0.153) + 5.783;
         const kilosGrasaTotal = (pesoActual * tejidoGrasoPorcentaje) / 100;
-        const ultimaMedicion = measurementHistory.length > 0 ? measurementHistory[measurementHistory.length - 1] : null;
-        const kilosGrasaAnterior = ultimaMedicion ? ultimaMedicion.resultados.kilosGrasaTotal : (patientData.ultimoPeso * tejidoGrasoPorcentaje) / 100;
+        const kilosGrasaAnterior = (pesoAnterior * tejidoGrasoPorcentaje) / 100;
         const cambioGrasaGramos = (kilosGrasaAnterior - kilosGrasaTotal) * 1000;
         const masaMagraActual = pesoActual - kilosGrasaTotal;
         const masaMagraAnterior = pesoAnterior - kilosGrasaAnterior;
         const cambioMasaMagraGramos = (masaMagraActual - masaMagraAnterior) * 1000;
-        const nuevaMedicion = {
-            fecha: new Date(),
+        const medicionData = {
+            fecha: firebase.firestore.Timestamp.fromDate(fecha),
             indicadores: { pt, pse, psi, pa },
             resultados: { pesoAnterior, pesoActual, diferenciaPeso, tejidoGrasoPorcentaje, kilosGrasaTotal, cambioGrasaGramos, cambioMasaMagraGramos },
             objetivos: objetivosData
         };
+
         try {
             const patientRef = db.collection('pacientes').doc(currentPatientId);
-            await patientRef.collection('mediciones').add(nuevaMedicion);
-            await patientRef.update({ ultimoPeso: pesoActual, fechaUltimoRegistro: nuevaMedicion.fecha });
-            console.log('Medición y objetivos guardados.');
+            if (measurementId) {
+                await patientRef.collection('mediciones').doc(measurementId).update(medicionData);
+                console.log('Medición actualizada con éxito.');
+            } else {
+                await patientRef.collection('mediciones').add(medicionData);
+                console.log('Medición guardada con éxito.');
+            }
+            await patientRef.update({ ultimoPeso: pesoActual, fechaUltimoRegistro: medicionData.fecha });
             addModal.classList.remove('show');
         } catch (error) {
             console.error("Error al guardar la medición: ", error);
@@ -238,7 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
             card.innerHTML = `
                 <div class="card-header">
                     <strong>Fecha: ${medicion.fecha.toDate().toLocaleDateString('es-ES')}</strong>
-                    <span>Peso: ${r.pesoActual} kg</span>
+                    <div class="card-actions">
+                        <button class="btn-icon btn-edit-measurement" data-id="${medicion.id}">✏️</button>
+                        <span>Peso: ${r.pesoActual} kg</span>
+                    </div>
                 </div>
                 <div class="card-body">
                     <p><strong>Kilos de Grasa Total:</strong><span>${r.kilosGrasaTotal.toFixed(2)} kg</span></p>
@@ -246,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p><strong>Masa Magra (vs ant.):</strong> ${masaMagraMsg}</p>
                 </div>
             `;
-            card.addEventListener('click', () => openViewModal(medicion));
             measurementHistoryListEl.appendChild(card);
         });
     }
@@ -424,7 +478,7 @@ document.addEventListener('DOMContentLoaded', () => {
             edad--;
         }
         const pesoActual = ultimaMedicion.resultados.pesoActual;
-        const alturaCm = patientData.altura; // CORREGIDO: Usar la altura real
+        const alturaCm = patientData.altura;
         if (!alturaCm) {
             alert("El paciente no tiene una altura registrada. No se puede generar el plan.");
             return null;
@@ -496,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         const calculatedNeeds = calculateNeeds(ultimaMedicionDoc);
-        if (!calculatedNeeds) return; // Detener si no se pudo calcular (ej. falta altura)
+        if (!calculatedNeeds) return;
 
         const { caloriasObjetivo, macros } = calculatedNeeds;
         const menuPlan = buildMenu(macros);
@@ -581,4 +635,5 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPatientData();
     loadMeasurementHistory();
     loadFoodLibrary();
+    loadExerciseLibrary();
 });
