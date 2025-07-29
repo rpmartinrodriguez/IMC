@@ -493,3 +493,62 @@ legend {
     display: block;
     margin-bottom: 5px;
 }
+
+/* =================================================================
+   ESTILOS PARA BIBLIOTECA DE ALIMENTOS (alimentos.html)
+   ================================================================= */
+.food-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.food-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.food-card-header {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.food-card-header h4 {
+    margin: 0;
+}
+
+.category-tag {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: white;
+    text-transform: capitalize;
+}
+
+.category-tag.keto { background-color: #8E44AD; }
+.category-tag.low-hc { background-color: #2980B9; }
+.category-tag.anti-inflammatory { background-color: #27AE60; }
+.category-tag.proteina { background-color: #E67E22; }
+.category-tag.grasa { background-color: #F1C40F; }
+.category-tag.carbohidrato { background-color: #3498DB; }
+.category-tag.general { background-color: #7F8C8D; }
+
+.food-card-body {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.food-card-body p {
+    margin: 0 0 8px 0;
+}
+
+.food-card-actions {
+    padding: 10px 15px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+}
