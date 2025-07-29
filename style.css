@@ -57,9 +57,8 @@ header {
 
 header h1 {
     margin: 0;
-    flex-grow: 1; /* Permite que el título ocupe el espacio central */
+    flex-grow: 1;
     text-align: center;
-    /* Movemos el botón a la izquierda, así que centramos el título */
     padding-left: 50px; /* Espacio para compensar el botón */
 }
 
@@ -86,7 +85,7 @@ header h1 {
 .navigation-overlay {
     position: fixed;
     top: 0;
-    left: -100%; /* Inicia fuera de la pantalla */
+    left: -100%;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
@@ -99,7 +98,7 @@ header h1 {
 }
 
 .navigation-overlay.show {
-    left: 0; /* Lo trae a la pantalla */
+    left: 0;
 }
 
 .navigation-overlay .close-nav-button {
@@ -134,7 +133,6 @@ header h1 {
 .nav-links a:hover {
     color: #007bff;
 }
-
 
 /* =================================================================
    GRÁFICOS (mediciones.html)
@@ -284,7 +282,7 @@ tbody tr:hover { background-color: #f1f1f1; }
     font-size: 14px;
 }
 
-.form-group input {
+.form-group input, .form-group select, .form-group textarea {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -461,6 +459,7 @@ legend {
 .form-row {
     display: flex;
     justify-content: space-between;
+    gap: 20px;
     margin: 0 -10px;
 }
 
@@ -554,15 +553,192 @@ legend {
 }
 
 /* =================================================================
-   ESTILOS PARA OBJETIVOS (mediciones.html)
+   ESTILOS PARA CONSTRUCTOR DE MENÚS (constructor-menu.html)
    ================================================================= */
-.input-range {
-    width: 100%;
+.menu-builder-container .btn-secondary {
+    padding: 8px 16px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
 }
 
-#nivelEstresValor {
+.meal-card-builder {
+    margin-bottom: 20px;
+}
+
+.meal-card-builder .meal-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.meal-card-header h4 { margin: 0; }
+
+.btn-add-food {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.food-list-builder {
+    list-style: none;
+    padding: 15px;
+    margin: 0;
+}
+
+.food-item-builder {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.food-item-builder small {
+    color: #555;
+}
+
+.btn-remove-food {
+    background: none;
+    border: none;
+    color: #dc3545;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.macros-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 15px;
+    background-color: #e9ecef;
+}
+
+.macros-grid.subtotals {
+    border-top: 1px solid #ddd;
+    background-color: #f8f9fa;
+    padding-top: 10px;
+}
+
+.macros-grid p {
+    margin: 0;
+    text-align: center;
+}
+
+.total-macros-summary {
+    border: 2px solid #007bff;
+}
+
+.total-macros-summary h3 {
+    color: #007bff;
+}
+
+.food-library-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+    max-height: 40vh;
+    overflow-y: auto;
+}
+
+.food-library-list li {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.food-library-list li:hover {
+    background-color: #f0f0f0;
+}
+
+/* =================================================================
+   ESTILOS PARA GENERADOR DE PLAN
+   ================================================================= */
+.btn-primary {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.modal-content.large {
+    max-width: 800px; /* Modal más ancho para el plan */
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+.tab-link {
+    padding: 10px 20px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 16px;
+    border-bottom: 3px solid transparent;
+}
+.tab-link.active {
+    border-bottom-color: #007bff;
     font-weight: bold;
     color: #007bff;
-    margin-left: 10px;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* =================================================================
+   ESTILOS PARA BOTONES DE ACCIONES EN TABLAS
+   ================================================================= */
+.btn-edit {
+    padding: 6px 12px;
+    font-size: 12px;
+    background-color: #ffc107; /* Un color amarillo para editar */
+    color: #212529;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-edit:hover {
+    background-color: #e0a800;
+}
+
+/* Ajuste para que la fila de la tabla no parezca clickeable en la celda de acciones */
+td:has(.btn-edit) {
+    cursor: default;
 }
