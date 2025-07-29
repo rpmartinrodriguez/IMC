@@ -111,12 +111,25 @@
             <fieldset><legend>Indicadores (Pliegues)</legend><div class="data-grid"><div class="data-item"><strong>PT:</strong> <span id="viewPT"></span></div><div class="data-item"><strong>PSE:</strong> <span id="viewPSE"></span></div><div class="data-item"><strong>PSI:</strong> <span id="viewPSI"></span></div><div class="data-item"><strong>PA:</strong> <span id="viewPA"></span></div></div></fieldset>
             <fieldset><legend>Resultados Calculados</legend><div class="data-grid"><div class="data-item"><strong>% Tejido Graso:</strong> <span id="viewTejidoGraso"></span></div><div class="data-item"><strong>Kilos de Grasa:</strong> <span id="viewKilosGrasa"></span></div><div class="data-item"><strong>Cambio Grasa:</strong> <span id="viewCambioGrasa"></span></div><div class="data-item"><strong>Cambio Masa Magra:</strong> <span id="viewCambioMasaMagra"></span></div></div></fieldset>
             <fieldset><legend>Objetivos y Estilo de Vida Registrados</legend><div class="data-grid"><div class="data-item"><strong>Peso Objetivo:</strong> <span id="viewPesoObjetivo"></span></div><div class="data-item"><strong>Actividad Física:</strong> <span id="viewActividadTipo"></span></div><div class="data-item"><strong>Duración Sesión:</strong> <span id="viewActividadDuracion"></span></div><div class="data-item"><strong>Horas de Sueño:</strong> <span id="viewHorasSueno"></span></div><div class="data-item"><strong>Nivel de Estrés:</strong> <span id="viewNivelEstres"></span></div></div></fieldset>
+            <div id="viewSavedPlanContainer" style="display:none;">
+                <button id="viewSavedPlanBtn" class="btn-primary full-width">Ver Plan Inteligente Guardado</button>
+            </div>
         </div>
     </div>
 
     <!-- MODAL PARA OPCIONES DE EXPORTACIÓN A PDF -->
     <div id="exportPdfModal" class="modal">
-        <div class="modal-content"><span class="close-btn">&times;</span><h2>Opciones de Exportación a PDF</h2><form id="exportOptionsForm"><p>Selecciona el rango de mediciones a incluir en el informe.</p><div class="form-row"><div class="form-group"><label for="dateFrom">Desde la fecha:</label><input type="date" id="dateFrom" class="input-field"></div><div class="form-group"><label for="dateTo">Hasta la fecha:</label><input type="date" id="dateTo" class="input-field"></div></div><div class="form-group-checkbox"><input type="checkbox" id="includeMenuCheck"><label for="includeMenuCheck">Adjuntar menú al informe</label></div><div id="menuSelectionContainer" class="form-group" style="display: none;"><label for="menuSelect">Selecciona un menú</label><select id="menuSelect" class="input-field"></select></div><button type="submit" class="btn-guardar">Generar PDF</button></form></div>
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Opciones de Exportación a PDF</h2>
+            <form id="exportOptionsForm">
+                <p>Selecciona el rango de mediciones a incluir en el informe.</p>
+                <div class="form-row"><div class="form-group"><label for="dateFrom">Desde la fecha:</label><input type="date" id="dateFrom" class="input-field"></div><div class="form-group"><label for="dateTo">Hasta la fecha:</label><input type="date" id="dateTo" class="input-field"></div></div>
+                <div class="form-group-checkbox"><input type="checkbox" id="includeMenuCheck"><label for="includeMenuCheck">Adjuntar menú al informe</label></div>
+                <div id="menuSelectionContainer" class="form-group" style="display: none;"><label for="menuSelect">Selecciona un menú</label><select id="menuSelect" class="input-field"></select></div>
+                <button type="submit" class="btn-guardar">Generar PDF</button>
+            </form>
+        </div>
     </div>
     
     <!-- MODAL PARA MOSTRAR EL PLAN GENERADO -->
