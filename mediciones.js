@@ -310,10 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const pdf = new jsPDF('p', 'mm', 'a4');
         let yPos = 20;
 
+        // PÁGINA 1: TÍTULO Y GRÁFICOS
         pdf.setFontSize(22);
+        pdf.setFont(undefined, 'bold');
         pdf.text(patientData.nombreCompleto, 105, yPos, { align: 'center' });
         yPos += 10;
         pdf.setFontSize(16);
+        pdf.setFont(undefined, 'normal');
         pdf.text('Evolución de Mediciones Antropométricas', 105, yPos, { align: 'center' });
         yPos += 15;
 
@@ -325,6 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pdf.addImage(chart2Canvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, 85);
         } catch (error) { console.error("Error al renderizar gráficos: ", error); }
 
+        // PÁGINA 2: HISTORIAL DE MEDICIONES
         pdf.addPage();
         yPos = 20;
         pdf.setFontSize(16);
@@ -340,57 +344,31 @@ document.addEventListener('DOMContentLoaded', () => {
             return mDate >= fromTimestamp && mDate <= toTimestamp;
         });
 
-        // REEMPLAZAMOS LA TABLA POR EL FORMATO DE TARJETAS
-        filteredHistory.forEach(medicion => {
-            if (yPos > 260) { // Chequeo de espacio para la tarjeta completa
-                pdf.addPage();
-                yPos = 20;
-            }
-            const r = medicion.resultados;
-            const fechaStr = medicion.fecha.toDate().toLocaleDateString('es-ES');
-            
-            // Dibuja el contenedor de la tarjeta
-            pdf.setDrawColor(221, 221, 221); // Gris claro
-            pdf.setFillColor(248, 249, 250); // Gris muy claro
-            pdf.roundedRect(14, yPos - 5, 182, 32, 3, 3, 'FD');
-
-            // Header de la tarjeta
-            pdf.setFontSize(11);
-            pdf.setFont(undefined, 'bold');
-            pdf.text(`Fecha: ${fechaStr}`, 20, yPos + 2);
-            pdf.setFont(undefined, 'normal');
-            pdf.text(`Peso: ${r.pesoActual} kg`, 190, yPos + 2, { align: 'right' });
-            yPos += 8;
-            pdf.setDrawColor(221, 221, 221);
-            pdf.line(20, yPos, 190, yPos); // Línea divisoria
-            yPos += 8;
-
-            // Cuerpo de la tarjeta
-            pdf.setFontSize(10);
-            pdf.text('Kilos de Grasa Total:', 20, yPos);
-            pdf.text(`${r.kilosGrasaTotal.toFixed(2)} kg`, 190, yPos, { align: 'right' });
-            yPos += 7;
-
-            pdf.text('Grasa (vs ant.):', 20, yPos);
-            const grasaMsg = r.cambioGrasaGramos > 0 ? `Quemados ${r.cambioGrasaGramos.toFixed(0)} gr` : `Ganados ${Math.abs(r.cambioGrasaGramos).toFixed(0)} gr`;
-            pdf.setTextColor(r.cambioGrasaGramos > 0 ? '#28a745' : '#dc3545');
-            pdf.text(grasaMsg, 190, yPos, { align: 'right' });
-            pdf.setTextColor('#000000'); // Resetear color
-            yPos += 7;
-
-            pdf.text('Masa Magra (vs ant.):', 20, yPos);
-            const masaMagraMsg = r.cambioMasaMagraGramos > 0 ? `Ganados ${r.cambioMasaMagraGramos.toFixed(0)} gr` : `Perdidos ${Math.abs(r.cambioMasaMagraGramos).toFixed(0)} gr`;
-            pdf.setTextColor(r.cambioMasaMagraGramos > 0 ? '#28a745' : '#dc3545');
-            pdf.text(masaMagraMsg, 190, yPos, { align: 'right' });
-            pdf.setTextColor('#000000'); // Resetear color
-            yPos += 15; // Espacio entre tarjetas
+        pdf.autoTable({
+            startY: yPos,
+            head: [['Fecha', 'Peso (kg)', '% Graso', 'Kg de Masa Magra']],
+            body: filteredHistory.map(m => {
+                const r = m.resultados;
+                const masaMagra = r.pesoActual - r.kilosGrasaTotal;
+                return [
+                    m.fecha.toDate().toLocaleDateString('es-ES'),
+                    r.pesoActual.toFixed(2),
+                    r.tejidoGrasoPorcentaje.toFixed(2),
+                    masaMagra.toFixed(2)
+                ];
+            }),
+            theme: 'grid',
+            headStyles: { fillColor: [44, 62, 80] }
         });
+        yPos = pdf.autoTable.previous.finalY + 15;
 
+        // PÁGINA 3: ÚLTIMO PLAN INTELIGENTE
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
-            if (yPos > 200) { pdf.addPage(); yPos = 20; }
+            pdf.addPage();
+            yPos = 20;
             pdf.setFontSize(16);
-            pdf.text('Último Plan Inteligente Generado', 15, yPos);
+            pdf.text('Plan Inteligente', 15, yPos);
             yPos += 10;
             const plan = lastPlanMeasurement.plan;
             pdf.setFontSize(12);
@@ -415,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
             yPos += 10;
             if (yPos > 250) { pdf.addPage(); yPos = 20; }
             pdf.setFontSize(14);
-            pdf.text('Recomendaciones de Estilo de Vida', 15, yPos);
+            pdf.text('Actividades Físicas y Recomendaciones', 15, yPos);
             yPos += 8;
             pdf.setFontSize(10);
             const recommendationsText = plan.recommendations.replace(/<h3>.*?<\/h3>|<p>|<\/p>|<strong>|<\/strong>/g, '\n').trim();
