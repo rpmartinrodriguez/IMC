@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. REFERENCIAS A ELEMENTOS DEL DOM
     const addPatientBtn = document.getElementById('addPatientBtn');
     const modal = document.getElementById('addPatientModal');
-    const closeModalBtn = document.querySelector('.close-btn');
+    const closeModalBtn = modal.querySelector('.close-btn');
     const addPatientForm = document.getElementById('addPatientForm');
     const searchInput = document.getElementById('searchInput');
 
@@ -30,19 +30,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target === modal) { modal.classList.remove('show'); }
     });
 
-    // 5. LÓGICA PARA GUARDAR PACIENTES
+    // 5. LÓGICA PARA GUARDAR PACIENTES (ACTUALIZADA)
     addPatientForm.addEventListener('submit', (event) => {
         event.preventDefault();
         const nombre = document.getElementById('nombre').value;
         const telefono = document.getElementById('telefono').value;
         const peso = parseFloat(document.getElementById('peso').value);
         const fechaIngresoStr = document.getElementById('fechaIngreso').value;
-        if (!fechaIngresoStr) { alert("Por favor, selecciona una fecha de ingreso."); return; }
+        
+        // NUEVOS CAMPOS
+        const fechaNacimientoStr = document.getElementById('fechaNacimiento').value;
+        const sexo = document.getElementById('sexo').value;
+
+        if (!fechaIngresoStr || !fechaNacimientoStr) { 
+            alert("Por favor, completa todos los campos de fecha."); 
+            return; 
+        }
         const fechaIngreso = new Date(fechaIngresoStr);
+        const fechaNacimiento = new Date(fechaNacimientoStr);
 
         db.collection("pacientes").add({
             nombreCompleto: nombre,
             telefono: telefono,
+            sexo: sexo, // AÑADIDO
+            fechaNacimiento: firebase.firestore.Timestamp.fromDate(fechaNacimiento), // AÑADIDO
             ultimoPeso: peso,
             fechaPrimerRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso),
             fechaUltimoRegistro: firebase.firestore.Timestamp.fromDate(fechaIngreso)
