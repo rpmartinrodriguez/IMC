@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // 4. REFERENCIAS AL DOM (completas)
+    // 4. REFERENCIAS AL DOM
     const patientNameEl = document.getElementById('patientName');
     const addMeasurementBtn = document.getElementById('addMeasurementBtn');
     const addModal = document.getElementById('addMeasurementModal');
