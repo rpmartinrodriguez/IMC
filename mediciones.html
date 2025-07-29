@@ -8,7 +8,6 @@
     <!-- LIBRERÍAS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- SCRIPT DEL PLUGIN AUTOTABLE AÑADIDO -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -95,10 +94,15 @@
             <span class="close-btn">&times;</span>
             <h2>Opciones de Exportación a PDF</h2>
             <form id="exportOptionsForm">
-                <p>Selecciona el rango de mediciones a incluir en el informe.</p>
-                <div class="form-row"><div class="form-group"><label for="dateFrom">Desde la fecha:</label><input type="date" id="dateFrom" class="input-field"></div><div class="form-group"><label for="dateTo">Hasta la fecha:</label><input type="date" id="dateTo" class="input-field"></div></div>
-                <div class="form-group-checkbox"><input type="checkbox" id="includeMenuCheck"><label for="includeMenuCheck">Adjuntar menú al informe</label></div>
-                <div id="menuSelectionContainer" class="form-group" style="display: none;"><label for="menuSelect">Selecciona un menú</label><select id="menuSelect" class="input-field"></select></div>
+                <p>El informe incluirá los gráficos de evolución, las últimas 5 mediciones y el plan inteligente más reciente.</p>
+                <div class="form-group-checkbox">
+                    <input type="checkbox" id="includeMenuCheck">
+                    <label for="includeMenuCheck">Adjuntar un menú manual adicional</label>
+                </div>
+                <div id="menuSelectionContainer" class="form-group" style="display: none;">
+                    <label for="menuSelect">Selecciona un menú</label>
+                    <select id="menuSelect" class="input-field"></select>
+                </div>
                 <button type="submit" class="btn-guardar">Generar PDF</button>
             </form>
         </div>
