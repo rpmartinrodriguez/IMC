@@ -340,27 +340,24 @@ document.addEventListener('DOMContentLoaded', () => {
             return mDate >= fromTimestamp && mDate <= toTimestamp;
         });
 
-        // Preparamos el contenedor del historial para la captura de pantalla
-        const historyContainer = document.getElementById('measurementHistoryList');
-        const originalContent = historyContainer.innerHTML;
-        renderHistory(filteredHistory); // Renderizamos solo el historial filtrado
-
-        try {
-            const historyCanvas = await html2canvas(historyContainer, { backgroundColor: '#ffffff' });
-            const imgHeight = historyCanvas.height * 180 / historyCanvas.width;
-            if (yPos + imgHeight > 280) {
-                pdf.addPage();
-                yPos = 20;
-            }
-            pdf.addImage(historyCanvas.toDataURL('image/png'), 'PNG', 15, yPos, 180, imgHeight);
-            yPos += imgHeight + 15;
-        } catch (error) {
-            console.error("Error al renderizar el historial: ", error);
-            pdf.text('No se pudo generar el historial de mediciones.', 15, yPos);
-        } finally {
-            // Restauramos el contenido original del historial en la página
-            renderHistory(measurementHistory);
-        }
+        pdf.autoTable({
+            startY: yPos,
+            head: [['Fecha', 'Peso (kg)', '% Grasa', 'Kg Grasa', 'Kg M. Magra']],
+            body: filteredHistory.map(m => {
+                const r = m.resultados;
+                const masaMagra = r.pesoActual - r.kilosGrasaTotal;
+                return [
+                    m.fecha.toDate().toLocaleDateString('es-ES'),
+                    r.pesoActual.toFixed(2),
+                    r.tejidoGrasoPorcentaje.toFixed(2),
+                    r.kilosGrasaTotal.toFixed(2),
+                    masaMagra.toFixed(2)
+                ];
+            }),
+            theme: 'grid',
+            headStyles: { fillColor: [44, 62, 80] }
+        });
+        yPos = pdf.autoTable.previous.finalY + 15;
 
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
