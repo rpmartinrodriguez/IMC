@@ -362,6 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function generatePDF() {
         loadingOverlay.style.display = 'flex';
+        loadingText.textContent = 'Generando PDF...';
         exportModal.classList.remove('show');
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF('p', 'mm', 'a4');
@@ -413,13 +414,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const lastPlanMeasurement = [...measurementHistory].reverse().find(m => m.plan);
         if (lastPlanMeasurement) {
             if (yPos > 200) { pdf.addPage(); yPos = 20; }
-            pdf.setFontSize(16);
-            pdf.text('Plan Inteligente', 15, yPos);
-            yPos += 10;
             const plan = lastPlanMeasurement.plan;
+            
+            pdf.setFontSize(16);
+            pdf.text('Análisis y Plan Sugerido', 15, yPos);
+            yPos += 10;
+            
+            pdf.setFontSize(10);
+            const interpretationLines = pdf.splitTextToSize(plan.interpretation, 180);
+            pdf.text(interpretationLines, 15, yPos);
+            yPos += interpretationLines.length * 5 + 10;
+
             pdf.setFontSize(12);
             pdf.text(`Objetivos Diarios: ${plan.targetCalories.toFixed(0)} kcal (P: ${plan.targetMacros.proteinas.toFixed(0)}g, C: ${plan.targetMacros.carbs.toFixed(0)}g, G: ${plan.targetMacros.grasas.toFixed(0)}g)`, 15, yPos);
             yPos += 15;
+            
             pdf.setFontSize(14);
             pdf.text('Menú Sugerido', 15, yPos);
             yPos += 8;
@@ -436,10 +445,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     yPos += 6;
                 });
             }
+            
             yPos += 10;
             if (yPos > 250) { pdf.addPage(); yPos = 20; }
             pdf.setFontSize(14);
-            pdf.text('Actividades Físicas y Recomendaciones', 15, yPos);
+            pdf.text('Recomendaciones', 15, yPos);
             yPos += 8;
             pdf.setFontSize(10);
             const recommendationsText = plan.recommendations.replace(/<h3>.*?<\/h3>|<p>|<\/p>|<strong>|<\/strong>/g, '\n').trim();
