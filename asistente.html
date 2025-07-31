@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente IA - App Antropométrica</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Menú de Navegación -->
+    <div id="navigation-overlay" class="navigation-overlay">
+        <button id="close-nav-button" class="close-nav-button">&times;</button>
+        <ul class="nav-links">
+            <li><a href="index.html">Pacientes</a></li>
+            <li><a href="menus.html">Menús</a></li>
+            <li><a href="alimentos.html">Alimentos</a></li>
+            <li><a href="ejercicios.html">Ejercicios</a></li>
+            <li><a href="asistente.html">Asistente IA</a></li>
+            <li><a href="calculadora.html">Calculadora IMC</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <header>
+            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            <h1>Asistente Nutricional IA</h1>
+        </header>
+
+        <div class="chat-container">
+            <div id="chat-history" class="chat-history">
+                <div class="bot-message">
+                    <p>¡Hola! Soy tu asistente nutricional. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre alimentos, recetas o consejos de nutrición.</p>
+                </div>
+            </div>
+            <form id="chat-form" class="chat-input-form">
+                <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí..." autocomplete="off" required>
+                <button type="submit">Enviar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SDKs y Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="asistente.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
