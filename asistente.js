@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
         appendMessage(userMessage, 'user-message');
         chatInput.value = '';
 
-        // CORREGIDO: Añadir dos clases separadas
         const typingIndicator = appendMessage('...', 'bot-message', 'typing');
 
         const botResponse = await getAIResponse(userMessage);
@@ -38,10 +37,9 @@ document.addEventListener('DOMContentLoaded', () => {
         appendMessage(botResponse, 'bot-message');
     });
 
-    // 5. FUNCIÓN PARA AÑADIR MENSAJES AL CHAT (MODIFICADA)
+    // 5. FUNCIÓN PARA AÑADIR MENSAJES AL CHAT
     function appendMessage(text, ...classes) {
         const messageDiv = document.createElement('div');
-        // Añade todas las clases pasadas como argumentos
         messageDiv.classList.add(...classes);
         
         const p = document.createElement('p');
@@ -69,7 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        // CORREGIDO: Se ha cambiado el nombre del modelo a la versión correcta
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
         try {
             const response = await fetch(apiUrl, {
