@@ -18,7 +18,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     
-    let conversationHistory = [];
+    // El historial ahora se reinicia con cada carga de página para evitar conversaciones muy largas
+    let conversationHistory = []; 
 
     // 4. MANEJAR EL ENVÍO DE MENSAJES
     chatForm.addEventListener('submit', async (e) => {
@@ -43,7 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
         messageDiv.classList.add(...classes);
         
         const p = document.createElement('p');
-        p.textContent = text;
+        // Para renderizar saltos de línea y formato simple
+        p.innerHTML = text.replace(/\n/g, '<br>');
         messageDiv.appendChild(p);
         
         chatHistoryEl.appendChild(messageDiv);
@@ -51,23 +53,36 @@ document.addEventListener('DOMContentLoaded', () => {
         return messageDiv;
     }
 
-    // 6. FUNCIÓN PARA COMUNICARSE CON LA IA
+    // 6. FUNCIÓN PARA COMUNICARSE CON LA IA (CORREGIDA Y MEJORADA)
     async function getAIResponse(userMessage) {
+        // Añadir el mensaje actual al historial
         conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
 
-        const systemInstruction = `Eres un asistente de nutrición y fitness profesional, con un tono amigable, claro y motivador. Responde a las preguntas del usuario de forma concisa y útil.`;
-        
+        // Instrucciones detalladas para la IA
+        const systemPrompt = `
+            Eres un nutricionista y entrenador personal de élite, siempre actualizado con los últimos descubrimientos científicos (basado en evidencia).
+            Tu tono es profesional, empático y motivador.
+            Proporciona respuestas claras, concisas y, sobre todo, seguras y responsables.
+            Nunca des un diagnóstico médico. Si la pregunta es compleja o podría ser un problema de salud, recomienda siempre consultar a un médico.
+            Estructura tus respuestas con párrafos cortos y, si es apropiado, listas con viñetas para facilitar la lectura.
+        `;
+
+        // Estructura de la petición corregida
         const payload = {
             contents: [
+                {
+                    role: "user",
+                    parts: [{ text: systemPrompt }]
+                },
+                {
+                    role: "model",
+                    parts: [{ text: "Entendido. Estoy listo para ayudar como un experto en nutrición y fitness." }]
+                },
                 ...conversationHistory
-            ],
-            systemInstruction: {
-                parts: { text: systemInstruction }
-            }
+            ]
         };
 
         const apiKey = "";
-        // CORREGIDO: Se ha cambiado el nombre del modelo a la versión correcta
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
         try {
@@ -78,21 +93,27 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
+                const errorBody = await response.json();
+                console.error('Error de la API:', errorBody);
                 throw new Error(`Error de la API: ${response.statusText}`);
             }
 
             const result = await response.json();
             
-            if (result.candidates && result.candidates.length > 0) {
+            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
                 const botResponseText = result.candidates[0].content.parts[0].text;
+                // Añadir la respuesta del bot al historial para dar contexto a futuras preguntas
                 conversationHistory.push({ role: "model", parts: [{ text: botResponseText }] });
                 return botResponseText;
             } else {
-                return "No he podido procesar tu solicitud en este momento.";
+                // Si la IA responde pero el contenido está vacío
+                conversationHistory.pop(); // Eliminar la última pregunta del usuario para que pueda reintentar
+                return "No he podido generar una respuesta. ¿Podrías reformular tu pregunta?";
             }
         } catch (error) {
             console.error("Error al contactar la API de Gemini:", error);
-            return "Lo siento, hubo un problema de conexión. Por favor, intenta de nuevo.";
+            conversationHistory.pop(); // Eliminar la última pregunta del usuario para que pueda reintentar
+            return "Lo siento, hubo un problema de conexión con el asistente. Por favor, verifica tu conexión a internet e intenta de nuevo.";
         }
     }
 });
