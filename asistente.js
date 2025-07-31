@@ -1,4 +1,4 @@
-// 1. CONFIGURACIÓN DE FIREBASE (Opcional para esta página, pero bueno para consistencia)
+// 1. CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
   authDomain: "medicion-imc.firebaseapp.com",
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     
-    let conversationHistory = []; // Almacena el historial para dar contexto a la IA
+    let conversationHistory = [];
 
     // 4. MANEJAR EL ENVÍO DE MENSAJES
     chatForm.addEventListener('submit', async (e) => {
@@ -26,52 +26,49 @@ document.addEventListener('DOMContentLoaded', () => {
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
-        // Mostrar el mensaje del usuario
-        appendMessage(userMessage, 'user');
+        appendMessage(userMessage, 'user-message');
         chatInput.value = '';
 
-        // Mostrar indicador de "escribiendo"
-        const typingIndicator = appendMessage('...', 'bot typing');
+        // CORREGIDO: Añadir dos clases separadas
+        const typingIndicator = appendMessage('...', 'bot-message', 'typing');
 
-        // Enviar a la IA y obtener respuesta
         const botResponse = await getAIResponse(userMessage);
 
-        // Quitar el indicador y mostrar la respuesta real
         chatHistoryEl.removeChild(typingIndicator);
-        appendMessage(botResponse, 'bot');
+        appendMessage(botResponse, 'bot-message');
     });
 
-    // 5. FUNCIÓN PARA AÑADIR MENSAJES AL CHAT
-    function appendMessage(text, type) {
+    // 5. FUNCIÓN PARA AÑADIR MENSAJES AL CHAT (MODIFICADA)
+    function appendMessage(text, ...classes) {
         const messageDiv = document.createElement('div');
-        messageDiv.classList.add(`${type}-message`);
+        // Añade todas las clases pasadas como argumentos
+        messageDiv.classList.add(...classes);
         
         const p = document.createElement('p');
         p.textContent = text;
         messageDiv.appendChild(p);
         
         chatHistoryEl.appendChild(messageDiv);
-        chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight; // Auto-scroll al final
+        chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
         return messageDiv;
     }
 
     // 6. FUNCIÓN PARA COMUNICARSE CON LA IA
     async function getAIResponse(userMessage) {
-        // Añadir el mensaje actual al historial de la conversación
         conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
 
         const systemInstruction = `Eres un asistente de nutrición y fitness profesional, con un tono amigable, claro y motivador. Responde a las preguntas del usuario de forma concisa y útil.`;
         
         const payload = {
             contents: [
-                ...conversationHistory // Incluir historial para dar contexto
+                ...conversationHistory
             ],
             systemInstruction: {
                 parts: { text: systemInstruction }
             }
         };
 
-        const apiKey = ""; // Dejar vacío
+        const apiKey = "";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
         try {
@@ -89,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (result.candidates && result.candidates.length > 0) {
                 const botResponseText = result.candidates[0].content.parts[0].text;
-                // Añadir la respuesta del bot al historial para la siguiente pregunta
                 conversationHistory.push({ role: "model", parts: [{ text: botResponseText }] });
                 return botResponseText;
             } else {
