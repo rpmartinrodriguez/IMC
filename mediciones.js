@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return tips;
     }
-
+    
     function generateLocalInterpretation(progressData) {
         let interpretation = `<h3>Análisis de Evolución</h3>`;
         
@@ -580,32 +580,98 @@ document.addEventListener('DOMContentLoaded', () => {
         return interpretation;
     }
 
+    async function getAIInterpretation(progressData) {
+        const prompt = `
+            Eres un asistente de nutrición y fitness profesional, con un tono motivador y positivo.
+            Analiza los siguientes datos de la evolución completa de un paciente y escribe una interpretación de 2 párrafos.
+            En el primer párrafo, enfócate en los logros y puntos fuertes, destacando los cambios positivos.
+            En el segundo párrafo, ofrece una recomendación clave basada en su punto más débil.
+            Usa un lenguaje claro y alentador.
+
+            Datos del Paciente:
+            - Secuencia de Peso (kg): [${progressData.weightSequence.join(', ')}]
+            - Secuencia de Kilos de Grasa (kg): [${progressData.fatKgSequence.join(', ')}]
+            - Nivel de actividad actual: ${progressData.activityLevel}
+            - Horas de sueño: ${progressData.sleepHours}
+            - Nivel de estrés: ${progressData.stressLevel}/10
+            - Objetivo de peso: ${progressData.goal}
+
+            Basado en estos datos, genera el texto.
+        `;
+
+        try {
+            loadingText.textContent = 'Generando análisis con IA...';
+            loadingOverlay.style.display = 'flex';
+            
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error de la API: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                console.warn("La respuesta de la IA no tuvo el formato esperado.");
+                return null; // Devolver null para usar el fallback
+            }
+        } catch (error) {
+            console.error("Error al contactar la API de Gemini:", error);
+            return null; // Devolver null para usar el fallback
+        }
+    }
+
     async function generateIntelligentPlan() {
         if (measurementHistory.length < 2) {
             alert("Se necesitan al menos dos mediciones para analizar la evolución y generar un plan.");
             return;
         }
         const ultimaMedicion = measurementHistory[measurementHistory.length - 1];
-        const primeraMedicion = measurementHistory[0];
-
+        
         if (!ultimaMedicion.objetivos || !patientData.fechaNacimiento || !patientData.sexo || !patientData.altura) {
             alert("Para generar un plan, el paciente debe tener altura, fecha de nacimiento y sexo registrados, y la última medición debe tener objetivos.");
             return;
         }
 
-        loadingText.textContent = 'Generando análisis de evolución...';
+        loadingText.textContent = 'Generando plan inteligente...';
         loadingOverlay.style.display = 'flex';
 
+        // 1. Generar análisis de respaldo local
         const progressData = {
-            weightChange: ultimaMedicion.resultados.pesoActual - primeraMedicion.resultados.pesoActual,
-            fatKgChange: ultimaMedicion.resultados.kilosGrasaTotal - primeraMedicion.resultados.kilosGrasaTotal,
-            leanMassChange: (ultimaMedicion.resultados.pesoActual - ultimaMedicion.resultados.kilosGrasaTotal) - (primeraMedicion.resultados.pesoActual - primeraMedicion.resultados.kilosGrasaTotal),
+            weightChange: ultimaMedicion.resultados.pesoActual - measurementHistory[0].resultados.pesoActual,
+            fatKgChange: ultimaMedicion.resultados.kilosGrasaTotal - measurementHistory[0].resultados.kilosGrasaTotal,
+            leanMassChange: (ultimaMedicion.resultados.pesoActual - ultimaMedicion.resultados.kilosGrasaTotal) - (measurementHistory[0].resultados.pesoActual - measurementHistory[0].resultados.kilosGrasaTotal),
             sleepHours: ultimaMedicion.objetivos.horasSueno,
             stressLevel: ultimaMedicion.objetivos.nivelEstres,
         };
+        let interpretationText = generateLocalInterpretation(progressData); // Fallback
 
-        const interpretationText = generateLocalInterpretation(progressData);
+        // 2. Intentar obtener análisis de la IA
+        const progressDataForAI = {
+            weightSequence: measurementHistory.map(m => m.resultados.pesoActual.toFixed(1)),
+            fatKgSequence: measurementHistory.map(m => m.resultados.kilosGrasaTotal.toFixed(1)),
+            activityLevel: ultimaMedicion.objetivos.actividadTipo,
+            sleepHours: ultimaMedicion.objetivos.horasSueno,
+            stressLevel: ultimaMedicion.objetivos.nivelEstres,
+            goal: ultimaMedicion.objetivos.pesoObjetivo > ultimaMedicion.resultados.pesoActual ? 'Subir de peso' : 'Bajar de peso'
+        };
+        const aiInterpretation = await getAIInterpretation(progressDataForAI);
+        if (aiInterpretation) {
+            interpretationText = `<h3>Análisis de Evolución por IA</h3><p>${aiInterpretation.replace(/\n/g, '<br>')}</p>`;
+        }
 
+        // 3. Calcular necesidades y construir plan
         const calculatedNeeds = calculateNeeds(ultimaMedicion);
         if (!calculatedNeeds) {
             loadingOverlay.style.display = 'none';
