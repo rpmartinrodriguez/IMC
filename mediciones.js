@@ -555,7 +555,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function generateLocalInterpretation(progressData) {
         let interpretation = `<h3>Análisis de Evolución</h3>`;
         
-        // Análisis del peso
         if (progressData.weightChange < -0.1) {
             interpretation += `<p>¡Excelente progreso! En el período analizado, has logrado una reducción de peso total de <strong>${Math.abs(progressData.weightChange).toFixed(2)} kg</strong>.</p>`;
         } else if (progressData.weightChange > 0.1) {
@@ -564,8 +563,7 @@ document.addEventListener('DOMContentLoaded', () => {
             interpretation += `<p>Tu peso se ha mantenido estable durante este período, lo cual es un buen punto de partida para enfocarnos en la recomposición corporal.</p>`;
         }
 
-        // Análisis de la composición corporal (el más importante)
-        if (progressData.fatKgChange < 0 && progressData.leanMassChange >= -0.2) { // Permitimos una pequeña pérdida de masa magra
+        if (progressData.fatKgChange < 0 && progressData.leanMassChange >= -0.2) {
             interpretation += `<p><strong>Punto Fuerte:</strong> Lo más destacable es la calidad de este cambio. Has reducido <strong>${Math.abs(progressData.fatKgChange).toFixed(2)} kg de grasa</strong> mientras has logrado mantener (o incluso aumentar) tu masa magra en <strong>${progressData.leanMassChange.toFixed(2)} kg</strong>. ¡Este es el escenario ideal y demuestra una gran disciplina con el plan!</p>`;
         } else if (progressData.fatKgChange < 0 && progressData.leanMassChange < -0.2) {
             interpretation += `<p><strong>Punto a Mejorar:</strong> Has tenido éxito en reducir <strong>${Math.abs(progressData.fatKgChange).toFixed(2)} kg de grasa</strong>, lo cual es un gran logro. Sin embargo, también se observa una pérdida de masa magra de <strong>${Math.abs(progressData.leanMassChange).toFixed(2)} kg</strong>. Nuestro próximo objetivo será ajustar la ingesta de proteínas y el entrenamiento de fuerza para proteger tu músculo mientras seguimos quemando grasa.</p>`;
@@ -573,7 +571,6 @@ document.addEventListener('DOMContentLoaded', () => {
             interpretation += `<p>El análisis muestra que debemos reenfocarnos en los objetivos. La clave será ajustar el plan de alimentación para promover la quema de grasa y combinarlo con un entrenamiento adecuado para preservar la masa muscular.</p>`;
         }
 
-        // Análisis del estilo de vida
         if (progressData.sleepHours < 7) {
             interpretation += `<p><strong>Recomendación Clave:</strong> Un punto fundamental a mejorar es el descanso. Dormir consistentemente menos de 7 horas puede dificultar la recuperación y la regulación hormonal. Intenta establecer una rutina para acostarte 30 minutos antes.</p>`;
         } else if (progressData.stressLevel > 6) {
@@ -599,7 +596,6 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingText.textContent = 'Generando análisis de evolución...';
         loadingOverlay.style.display = 'flex';
 
-        // 1. Recopilar datos para el análisis local
         const progressData = {
             weightChange: ultimaMedicion.resultados.pesoActual - primeraMedicion.resultados.pesoActual,
             fatKgChange: ultimaMedicion.resultados.kilosGrasaTotal - primeraMedicion.resultados.kilosGrasaTotal,
@@ -608,10 +604,8 @@ document.addEventListener('DOMContentLoaded', () => {
             stressLevel: ultimaMedicion.objetivos.nivelEstres,
         };
 
-        // 2. Generar interpretación localmente
         const interpretationText = generateLocalInterpretation(progressData);
 
-        // 3. Calcular necesidades y construir plan
         const calculatedNeeds = calculateNeeds(ultimaMedicion);
         if (!calculatedNeeds) {
             loadingOverlay.style.display = 'none';
@@ -648,7 +642,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('plan-alimentacion').innerHTML = menuHTML;
         document.getElementById('plan-ejercicio').innerHTML = planData.recommendations;
         
-        // Asegurarse de que la primera pestaña esté activa
         tabs.forEach(t => t.classList.remove('active'));
         tabContents.forEach(c => c.classList.remove('active'));
         tabs[0].classList.add('active');
