@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     
-    // El historial ahora se reinicia con cada carga de página para evitar conversaciones muy largas
+    // El historial se reinicia con cada carga de página.
     let conversationHistory = []; 
 
     // 4. MANEJAR EL ENVÍO DE MENSAJES
@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         appendMessage(userMessage, 'user-message');
         chatInput.value = '';
+        chatInput.disabled = true; // Deshabilitar input mientras responde
 
         const typingIndicator = appendMessage('...', 'bot-message', 'typing');
 
@@ -36,6 +37,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         chatHistoryEl.removeChild(typingIndicator);
         appendMessage(botResponse, 'bot-message');
+        chatInput.disabled = false; // Habilitar input de nuevo
+        chatInput.focus();
     });
 
     // 5. FUNCIÓN PARA AÑADIR MENSAJES AL CHAT
@@ -67,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             Estructura tus respuestas con párrafos cortos y, si es apropiado, listas con viñetas para facilitar la lectura.
         `;
 
-        // Estructura de la petición corregida
+        // Estructura de la petición corregida y simplificada
         const payload = {
             contents: [
                 {
