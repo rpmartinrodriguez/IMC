@@ -1,122 +1,124 @@
-// 1. CONFIGURACIÓN DE FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
-  authDomain: "medicion-imc.firebaseapp.com",
-  projectId: "medicion-imc",
-  storageBucket: "medicion-imc.appspot.com",
-  messagingSenderId: "544674177518",
-  appId: "1:544674177518:web:c060519e65a2913e0beeff"
-};
-
-// 2. INICIALIZACIÓN DE SERVICIOS
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 document.addEventListener('DOMContentLoaded', () => {
-    // 3. REFERENCIAS AL DOM
-    const chatHistoryEl = document.getElementById('chat-history');
+    // Referencias a los elementos del DOM
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
-    
-    // El historial se reinicia con cada carga de página.
-    let conversationHistory = []; 
+    const chatMessages = document.getElementById('chat-messages');
 
-    // 4. MANEJAR EL ENVÍO DE MENSAJES
+    // =================================================================
+    // ¡IMPORTANTE! COLOCA TU API KEY DE GEMINI AQUÍ
+    // =================================================================
+    const API_KEY = 'TU_API_KEY_AQUI'; // <--- REEMPLAZA ESTO
+
+    // El historial de la conversación para darle contexto a la IA
+    let conversationHistory = [];
+
+    // --- MANEJO DEL FORMULARIO ---
     chatForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const userMessage = chatInput.value.trim();
         if (!userMessage) return;
 
-        appendMessage(userMessage, 'user-message');
+        // Añadir el mensaje del usuario a la interfaz
+        addMessageToUI(userMessage, 'user');
+
+        // Limpiar el input y mostrar indicador de "escribiendo..."
         chatInput.value = '';
-        chatInput.disabled = true; // Deshabilitar input mientras responde
-
-        const typingIndicator = appendMessage('...', 'bot-message', 'typing');
-
-        const botResponse = await getAIResponse(userMessage);
-
-        chatHistoryEl.removeChild(typingIndicator);
-        appendMessage(botResponse, 'bot-message');
-        chatInput.disabled = false; // Habilitar input de nuevo
-        chatInput.focus();
-    });
-
-    // 5. FUNCIÓN PARA AÑADIR MENSAJES AL CHAT
-    function appendMessage(text, ...classes) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add(...classes);
-        
-        const p = document.createElement('p');
-        // Para renderizar saltos de línea y formato simple
-        p.innerHTML = text.replace(/\n/g, '<br>');
-        messageDiv.appendChild(p);
-        
-        chatHistoryEl.appendChild(messageDiv);
-        chatHistoryEl.scrollTop = chatHistoryEl.scrollHeight;
-        return messageDiv;
-    }
-
-    // 6. FUNCIÓN PARA COMUNICARSE CON LA IA (CORREGIDA Y MEJORADA)
-    async function getAIResponse(userMessage) {
-        // Añadir el mensaje actual al historial
-        conversationHistory.push({ role: "user", parts: [{ text: userMessage }] });
-
-        // Instrucciones detalladas para la IA
-        const systemPrompt = `
-            Eres un nutricionista y entrenador personal de élite, siempre actualizado con los últimos descubrimientos científicos (basado en evidencia).
-            Tu tono es profesional, empático y motivador.
-            Proporciona respuestas claras, concisas y, sobre todo, seguras y responsables.
-            Nunca des un diagnóstico médico. Si la pregunta es compleja o podría ser un problema de salud, recomienda siempre consultar a un médico.
-            Estructura tus respuestas con párrafos cortos y, si es apropiado, listas con viñetas para facilitar la lectura.
-        `;
-
-        // Estructura de la petición corregida y simplificada
-        const payload = {
-            contents: [
-                {
-                    role: "user",
-                    parts: [{ text: systemPrompt }]
-                },
-                {
-                    role: "model",
-                    parts: [{ text: "Entendido. Estoy listo para ayudar como un experto en nutrición y fitness." }]
-                },
-                ...conversationHistory
-            ]
-        };
-
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        showTypingIndicator();
 
         try {
-            const response = await fetch(apiUrl, {
+            // Obtener la respuesta de la IA
+            const aiResponse = await getAIResponse(userMessage);
+
+            // Quitar el indicador y mostrar la respuesta de la IA
+            removeTypingIndicator();
+            addMessageToUI(aiResponse, 'ai');
+
+        } catch (error) {
+            // Si hay un error, mostrarlo en la interfaz
+            removeTypingIndicator();
+            addMessageToUI(`Error: ${error.message}`, 'ai');
+            console.error('Error completo:', error);
+        }
+    });
+
+    // --- FUNCIONES DE LA INTERFAZ ---
+
+    function addMessageToUI(message, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.className = `chat-message ${sender}-message`;
+        messageElement.textContent = message;
+        chatMessages.appendChild(messageElement);
+        // Hacer scroll hacia el último mensaje
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.id = 'typing-indicator';
+        indicator.className = 'chat-message typing-indicator';
+        indicator.textContent = 'El asistente está escribiendo...';
+        chatMessages.appendChild(indicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+
+    // --- LÓGICA DE LA API DE GEMINI ---
+
+    async function getAIResponse(userMessage) {
+        // Añadir el nuevo mensaje del usuario al historial
+        conversationHistory.push({
+            role: "user",
+            parts: [{ text: userMessage }]
+        });
+        
+        // La URL del endpoint para el modelo gemini-pro
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${API_KEY}`;
+
+        // El cuerpo (payload) de la solicitud, con todo el historial
+        const requestBody = {
+            contents: conversationHistory
+        };
+
+        try {
+            const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
             });
 
+            // Si la respuesta no es exitosa (ej. 400, 403, 500), lanzar un error
             if (!response.ok) {
-                const errorBody = await response.json();
-                console.error('Error de la API:', errorBody);
-                throw new Error(`Error de la API: ${response.statusText}`);
+                const errorData = await response.json();
+                console.error("Respuesta de error de la API:", errorData);
+                throw new Error(`Error de la API: ${errorData.error.message}`);
             }
 
-            const result = await response.json();
+            const data = await response.json();
             
-            if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
-                const botResponseText = result.candidates[0].content.parts[0].text;
-                // Añadir la respuesta del bot al historial para dar contexto a futuras preguntas
-                conversationHistory.push({ role: "model", parts: [{ text: botResponseText }] });
-                return botResponseText;
-            } else {
-                // Si la IA responde pero el contenido está vacío
-                conversationHistory.pop(); // Eliminar la última pregunta del usuario para que pueda reintentar
-                return "No he podido generar una respuesta. ¿Podrías reformular tu pregunta?";
-            }
+            // Extraer el texto de la respuesta
+            const aiText = data.candidates[0].content.parts[0].text;
+
+            // Añadir la respuesta de la IA al historial para la próxima pregunta
+            conversationHistory.push({
+                role: "model", // 'model' es el rol de la IA
+                parts: [{ text: aiText }]
+            });
+
+            return aiText;
+
         } catch (error) {
+            // Este bloque captura tanto errores de red como los que lanzamos arriba
             console.error("Error al contactar la API de Gemini:", error);
-            conversationHistory.pop(); // Eliminar la última pregunta del usuario para que pueda reintentar
-            return "Lo siento, hubo un problema de conexión con el asistente. Por favor, verifica tu conexión a internet e intenta de nuevo.";
+            // Re-lanzamos el error para que sea manejado por el event listener del formulario
+            throw error;
         }
     }
 });
