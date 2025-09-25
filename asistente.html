@@ -3,47 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asistente IA - App Antropométrica</title>
+    <title>Asistente Virtual</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos para el asistente */
+        .chat-container {
+            max-width: 800px;
+            margin: 40px auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 80vh; /* Ocupa el 80% de la altura de la pantalla */
+        }
+        #chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .chat-message {
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 75%;
+            line-height: 1.5;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+        .ai-message {
+            background-color: #f1f0f0;
+            color: #333;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        #chat-form {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #e0e0e0;
+            background-color: #fff;
+        }
+        #chat-input {
+            flex-grow: 1;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        #chat-form button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #chat-form button:hover {
+            background-color: #0056b3;
+        }
+        .typing-indicator {
+            align-self: flex-start;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Menú de Navegación -->
+    <!-- Menú de Navegación (puedes copiarlo de tus otras páginas) -->
     <div id="navigation-overlay" class="navigation-overlay">
-        <button id="close-nav-button" class="close-nav-button">&times;</button>
-        <ul class="nav-links">
-            <li><a href="index.html">Pacientes</a></li>
-            <li><a href="menus.html">Menús</a></li>
-            <li><a href="alimentos.html">Alimentos</a></li>
-            <li><a href="ejercicios.html">Ejercicios</a></li>
-            <li><a href="asistente.html">Asistente IA</a></li>
-            <li><a href="calculadora.html">Calculadora IMC</a></li>
-        </ul>
+        <!-- ... tu menú de hamburguesa ... -->
     </div>
 
     <div class="container">
         <header>
-            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
-            <h1>Asistente Nutricional IA</h1>
+            <!-- ... tu header con el botón de hamburguesa ... -->
+            <h1>Asistente IA</h1>
         </header>
 
         <div class="chat-container">
-            <div id="chat-history" class="chat-history">
-                <div class="bot-message">
-                    <p>¡Hola! Soy tu asistente nutricional. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre alimentos, recetas o consejos de nutrición.</p>
-                </div>
+            <div id="chat-messages">
+                <!-- Los mensajes del chat aparecerán aquí -->
+                <div class="chat-message ai-message">Hola, ¿cómo puedo ayudarte hoy?</div>
             </div>
-            <form id="chat-form" class="chat-input-form">
-                <input type="text" id="chat-input" placeholder="Escribe tu pregunta aquí..." autocomplete="off" required>
-                <button type="submit">Enviar</button>
+            <form id="chat-form">
+                <input type="text" id="chat-input" placeholder="Escribe tu pregunta..." autocomplete="off" required>
+                <button type="submit">➤</button>
             </form>
         </div>
     </div>
 
-    <!-- SDKs y Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    <script src="asistente.js"></script>
+    <!-- Scripts -->
     <script src="main.js"></script>
+    <script src="asistente.js"></script>
 </body>
 </html>
