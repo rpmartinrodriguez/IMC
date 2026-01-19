@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriManager Pro - Sistema Integral</title>
+    <title>NutriManager Pro - Violet Edition</title>
     
     <!-- Librerías Externas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -18,269 +18,334 @@
 
     <style>
         :root {
-            --primary: #4361ee;
-            --primary-dark: #3a0ca3;
-            --secondary: #7209b7;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --dark: #212529;
-            --light: #f8f9fa;
+            /* Gama de Violetas y Purpuras */
+            --primary: #7b2cbf;
+            --primary-dark: #5a189a;
+            --primary-light: #9d4edd;
+            --secondary: #c77dff;
+            --accent: #e0aaff;
+            --success: #2ecc71;
+            --danger: #ef4444;
+            --dark: #240046;
+            --light: #f3e8ff;
+            --bg: #f8f4ff;
             --white: #ffffff;
             --radius: 12px;
-            --shadow: 0 4px 15px rgba(0,0,0,0.08);
+            --shadow: 0 4px 20px rgba(123, 44, 191, 0.15);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            color: var(--dark);
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background-color: var(--bg); 
+            color: var(--dark); 
+            margin: 0; 
+            padding: 0; 
+            min-height: 100vh; 
         }
 
-        /* --- NAVEGACIÓN Y MENÚ HAMBURGUESA --- */
-        header {
-            background: var(--white);
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        /* --- NAVEGACIÓN --- */
+        header { 
+            background: var(--white); 
+            padding: 15px 20px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+            box-shadow: 0 2px 10px rgba(123, 44, 191, 0.1); 
         }
 
-        .hamburger {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            z-index: 2100;
+        .hamburger { 
+            background: none; 
+            border: none; 
+            cursor: pointer; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 5px; 
+            z-index: 2100; 
         }
 
-        .hamburger span {
-            width: 25px;
-            height: 3px;
-            background: var(--dark);
-            border-radius: 3px;
-            transition: 0.3s;
+        .hamburger span { 
+            width: 25px; 
+            height: 3px; 
+            background: var(--primary); 
+            border-radius: 3px; 
+            transition: 0.3s; 
         }
-
-        .nav-overlay {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 280px;
-            height: 100%;
-            background: var(--dark);
-            z-index: 2000;
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding-top: 80px;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        
+        .nav-overlay { 
+            position: fixed; 
+            top: 0; 
+            left: -100%; 
+            width: 280px; 
+            height: 100%; 
+            background: var(--dark); 
+            z-index: 2000; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            padding-top: 80px; 
+            box-shadow: 10px 0 30px rgba(0,0,0,0.3); 
         }
 
         .nav-overlay.active { left: 0; }
 
         .nav-links { list-style: none; padding: 0; margin: 0; }
-        .nav-links li a {
-            display: block;
-            padding: 18px 25px;
-            color: #ccc;
-            text-decoration: none;
-            font-size: 1.1em;
-            transition: 0.3s;
-            border-left: 4px solid transparent;
+        .nav-links li a { 
+            display: block; 
+            padding: 18px 25px; 
+            color: var(--accent); 
+            text-decoration: none; 
+            font-size: 1.1em; 
+            border-left: 4px solid transparent; 
+            transition: 0.3s; 
         }
 
-        .nav-links li a:hover, .nav-links li a.active {
-            color: white;
-            background: rgba(255,255,255,0.05);
-            border-left-color: var(--primary);
+        .nav-links li a:hover, .nav-links li a.active { 
+            color: white; 
+            background: rgba(255,255,255,0.05); 
+            border-left-color: var(--secondary); 
         }
 
-        /* --- CONTENEDOR PRINCIPAL --- */
-        main {
-            max-width: 1100px;
-            margin: 20px auto;
-            padding: 0 15px 100px 15px;
+        /* --- CONTENIDO --- */
+        main { 
+            max-width: 1100px; 
+            margin: 20px auto; 
+            padding: 0 15px 100px 15px; 
         }
 
         .view-section { display: none; }
         .view-section.active { display: block; animation: fadeIn 0.4s ease; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
         }
 
         /* --- COMPONENTES UI --- */
-        .card {
-            background: var(--white);
-            padding: 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-            border: 1px solid #edf2f7;
+        .card { 
+            background: var(--white); 
+            padding: 20px; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow); 
+            margin-bottom: 20px; 
+            border: 1px solid #e9d5ff; 
         }
 
-        .btn {
-            padding: 12px 20px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: 0.2s;
+        .btn { 
+            padding: 12px 20px; 
+            border-radius: 8px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            transition: 0.2s; 
         }
 
         .btn-primary { background: var(--primary); color: white; }
-        .btn-success { background: #2ecc71; color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-ghost { background: var(--light); color: var(--primary); }
+        .btn-whatsapp { background: #25d366; color: white; }
         .btn-danger { background: var(--danger); color: white; }
-        .btn-ghost { background: #f1f3f5; color: var(--dark); }
 
-        .input-field {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 15px;
-            transition: 0.3s;
-        }
-        .input-field:focus { border-color: var(--primary); outline: none; }
-
-        /* --- TABLAS RESPONSIVAS --- */
-        .table-wrapper { overflow-x: auto; border-radius: var(--radius); }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase; }
-        td { padding: 15px; border-bottom: 1px solid #f1f5f9; }
-
-        @media (max-width: 768px) {
-            .res-table thead { display: none; }
-            .res-table tr { display: block; margin-bottom: 15px; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
-            .res-table td { display: flex; justify-content: space-between; padding: 10px 5px; border: none; font-size: 14px; }
-            .res-table td::before { content: attr(data-label); font-weight: bold; color: #64748b; }
+        .input-field { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #e9d5ff; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            margin-bottom: 15px; 
+            outline: none; 
         }
 
-        /* --- CALENDARIO AGENDA --- */
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background: #e2e8f0;
-            border: 1px solid #e2e8f0;
+        .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(123, 44, 191, 0.1); }
+        
+        /* --- CALENDARIO --- */
+        .calendar-grid { 
+            display: grid; 
+            grid-template-columns: repeat(7, 1fr); 
+            gap: 1px; 
+            background: #e9d5ff; 
+            border: 1px solid #e9d5ff; 
+            border-radius: 8px; 
+            overflow: hidden; 
         }
-        .calendar-cell {
-            background: white;
-            min-height: 100px;
-            padding: 5px;
-            cursor: pointer;
-            transition: 0.2s;
+
+        .calendar-cell { 
+            background: white; 
+            min-height: 110px; 
+            padding: 8px; 
+            cursor: pointer; 
+            position: relative; 
+            transition: 0.2s; 
         }
-        .calendar-cell:hover { background: #f8fafc; }
-        .day-n { font-weight: bold; font-size: 12px; color: #94a3b8; display: block; margin-bottom: 4px; }
-        .turno-pill {
-            background: var(--primary);
-            color: white;
-            font-size: 9px;
-            padding: 2px 4px;
-            border-radius: 4px;
-            margin-bottom: 2px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+
+        .calendar-cell:hover { background: #fdfaff; }
+        .calendar-cell.today { background: #f3e8ff; border: 2px solid var(--primary-light); }
+        
+        .day-n { font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 5px; display: block; }
+        
+        .turno-pill { 
+            background: var(--primary); 
+            color: white; 
+            font-size: 10px; 
+            padding: 3px 6px; 
+            border-radius: 4px; 
+            margin-bottom: 3px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
         }
+
+        /* --- GRID DE HORARIOS --- */
+        .time-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+
+        .time-slot { 
+            padding: 10px; 
+            border-radius: 8px; 
+            border: 2px solid #e9d5ff; 
+            background: white; 
+            color: var(--primary); 
+            font-weight: bold; 
+            text-align: center; 
+            cursor: pointer; 
+            font-size: 13px; 
+            transition: 0.2s; 
+        }
+
+        .time-slot:hover:not(.taken) { background: var(--light); border-color: var(--primary); }
+        .time-slot.selected { background: var(--primary); color: white; border-color: var(--primary-dark); transform: scale(1.05); }
+        .time-slot.taken { background: #f1f1f1; color: #aaa; text-decoration: line-through; border-color: #eee; cursor: not-allowed; }
 
         /* --- MODALES --- */
-        .modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 3000;
-            padding: 15px;
-            backdrop-filter: blur(4px);
+        .modal { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(36, 0, 70, 0.6); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 3000; 
+            padding: 15px; 
+            backdrop-filter: blur(4px); 
         }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: white;
-            width: 100%;
-            max-width: 600px;
-            border-radius: 15px;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 25px;
-        }
-        .modal-large { max-width: 900px; }
 
-        /* --- ASISTENTE IA --- */
-        .chat-box { height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 10px; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; line-height: 1.5; font-size: 14px; }
+        .modal.active { display: flex; }
+        .modal-content { 
+            background: white; 
+            width: 100%; 
+            max-width: 550px; 
+            border-radius: 20px; 
+            max-height: 90vh; 
+            overflow-y: auto; 
+            padding: 30px; 
+            position: relative; 
+            border-top: 8px solid var(--primary); 
+        }
+        .modal-large { max-width: 850px; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #aaa; }
+
+        /* --- DAY VIEW --- */
+        .day-view-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px; 
+            border: 1px solid #e9d5ff; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
+            background: #faf5ff; 
+        }
+
+        /* --- TABLAS --- */
+        .table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid #e9d5ff; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th { background: #f8f4ff; padding: 15px; text-align: left; font-size: 13px; color: var(--primary); text-transform: uppercase; }
+        td { padding: 15px; border-bottom: 1px solid #f3e8ff; }
+
+        /* --- CHAT IA --- */
+        .chat-box { height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 15px; background: #fdfaff; border-radius: 10px; }
+        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; line-height: 1.5; font-size: 14px; }
         .msg-u { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg-b { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; }
+        .msg-b { align-self: flex-start; background: white; border: 1px solid #e9d5ff; border-bottom-left-radius: 2px; }
 
         /* --- UTILIDADES --- */
-        .fab {
-            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
-            background: var(--primary); color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
-            cursor: pointer; border: none; z-index: 900;
+        .fab { 
+            position: fixed; 
+            bottom: 30px; 
+            right: 30px; 
+            width: 65px; 
+            height: 65px; 
+            background: var(--primary); 
+            color: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 28px; 
+            box-shadow: 0 10px 25px rgba(123, 44, 191, 0.4); 
+            cursor: pointer; 
+            border: none; 
+            z-index: 900; 
         }
 
-        .badge {
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            position: absolute;
-            top: -5px;
-            right: -5px;
+        .loader-overlay { 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(255,255,255,0.9); 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 9999; 
         }
-
-        .loader-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.9);
-            display: none; flex-direction: column;
-            align-items: center; justify-content: center;
-            z-index: 9999;
+        
+        .spinner { 
+            width: 45px; 
+            height: 45px; 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid var(--primary); 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
         }
-        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
+
+        @media (max-width: 768px) {
+            .calendar-cell { min-height: 85px; padding: 4px; }
+            .day-n { font-size: 11px; }
+            .turno-pill { font-size: 8px; }
+            .time-grid { grid-template-columns: repeat(3, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div id="mainLoader" class="loader-overlay">
         <div class="spinner"></div>
-        <p style="margin-top: 15px; font-weight: 600;">Sincronizando con la nube...</p>
+        <p style="margin-top: 15px; font-weight: 600; color: var(--primary);">NutriManager Pro...</p>
     </div>
 
     <!-- Menú Lateral -->
     <nav id="navOverlay" class="nav-overlay">
         <ul class="nav-links">
-            <li><a href="#" onclick="switchView('patients')" id="link-patients" class="active">👥 Mis Pacientes</a></li>
-            <li><a href="#" onclick="switchView('agenda')" id="link-agenda">📅 Agenda de Turnos</a></li>
+            <li><a href="#" onclick="switchView('agenda')" id="link-agenda" class="active">📅 Agenda Nutricional</a></li>
+            <li><a href="#" onclick="switchView('patients')" id="link-patients">👥 Mis Pacientes</a></li>
             <li><a href="#" onclick="switchView('foods')" id="link-foods">🍎 Biblioteca Alimentos</a></li>
             <li><a href="#" onclick="switchView('calc')" id="link-calc">⚖️ Calculadora IMC</a></li>
-            <li><a href="#" onclick="switchView('ai')" id="link-ai">🤖 Asistente Virtual</a></li>
+            <li><a href="#" onclick="switchView('ai')" id="link-ai">🤖 Asistente Virtual IA</a></li>
         </ul>
     </nav>
 
@@ -288,62 +353,58 @@
         <button class="hamburger" onclick="toggleMenu()">
             <span></span><span></span><span></span>
         </button>
-        <h2 id="viewTitle" style="margin:0; font-size: 1.1rem; color: var(--primary)">NutriManager Pro</h2>
-        <div style="position:relative; cursor:pointer" onclick="showNotifications()">
-            🔔 <span id="notifCount" class="badge" style="display:none">0</span>
-        </div>
+        <h2 id="viewHeaderTitle" style="margin:0; font-size: 1.1rem; color: var(--primary)">Mi Agenda</h2>
+        <div style="font-size: 20px; cursor: pointer; color: var(--primary);" onclick="showUpcomingAlert()">🔔</div>
     </header>
 
     <main>
-        <!-- VISTA: LISTA DE PACIENTES -->
-        <section id="view-patients" class="view-section active">
-            <div class="card">
-                <input type="search" id="patientSearch" class="input-field" placeholder="🔍 Buscar paciente por nombre..." oninput="filterPatients()">
-            </div>
-            <div class="table-wrapper">
-                <table class="res-table">
-                    <thead>
-                        <tr><th>Paciente</th><th>Teléfono</th><th>Último Peso</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody id="patientListBody"></tbody>
-                </table>
-            </div>
-            <button class="fab" onclick="openPatientModal()">+</button>
-        </section>
-
-        <!-- VISTA: DETALLE PACIENTE / EVOLUCIÓN -->
-        <section id="view-details" class="view-section">
-            <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
-                <button class="btn btn-ghost" onclick="switchView('patients')">⬅ Atrás</button>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Plan Inteligente</button>
-                    <button class="btn btn-ghost" onclick="exportEvolutionPDF()">📄 PDF</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 id="detName" style="margin-top:0">Cargando...</h2>
-                <div class="charts-grid">
-                    <div style="height: 200px;"><canvas id="chartWeight"></canvas></div>
-                    <div style="height: 200px;"><canvas id="chartFat"></canvas></div>
-                </div>
-            </div>
-
-            <h3>Historial Antropométrico</h3>
-            <div id="measurementList"></div>
-            <button class="fab" onclick="openMeasureModal()">+</button>
-        </section>
-
-        <!-- VISTA: AGENDA CALENDARIO -->
-        <section id="view-agenda" class="view-section">
+        <!-- VISTA: AGENDA (PRINCIPAL) -->
+        <section id="view-agenda" class="view-section active">
             <div class="card">
                 <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <button class="btn btn-ghost" onclick="changeMonth(-1)">◀</button>
-                    <h3 id="calendarMonthLabel" style="margin:0">Mes Año</h3>
+                    <h2 id="calendarLabel" style="margin:0; font-size: 1.2rem; color: var(--primary-dark)">Mes Año</h2>
                     <button class="btn btn-ghost" onclick="changeMonth(1)">▶</button>
                 </div>
                 <div id="calendarGrid" class="calendar-grid"></div>
             </div>
+        </section>
+
+        <!-- VISTA: PACIENTES -->
+        <section id="view-patients" class="view-section">
+            <div class="card" style="display:flex; gap:10px;">
+                <input type="search" id="patientSearch" class="input-field" style="margin:0" placeholder="🔍 Buscar paciente..." oninput="renderPatients()">
+                <button class="btn btn-primary" onclick="openPatientModal()">+</button>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr><th>Paciente</th><th>WhatsApp</th><th>Último Peso</th><th>Acciones</th></tr>
+                    </thead>
+                    <tbody id="patientListBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- VISTA: DETALLE / EVOLUCIÓN -->
+        <section id="view-details" class="view-section">
+            <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
+                <button class="btn btn-ghost" onclick="switchView('patients')">⬅ Volver</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Generar Plan</button>
+                    <button class="btn btn-ghost" onclick="exportEvolutionPDF()">📄 Exportar PDF</button>
+                </div>
+            </div>
+            <div class="card">
+                <h2 id="detName" style="margin-top:0">Nombre del Paciente</h2>
+                <div class="charts-grid">
+                    <div style="height: 220px;"><canvas id="chartWeight"></canvas></div>
+                    <div style="height: 220px;"><canvas id="chartFat"></canvas></div>
+                </div>
+            </div>
+            <h3>Historial de Evaluaciones</h3>
+            <div id="measurementList"></div>
+            <button class="fab" onclick="openMeasureModal()">+</button>
         </section>
 
         <!-- VISTA: ALIMENTOS -->
@@ -358,23 +419,23 @@
         <!-- VISTA: CALCULADORA -->
         <section id="view-calc" class="view-section">
             <div class="card" style="max-width: 500px; margin: 0 auto">
-                <h2>Calculadora de IMC</h2>
-                <label>Peso (kg)</label><input type="number" id="calcW" class="input-field">
-                <label>Altura (cm)</label><input type="number" id="calcH" class="input-field">
-                <button class="btn btn-primary" style="width:100%" onclick="quickBMI()">Calcular Ahora</button>
-                <div id="bmiRes" class="card" style="display:none; margin-top:20px; text-align:center; background:#e0f2fe"></div>
+                <h2 style="color: var(--primary)">Calculadora Nutricional</h2>
+                <label>Peso Actual (kg)</label><input type="number" id="calcW" class="input-field" placeholder="70">
+                <label>Altura (cm)</label><input type="number" id="calcH" class="input-field" placeholder="175">
+                <button class="btn btn-primary" style="width:100%" onclick="quickBMI()">Calcular IMC</button>
+                <div id="bmiRes" class="card" style="display:none; margin-top:20px; text-align:center; background: var(--light); font-weight: bold; color: var(--primary-dark);"></div>
             </div>
         </section>
 
-        <!-- VISTA: ASISTENTE IA -->
+        <!-- VISTA: IA -->
         <section id="view-ai" class="view-section">
             <div class="card">
                 <div id="chatWindow" class="chat-box">
-                    <div class="msg msg-b">Hola, soy tu asistente IA especializado en nutrición. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre recetas, macros o consejos para tus pacientes.</div>
+                    <div class="msg msg-b">¡Hola! Soy tu asistente nutricional inteligente. ¿Deseas analizar un menú, calcular macros o necesitas una sugerencia para un paciente?</div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:15px">
-                    <input type="text" id="chatInput" class="input-field" style="margin:0" placeholder="Escribe tu consulta..." onkeypress="if(event.key==='Enter') sendMessage()">
-                    <button class="btn btn-primary" onclick="sendMessage()">➤</button>
+                    <input type="text" id="chatInput" class="input-field" style="margin:0" placeholder="Escribe tu consulta aquí..." onkeypress="if(event.key==='Enter') sendAIRequest()">
+                    <button class="btn btn-primary" onclick="sendAIRequest()">➤</button>
                 </div>
             </div>
         </section>
@@ -382,21 +443,62 @@
 
     <!-- MODALES -->
 
+    <!-- Modal Day View -->
+    <div id="modalDayView" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h2 id="dayViewTitle" style="color: var(--primary); margin-top: 0;">Turnos del Día</h2>
+            <div id="dayTurnosList"></div>
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" id="btnAddTurnoToday">+ Agendar Nuevo Turno</button>
+        </div>
+    </div>
+
+    <!-- Modal Formulario Turno (CUADRICULA DE TIEMPOS) -->
+    <div id="modalTurnoForm" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h2 id="turnoFormTitle" style="color: var(--primary); margin-top: 0;">Agendar Turno</h2>
+            <form id="formTurno">
+                <input type="hidden" id="t_id">
+                <input type="hidden" id="t_date">
+                <input type="hidden" id="t_selected_time" required>
+                
+                <label>Paciente</label>
+                <input type="text" id="t_paciente" class="input-field" list="patientsList" required placeholder="Escriba el nombre...">
+                <datalist id="patientsList"></datalist>
+                
+                <label style="display:block; margin-bottom: 12px; font-weight: bold;">Horarios Disponibles:</label>
+                <div id="timeGrid" class="time-grid"></div>
+                
+                <label>WhatsApp</label>
+                <input type="tel" id="t_phone" class="input-field" placeholder="54911..." required>
+                
+                <label>Notas / Obra Social</label>
+                <textarea id="t_obs" class="input-field" rows="2" style="width:100%; padding:10px;"></textarea>
+                
+                <div style="display:flex; gap:10px">
+                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar Turno</button>
+                    <button type="button" id="btnDeleteTurno" class="btn btn-danger" style="display:none" onclick="deleteTurno()">Borrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal Paciente -->
     <div id="modalPatient" class="modal">
         <div class="modal-content">
-            <h2 id="modalPatientTitle">Nuevo Paciente</h2>
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h2 id="pTitle" style="color: var(--primary); margin-top: 0;">Nuevo Paciente</h2>
             <form id="formPatient">
                 <input type="hidden" id="edit_p_id">
-                <label>Nombre Completo</label><input type="text" id="p_name" class="input-field" required>
+                <label>Nombre y Apellido</label><input type="text" id="p_name" class="input-field" required>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
                     <div><label>Nacimiento</label><input type="date" id="p_birth" class="input-field" required></div>
                     <div><label>Sexo</label><select id="p_gender" class="input-field"><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select></div>
                 </div>
-                <label>WhatsApp (ej: 54911...)</label><input type="tel" id="p_phone" class="input-field" required>
+                <label>WhatsApp</label><input type="tel" id="p_phone" class="input-field" placeholder="54911..." required>
                 <label>Peso Inicial (kg)</label><input type="number" id="p_weight" step="0.1" class="input-field" required>
-                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Paciente</button>
-                <button type="button" class="btn btn-ghost" style="width:100%; margin-top:10px" onclick="closeModals()">Cancelar</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Ficha</button>
             </form>
         </div>
     </div>
@@ -404,18 +506,18 @@
     <!-- Modal Medición -->
     <div id="modalMeasure" class="modal">
         <div class="modal-content">
-            <h2>Nueva Evaluación</h2>
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h2 style="color: var(--primary); margin-top: 0;">Nueva Evaluación</h2>
             <form id="formMeasure">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div><label>Peso Actual (kg)</label><input type="number" id="m_w" step="0.1" class="input-field" required></div>
-                    <div><label>Peso Meta (kg)</label><input type="number" id="m_goal" step="0.1" class="input-field" required></div>
+                    <div><label>Peso (kg)</label><input type="number" id="m_w" step="0.1" class="input-field" required></div>
+                    <div><label>Meta (kg)</label><input type="number" id="m_goal" step="0.1" class="input-field" required></div>
                 </div>
-                <p style="font-weight: bold; margin-bottom: 5px;">Indicadores (Pliegues mm)</p>
                 <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px">
-                    <div><label>PT</label><input type="number" id="m_pt" step="0.1" class="input-field"></div>
-                    <div><label>PSE</label><input type="number" id="m_pse" step="0.1" class="input-field"></div>
-                    <div><label>PSI</label><input type="number" id="m_psi" step="0.1" class="input-field"></div>
-                    <div><label>PA</label><input type="number" id="m_pa" step="0.1" class="input-field"></div>
+                    <div><label>PT</label><input type="number" id="m_pt" class="input-field" value="0"></div>
+                    <div><label>PSE</label><input type="number" id="m_pse" class="input-field" value="0"></div>
+                    <div><label>PSI</label><input type="number" id="m_psi" class="input-field" value="0"></div>
+                    <div><label>PA</label><input type="number" id="m_pa" class="input-field" value="0"></div>
                 </div>
                 <label>Actividad Física</label>
                 <select id="m_act" class="input-field">
@@ -425,31 +527,10 @@
                     <option value="fuerte">Fuerte (Atleta)</option>
                 </select>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div><label>Sueño (hs)</label><input type="number" id="m_sleep" value="7" class="input-field"></div>
-                    <div><label>Estrés (1-10)</label><input type="range" id="m_stress" min="1" max="10" style="width:100%"></div>
+                    <div><label>Sueño (hs)</label><input type="number" id="m_sleep" class="input-field" value="7"></div>
+                    <div><label>Estrés (1-10)</label><input type="range" id="m_stress" min="1" max="10" value="5" style="width:100%"></div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Registrar Evaluación</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal Turno -->
-    <div id="modalTurno" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTurnoTitle">Agendar Turno</h2>
-            <form id="formTurno">
-                <input type="hidden" id="t_id"><input type="hidden" id="t_date">
-                <label>Nombre del Paciente</label><input type="text" id="t_pat" class="input-field" required>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div><label>Hora</label><input type="time" id="t_time" class="input-field" required></div>
-                    <div><label>WhatsApp</label><input type="tel" id="t_wa" class="input-field" required></div>
-                </div>
-                <label>Obra Social</label><input type="text" id="t_os" class="input-field">
-                <label>Observaciones</label><textarea id="t_obs" class="input-field" rows="2"></textarea>
-                <div style="display:flex; gap:10px">
-                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar</button>
-                    <button type="button" id="btnDelTurno" class="btn btn-danger" style="display:none" onclick="deleteTurno()">Borrar</button>
-                </div>
             </form>
         </div>
     </div>
@@ -457,8 +538,10 @@
     <!-- Modal Alimento -->
     <div id="modalFood" class="modal">
         <div class="modal-content">
-            <h2>Gestión de Alimento</h2>
+            <span class="close-modal" onclick="closeModals()">&times;</span>
+            <h2 style="color: var(--primary); margin-top: 0;">Gestionar Alimento</h2>
             <form id="formFood">
+                <input type="hidden" id="edit_f_id">
                 <label>Nombre</label><input type="text" id="f_n" class="input-field" required>
                 <label>Categoría</label>
                 <select id="f_c" class="input-field">
@@ -467,10 +550,10 @@
                     <option value="grasa">Grasa</option>
                     <option value="verdura">Verdura / Fibra</option>
                 </select>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px">
-                    <div><label>Prot (g)</label><input type="number" step="0.1" id="f_p" class="input-field"></div>
-                    <div><label>Carb (g)</label><input type="number" step="0.1" id="f_ca" class="input-field"></div>
-                    <div><label>Grasa (g)</label><input type="number" step="0.1" id="f_g" class="input-field"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px">
+                    <div><label>Prot</label><input type="number" id="f_p" class="input-field" value="0" step="0.1"></div>
+                    <div><label>Carb</label><input type="number" id="f_ca" class="input-field" value="0" step="0.1"></div>
+                    <div><label>Grasa</label><input type="number" id="f_g" class="input-field" value="0" step="0.1"></div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%">Guardar Alimento</button>
             </form>
@@ -479,14 +562,17 @@
 
     <!-- Modal Plan Resultado -->
     <div id="modalPlan" class="modal"><div class="modal-content modal-large">
-        <header style="display:flex; justify-content:space-between"><h2>✨ Plan Nutricional Sugerido</h2><button onclick="closeModals()" style="border:none; background:none; font-size:24px; cursor:pointer">&times;</button></header>
-        <div id="planContainer" style="margin-top:20px"></div>
+        <header style="display:flex; justify-content:space-between">
+            <h2 style="color: var(--primary); margin-top: 0;">✨ Propuesta de Plan</h2>
+            <button onclick="closeModals()" style="background:none; border:none; font-size:24px; cursor:pointer">&times;</button>
+        </header>
+        <div id="planDisplayArea" style="margin-top:20px"></div>
     </div></div>
 
     <script>
-        // 1. FIREBASE CONFIG & ESTRUCTURA DE DATOS (REGLA 1)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nutrimanager-pro-v4';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        // 1. CONFIGURACIÓN FIREBASE (REGLAS 1 Y 3)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nutrimanager-pro-master';
+        const firebaseConfig = {
             apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
             authDomain: "medicion-imc.firebaseapp.com",
             projectId: "medicion-imc",
@@ -494,58 +580,56 @@
             messagingSenderId: "544674177518",
             appId: "1:544674177518:web:c060519e65a2913e0beeff"
         };
-        const getColPath = (col) => `artifacts/${appId}/public/data/${col}`;
+        const getPath = (col) => `artifacts/${appId}/public/data/${col}`;
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
         let state = {
-            view: 'patients',
+            view: 'agenda',
             patients: [],
-            foods: [],
             turnos: [],
-            selPat: null,
+            foods: [],
             measures: [],
+            selPat: null,
             calDate: new Date(),
             user: null
         };
 
-        // 2. INICIO Y AUTENTICACIÓN (REGLA 3)
+        // 2. INICIALIZACIÓN (REGLA 3)
         document.addEventListener('DOMContentLoaded', async () => {
             showLoader(true);
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await auth.signInWithCustomToken(__initial_auth_token);
-                } else { await auth.signInAnonymously(); }
-                
+                // Autenticar antes de cargar datos
+                await auth.signInAnonymously();
                 auth.onAuthStateChanged(user => {
                     if (user) {
                         state.user = user;
-                        initDataListeners();
+                        startRealtimeListeners();
                     }
                 });
-            } catch (e) { console.error("Auth Error", e); showLoader(false); }
+            } catch (e) { console.error("Error Auth:", e); showLoader(false); }
         });
 
-        function initDataListeners() {
+        function startRealtimeListeners() {
             // Escuchar Pacientes
-            db.collection(getColPath("pacientes")).orderBy("nombreCompleto").onSnapshot(snap => {
-                state.patients = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (state.view === 'patients') renderPatients();
-            });
-
-            // Escuchar Alimentos
-            db.collection(getColPath("alimentos")).orderBy("name").onSnapshot(snap => {
-                state.foods = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (state.view === 'foods') renderFoods();
+            db.collection(getPath("pacientes")).orderBy("nombreCompleto").onSnapshot(s => {
+                state.patients = s.docs.map(d => ({id: d.id, ...d.data()}));
+                updatePatientDatalist();
+                if(state.view === 'patients') renderPatients();
             });
 
             // Escuchar Turnos
-            db.collection(getColPath("turnos")).onSnapshot(snap => {
-                state.turnos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (state.view === 'agenda') renderCalendar();
-                updateBadge();
+            db.collection(getPath("turnos")).onSnapshot(s => {
+                state.turnos = s.docs.map(d => ({id: d.id, ...d.data()}));
+                if(state.view === 'agenda') renderCalendar();
+            });
+
+            // Escuchar Alimentos
+            db.collection(getPath("alimentos")).orderBy("name").onSnapshot(s => {
+                state.foods = s.docs.map(d => ({id: d.id, ...d.data()}));
+                if(state.view === 'foods') renderFoods();
             });
 
             showLoader(false);
@@ -563,86 +647,19 @@
             const link = document.getElementById(`link-${view === 'details' ? 'patients' : view}`);
             if (link) link.classList.add('active');
 
-            if (view === 'patients') renderPatients();
+            const headers = { agenda: 'Mi Agenda', patients: 'Mis Pacientes', details: 'Evolución Paciente', foods: 'Biblioteca Alimentos', calc: 'Calculadora IMC', ai: 'Asistente IA' };
+            document.getElementById('viewHeaderTitle').innerText = headers[view] || 'NutriManager';
+
             if (view === 'agenda') renderCalendar();
+            if (view === 'patients') renderPatients();
             if (view === 'foods') renderFoods();
-            if (view === 'details') loadDetails(params.id);
+            if (view === 'details') loadPatientDetails(params.id);
 
             if (document.getElementById('navOverlay').classList.contains('active')) toggleMenu();
             window.scrollTo(0,0);
         }
 
-        // 4. MÓDULO PACIENTES
-        function renderPatients() {
-            const val = document.getElementById('patientSearch').value.toLowerCase();
-            const filtered = state.patients.filter(p => p.nombreCompleto.toLowerCase().includes(val));
-            const body = document.getElementById('patientListBody');
-            body.innerHTML = filtered.map(p => `
-                <tr onclick="switchView('details', {id:'${p.id}'})" style="cursor:pointer">
-                    <td data-label="Paciente" style="color:var(--primary); font-weight:bold">${p.nombreCompleto}</td>
-                    <td data-label="Teléfono">${p.telefono}</td>
-                    <td data-label="Último Peso">${p.ultimoPeso || '-'} kg</td>
-                    <td data-label="Acciones">
-                        <button class="btn btn-ghost" style="padding:6px 10px" onclick="event.stopPropagation(); editPatient('${p.id}')">✏️</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filterPatients() { renderPatients(); }
-
-        async function loadDetails(id) {
-            state.selPat = state.patients.find(x => x.id === id);
-            document.getElementById('detName').innerText = state.selPat.nombreCompleto;
-            
-            // Cargar Mediciones (Sub-colección)
-            db.collection(getColPath("pacientes")).doc(id).collection("mediciones").orderBy("fecha", "asc").onSnapshot(snap => {
-                state.measures = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderMeasures();
-                renderEvolutionCharts();
-            });
-        }
-
-        function renderMeasures() {
-            const list = document.getElementById('measurementList');
-            list.innerHTML = [...state.measures].reverse().map(m => `
-                <div class="card" style="cursor:pointer" onclick="viewSavedPlan('${m.id}')">
-                    <div style="display:flex; justify-content:space-between; align-items:center">
-                        <strong>📅 ${m.fecha.toDate().toLocaleDateString()}</strong>
-                        <span style="font-size:12px; color:var(--primary)">${m.plan ? 'Plan Guardado' : 'Ver Detalles'}</span>
-                    </div>
-                    <div style="display:grid; grid-template-columns: repeat(2, 1fr); margin-top:10px; font-size:14px">
-                        <span>Peso: <b>${m.resultados.pesoActual} kg</b></span>
-                        <span>Grasa: <b>${m.resultados.tejidoGrasoPorcentaje.toFixed(1)}%</b></span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 5. GRÁFICOS DE EVOLUCIÓN
-        let wChart, fChart;
-        function renderEvolutionCharts() {
-            if (state.measures.length < 2) return;
-            const labels = state.measures.map(m => m.fecha.toDate().toLocaleDateString());
-            const weights = state.measures.map(m => m.resultados.pesoActual);
-            const fats = state.measures.map(m => m.resultados.tejidoGrasoPorcentaje);
-
-            if (wChart) wChart.destroy();
-            wChart = new Chart(document.getElementById('chartWeight'), {
-                type: 'line',
-                data: { labels, datasets: [{ label: 'Peso (kg)', data: weights, borderColor: '#4361ee', tension: 0.3, fill: true, backgroundColor: 'rgba(67, 97, 238, 0.1)' }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            if (fChart) fChart.destroy();
-            fChart = new Chart(document.getElementById('chartFat'), {
-                type: 'line',
-                data: { labels, datasets: [{ label: 'Grasa (%)', data: fats, borderColor: '#f72585', tension: 0.3 }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-        }
-
-        // 6. AGENDA (CALENDARIO)
+        // 4. MÓDULO CALENDARIO (AGENDA)
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
@@ -652,139 +669,288 @@
             const days = new Date(year, month + 1, 0).getDate();
             const names = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
             
-            document.getElementById('calendarMonthLabel').innerText = `${names[month]} ${year}`;
+            document.getElementById('calendarLabel').innerText = `${names[month]} ${year}`;
 
-            // Cabeceras
-            ['D','L','M','M','J','V','S'].forEach(d => {
-                const el = document.createElement('div'); el.style.textAlign='center'; el.style.padding='5px'; el.style.fontWeight='bold'; el.innerText=d; grid.appendChild(el);
+            // Labels de días
+            ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d => {
+                const el = document.createElement('div'); el.style.textAlign='center'; el.style.padding='10px'; el.style.fontWeight='bold'; el.style.color='var(--primary)'; el.style.fontSize='12px'; el.innerText=d; grid.appendChild(el);
             });
 
-            // Espacios vacíos
             for(let i=0; i<first; i++) grid.appendChild(document.createElement('div'));
 
-            // Días
             for(let d=1; d<=days; d++) {
-                const dateS = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell';
+                if (ds === new Date().toISOString().split('T')[0]) cell.classList.add('today');
+                
                 cell.innerHTML = `<span class="day-n">${d}</span>`;
                 
-                state.turnos.filter(t => t.date === dateS).forEach(t => {
+                const dTurnos = state.turnos.filter(t => t.date === ds).sort((a,b) => a.time.localeCompare(b.time));
+                dTurnos.slice(0, 3).forEach(t => {
                     const p = document.createElement('div');
                     p.className = 'turno-pill';
                     p.innerText = `${t.time} ${t.paciente}`;
-                    p.onclick = (e) => { e.stopPropagation(); openEditTurno(t); };
                     cell.appendChild(p);
                 });
+                if(dTurnos.length > 3) {
+                    const more = document.createElement('div');
+                    more.className = 'turno-pill';
+                    more.style.background = '#94a3b8';
+                    more.innerText = `+${dTurnos.length-3} más...`;
+                    cell.appendChild(more);
+                }
 
-                cell.onclick = () => openAddTurno(dateS);
+                cell.onclick = () => openDayView(ds);
                 grid.appendChild(cell);
             }
         }
 
         function changeMonth(dir) { state.calDate.setMonth(state.calDate.getMonth() + dir); renderCalendar(); }
 
-        // 7. PLAN INTELIGENTE (ALGORITMO)
-        async function generateSmartPlan() {
-            if (state.measures.length === 0) return alert("Faltan mediciones.");
-            showLoader(true);
+        // VISOR DEL DÍA
+        function openDayView(date) {
+            const dTurnos = state.turnos.filter(t => t.date === date).sort((a,b) => a.time.localeCompare(b.time));
+            document.getElementById('dayViewTitle').innerText = `Día: ${date}`;
+            const list = document.getElementById('dayTurnosList');
+            list.innerHTML = dTurnos.length ? '' : '<p style="text-align:center; color:#aaa; padding:20px;">Sin compromisos para hoy.</p>';
             
-            const last = state.measures[state.measures.length - 1];
+            dTurnos.forEach(t => {
+                const item = document.createElement('div');
+                item.className = 'day-view-item';
+                item.innerHTML = `
+                    <div class="item-info">
+                        <strong>${t.time} hs - ${t.paciente}</strong>
+                        <br><small>${t.obs || 'Sin notas'}</small>
+                    </div>
+                    <div style="display:flex; gap:8px">
+                        <button class="btn btn-whatsapp" onclick="sendWaReminder('${t.phone}', '${t.paciente}', '${t.date}', '${t.time}')">📱</button>
+                        <button class="btn btn-ghost" onclick="openTurnoForm('${date}', '${t.id}')">✏️</button>
+                    </div>`;
+                list.appendChild(item);
+            });
+
+            document.getElementById('btnAddTurnoToday').onclick = () => openTurnoForm(date);
+            document.getElementById('modalDayView').classList.add('active');
+        }
+
+        // FORMULARIO TURNO + CUADRICULA DE TIEMPOS
+        function openTurnoForm(date, id = null) {
+            const f = document.getElementById('formTurno');
+            f.reset();
+            document.getElementById('t_id').value = id || '';
+            document.getElementById('t_date').value = date;
+            document.getElementById('t_selected_time').value = '';
+            document.getElementById('btnDeleteTurno').style.display = id ? 'block' : 'none';
+            document.getElementById('turnoFormTitle').innerText = id ? 'Editar Turno' : `Turno: ${date}`;
+
+            const grid = document.getElementById('timeGrid');
+            grid.innerHTML = '';
+            const taken = state.turnos.filter(t => t.date === date && t.id !== id).map(t => t.time);
+            
+            // Generar horas de 7 a 20
+            for(let h=7; h<=20; h++) {
+                ['00', '30'].forEach(m => {
+                    const time = `${String(h).padStart(2,'0')}:${m}`;
+                    const slot = document.createElement('div');
+                    slot.className = 'time-slot';
+                    if (taken.includes(time)) {
+                        slot.classList.add('taken');
+                    } else {
+                        slot.onclick = () => {
+                            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                            slot.classList.add('selected');
+                            document.getElementById('t_selected_time').value = time;
+                        };
+                    }
+                    slot.innerText = time;
+                    grid.appendChild(slot);
+                });
+            }
+
+            if (id) {
+                const t = state.turnos.find(x => x.id === id);
+                document.getElementById('t_paciente').value = t.paciente;
+                document.getElementById('t_phone').value = t.phone;
+                document.getElementById('t_obs').value = t.obs;
+                // Pre-seleccionar
+                setTimeout(() => {
+                    const slots = document.querySelectorAll('.time-slot');
+                    slots.forEach(s => { if(s.innerText === t.time) { s.click(); } });
+                }, 50);
+            }
+
+            document.getElementById('modalTurnoForm').classList.add('active');
+        }
+
+        document.getElementById('formTurno').onsubmit = async (e) => {
+            e.preventDefault();
+            const time = document.getElementById('t_selected_time').value;
+            if(!time) return alert("Por favor, selecciona un horario de la cuadrícula.");
+            
+            showLoader(true);
+            const data = {
+                date: document.getElementById('t_date').value,
+                time: time,
+                paciente: document.getElementById('t_paciente').value,
+                phone: document.getElementById('t_phone').value,
+                obs: document.getElementById('t_obs').value
+            };
+            const id = document.getElementById('t_id').value;
+            if(id) await db.collection(getPath("turnos")).doc(id).update(data);
+            else await db.collection(getPath("turnos")).add(data);
+            
+            closeModals();
+            showLoader(false);
+        };
+
+        // 5. MÓDULO PACIENTES
+        function renderPatients() {
+            const q = document.getElementById('patientSearch').value.toLowerCase();
+            const filtered = state.patients.filter(p => p.nombreCompleto.toLowerCase().includes(q));
+            const body = document.getElementById('patientListBody');
+            body.innerHTML = filtered.map(p => `
+                <tr onclick="switchView('details', {id:'${p.id}'})" style="cursor:pointer">
+                    <td style="color:var(--primary); font-weight:bold">${p.nombreCompleto}</td>
+                    <td>${p.telefono}</td>
+                    <td>${p.ultimoPeso || '-'} kg</td>
+                    <td>
+                        <button class="btn btn-ghost" style="padding:6px 10px" onclick="event.stopPropagation(); openEditPatient('${p.id}')">✏️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updatePatientDatalist() {
+            document.getElementById('patientsList').innerHTML = state.patients.map(p => `<option value="${p.nombreCompleto}">`).join('');
+        }
+
+        // DETALLES PACIENTE & MEDICIONES
+        async function loadPatientDetails(id) {
+            state.selPat = state.patients.find(x => x.id === id);
+            document.getElementById('detName').innerText = state.selPat.nombreCompleto;
+            
+            db.collection(getPath("pacientes")).doc(id).collection("mediciones").orderBy("fecha", "asc").onSnapshot(s => {
+                state.measures = s.docs.map(d => ({id: d.id, ...d.data()}));
+                renderMeasures();
+                renderEvolutionCharts();
+            });
+        }
+
+        function renderMeasures() {
+            const list = document.getElementById('measurementList');
+            list.innerHTML = [...state.measures].reverse().map(m => `
+                <div class="card" style="cursor:pointer" onclick="viewSavedPlan('${m.id}')">
+                    <div style="display:flex; justify-content:space-between">
+                        <strong>📅 ${m.fecha.toDate().toLocaleDateString()}</strong>
+                        <span style="font-size:12px; color:var(--primary)">${m.plan ? '✨ Plan generado' : 'Ver datos'}</span>
+                    </div>
+                    <div style="font-size:14px; margin-top:10px; display:grid; grid-template-columns: 1fr 1fr">
+                        <span>Peso: <b>${m.resultados.pesoActual} kg</b></span>
+                        <span>Grasa: <b>${m.resultados.tejidoGrasoPorcentaje.toFixed(1)}%</b></span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // GRÁFICOS
+        let wChart, fChart;
+        function renderEvolutionCharts() {
+            if (state.measures.length < 2) return;
+            const labels = state.measures.map(m => m.fecha.toDate().toLocaleDateString());
+            const wData = state.measures.map(m => m.resultados.pesoActual);
+            const fData = state.measures.map(m => m.resultados.tejidoGrasoPorcentaje);
+
+            if(wChart) wChart.destroy();
+            wChart = new Chart(document.getElementById('chartWeight'), {
+                type:'line', data:{labels, datasets:[{label:'Peso (kg)', data:wData, borderColor:'#7b2cbf', tension:0.3, fill:true, backgroundColor:'rgba(123, 44, 191, 0.1)'}]},
+                options:{responsive:true, maintainAspectRatio:false}
+            });
+
+            if(fChart) fChart.destroy();
+            fChart = new Chart(document.getElementById('chartFat'), {
+                type:'line', data:{labels, datasets:[{label:'Grasa (%)', data:fData, borderColor:'#ef4444', tension:0.3}]},
+                options:{responsive:true, maintainAspectRatio:false}
+            });
+        }
+
+        // 6. PLAN INTELIGENTE (ALGORITMO)
+        async function generateSmartPlan() {
+            if (state.measures.length === 0) return alert("Falta registrar una medición actual.");
+            showLoader(true);
+            const last = state.measures[state.measures.length-1];
             const p = state.selPat;
-            const nac = p.fechaNacimiento.toDate();
-            let edad = new Date().getFullYear() - nac.getFullYear();
+            const hoy = new Date(), nac = p.fechaNacimiento.toDate();
+            let edad = hoy.getFullYear() - nac.getFullYear();
 
-            // Lógica Mifflin-St Jeor
-            let bmr = (10 * last.resultados.pesoActual) + (6.25 * 170) - (5 * edad) + (p.sexo === 'masculino' ? 5 : -161);
-            const factor = { sedentario: 1.2, ligero: 1.375, moderado: 1.55, fuerte: 1.725 }[last.objetivos.actividadTipo] || 1.2;
-            let tdee = bmr * factor;
-            let target = last.objetivos.pesoObjetivo < last.resultados.pesoActual ? tdee - 500 : tdee + 300;
+            // Mifflin-St Jeor
+            let bmr = (10 * last.resultados.pesoActual) + (6.25 * 170) - (5 * edad) + (p.sexo==='masculino'?5:-161);
+            const factor = { sedentario:1.2, ligero:1.375, moderado:1.55, fuerte:1.725 }[last.objetivos.actividadTipo] || 1.375;
+            let target = last.objetivos.pesoObjetivo < last.resultados.pesoActual ? (bmr*factor)-500 : (bmr*factor)+300;
 
-            const prots = state.foods.filter(f => f.category === 'proteina').sort(() => 0.5 - Math.random());
-            const carbs = state.foods.filter(f => f.category === 'carbohidrato').sort(() => 0.5 - Math.random());
+            const prots = state.foods.filter(f => f.category==='proteina').sort(() => 0.5 - Math.random());
+            const carbs = state.foods.filter(f => f.category==='carbohidrato').sort(() => 0.5 - Math.random());
 
             const html = `
                 <div class="card" style="border-left:5px solid var(--primary)">
-                    <h3>Meta Diaria: ${Math.round(target)} kcal</h3>
+                    <h3>Requerimiento: ${Math.round(target)} kcal/día</h3>
                     <p><b>P:</b> ${Math.round(target*0.3/4)}g | <b>C:</b> ${Math.round(target*0.4/4)}g | <b>G:</b> ${Math.round(target*0.3/9)}g</p>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
-                    <div class="card"><h4>🌅 Desayuno</h4><ul><li>100g ${prots[0]?.name || 'Proteína'}</li><li>60g ${carbs[0]?.name || 'Carbs'}</li></ul></div>
-                    <div class="card"><h4>🥗 Almuerzo</h4><ul><li>150g ${prots[1]?.name || 'Proteína'}</li><li>100g ${carbs[1]?.name || 'Carbs'}</li></ul></div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px">
+                    <div class="card"><h4>🌅 Desayuno</h4><ul><li>100g ${prots[0]?.name||'Proteína'}</li><li>60g ${carbs[0]?.name||'Carbs'}</li></ul></div>
+                    <div class="card"><h4>🥗 Almuerzo</h4><ul><li>150g ${prots[1]?.name||'Proteína'}</li><li>100g ${carbs[1]?.name||'Carbs'}</li></ul></div>
                 </div>
-                <div class="card" style="background:#fff9db">
-                    <h4>🏃 Estilo de Vida</h4>
-                    <p>${last.objetivos.actividadTipo === 'sedentario' ? 'Caminatas diarias de 30 min.' : 'Entrenamiento de fuerza 3 veces por semana.'}</p>
+                <div class="card" style="background:#fff9db; border-color:#ffe066">
+                    <h4>🏃 Recomendación Actividad</h4>
+                    <p>${last.objetivos.actividadTipo === 'sedentario' ? 'Caminatas diarias de 30 min a paso moderado.' : 'Entrenamiento de fuerza 45 min + cardio ligero.'}</p>
                 </div>
             `;
-
-            document.getElementById('planContainer').innerHTML = html;
+            document.getElementById('planDisplayArea').innerHTML = html;
             document.getElementById('modalPlan').classList.add('active');
-            
-            // Guardar en medición
-            await db.collection(getColPath("pacientes")).doc(p.id).collection("mediciones").doc(last.id).update({ plan: html });
+            await db.collection(getPath("pacientes")).doc(p.id).collection("mediciones").doc(last.id).update({ plan: html });
             showLoader(false);
         }
 
-        // 8. ASISTENTE IA (GEMINI)
-        async function sendMessage() {
-            const inp = document.getElementById('chatInput');
-            const box = document.getElementById('chatWindow');
-            if (!inp.value.trim()) return;
-            
+        // 7. IA GEMINI (ASISTENTE)
+        async function sendAIRequest() {
+            const inp = document.getElementById('chatInput'), win = document.getElementById('chatWindow');
+            if(!inp.value.trim()) return;
             const msg = inp.value; inp.value = '';
-            box.innerHTML += `<div class="msg msg-u">${msg}</div>`;
-            box.scrollTop = box.scrollHeight;
+            win.innerHTML += `<div class="msg msg-u">${msg}</div>`;
+            win.scrollTop = win.scrollHeight;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`, {
-                    method: 'POST',
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Como nutricionista experto, responde: ${msg}` }] }] })
+                    method: 'POST', body: JSON.stringify({contents:[{parts:[{text: `Eres un nutricionista experto. El usuario pregunta: ${msg}`}]}]})
                 });
                 const data = await res.json();
-                const text = data.candidates[0].content.parts[0].text;
-                box.innerHTML += `<div class="msg msg-b">${text}</div>`;
-                box.scrollTop = box.scrollHeight;
-            } catch (e) { box.innerHTML += `<div class="msg msg-b" style="color:red">Error de conexión con IA.</div>`; }
+                win.innerHTML += `<div class="msg msg-b">${data.candidates[0].content.parts[0].text}</div>`;
+                win.scrollTop = win.scrollHeight;
+            } catch(e) { win.innerHTML += `<div class="msg msg-b" style="color:red">Error al conectar con el cerebro IA.</div>`; }
         }
 
-        // 9. EXPORTACIÓN PDF
-        async function exportEvolutionPDF() {
-            showLoader(true);
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            const p = state.selPat;
-
-            pdf.setFontSize(22); pdf.text(p.nombreCompleto, 105, 20, { align: 'center' });
-            pdf.setFontSize(14); pdf.text("Informe de Evolución Antropométrica", 105, 30, { align: 'center' });
-
-            const canvas = await html2canvas(document.querySelector('.charts-grid'));
-            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 40, 190, 80);
-
-            pdf.autoTable({
-                startY: 130,
-                head: [['Fecha', 'Peso (kg)', '% Grasa', 'Grasa (kg)']],
-                body: state.measures.map(m => [
-                    m.fecha.toDate().toLocaleDateString(),
-                    m.resultados.pesoActual,
-                    m.resultados.tejidoGrasoPorcentaje.toFixed(1),
-                    (m.resultados.pesoActual * m.resultados.tejidoGrasoPorcentaje / 100).toFixed(1)
-                ])
-            });
-
-            pdf.save(`Informe_${p.nombreCompleto.replace(' ','_')}.pdf`);
-            showLoader(false);
-        }
-
-        // 10. CRUD HELPERS
+        // 8. CRUD & HELPERS
         function showLoader(s) { document.getElementById('mainLoader').style.display = s ? 'flex' : 'none'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
+        window.onclick = (e) => { if(e.target.className === 'modal active') closeModals(); };
 
         function openPatientModal() { 
             document.getElementById('formPatient').reset(); 
             document.getElementById('edit_p_id').value = ''; 
-            document.getElementById('modalPatientTitle').innerText = 'Nuevo Paciente';
+            document.getElementById('pTitle').innerText = 'Nuevo Paciente';
             document.getElementById('modalPatient').classList.add('active'); 
+        }
+
+        function openEditPatient(id) {
+            const p = state.patients.find(x => x.id === id);
+            document.getElementById('edit_p_id').value = id;
+            document.getElementById('p_name').value = p.nombreCompleto;
+            document.getElementById('p_phone').value = p.telefono;
+            document.getElementById('p_weight').value = p.ultimoPeso;
+            document.getElementById('p_gender').value = p.sexo;
+            document.getElementById('p_birth').value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
+            document.getElementById('pTitle').innerText = 'Editar Paciente';
+            document.getElementById('modalPatient').classList.add('active');
         }
 
         document.getElementById('formPatient').onsubmit = async (e) => {
@@ -799,146 +965,99 @@
                 fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('p_birth').value)),
                 fechaUltimoRegistro: firebase.firestore.Timestamp.now()
             };
-            if (id) await db.collection(getColPath("pacientes")).doc(id).update(data);
-            else await db.collection(getColPath("pacientes")).add(data);
+            if(id) await db.collection(getPath("pacientes")).doc(id).update(data);
+            else await db.collection(getPath("pacientes")).add(data);
             closeModals();
             showLoader(false);
         };
 
-        function editPatient(id) {
-            const p = state.patients.find(x => x.id === id);
-            document.getElementById('edit_p_id').value = id;
-            document.getElementById('p_name').value = p.nombreCompleto;
-            document.getElementById('p_phone').value = p.telefono;
-            document.getElementById('p_weight').value = p.ultimoPeso;
-            document.getElementById('p_gender').value = p.sexo;
-            document.getElementById('p_birth').value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
-            document.getElementById('modalPatientTitle').innerText = 'Editar Paciente';
-            document.getElementById('modalPatient').classList.add('active');
-        }
-
         function openMeasureModal() { document.getElementById('formMeasure').reset(); document.getElementById('modalMeasure').classList.add('active'); }
-        
         document.getElementById('formMeasure').onsubmit = async (e) => {
             e.preventDefault();
             showLoader(true);
             const w = parseFloat(document.getElementById('m_w').value);
             const pt = parseFloat(document.getElementById('m_pt').value || 0);
             const pse = parseFloat(document.getElementById('m_pse').value || 0);
-            const psi = parseFloat(document.getElementById('m_psi').value || 0);
-            const pa = parseFloat(document.getElementById('m_pa').value || 0);
-            const fat = ((pt + pse + psi + pa) * 0.153) + 5.783;
+            const fat = ((pt + pse) * 0.15) + 5.7; // Simplificado
 
-            const data = {
+            const d = {
                 fecha: firebase.firestore.Timestamp.now(),
-                objetivos: {
-                    pesoObjetivo: parseFloat(document.getElementById('m_goal').value),
-                    actividadTipo: document.getElementById('m_act').value,
-                    horasSueno: parseFloat(document.getElementById('m_sleep').value)
-                },
-                resultados: {
-                    pesoActual: w,
-                    tejidoGrasoPorcentaje: fat
-                }
+                objetivos: { pesoObjetivo: parseFloat(document.getElementById('m_goal').value), actividadTipo: document.getElementById('m_act').value },
+                resultados: { pesoActual: w, tejidoGrasoPorcentaje: fat }
             };
-
-            await db.collection(getColPath("pacientes")).doc(state.selPat.id).collection("mediciones").add(data);
-            await db.collection(getColPath("pacientes")).doc(state.selPat.id).update({ ultimoPeso: w, fechaUltimoRegistro: data.fecha });
+            await db.collection(getPath("pacientes")).doc(state.selPat.id).collection("mediciones").add(d);
+            await db.collection(getPath("pacientes")).doc(state.selPat.id).update({ ultimoPeso: w, fechaUltimoRegistro: d.fecha });
             closeModals();
             showLoader(false);
         };
 
-        function openAddTurno(date) {
-            document.getElementById('formTurno').reset();
-            document.getElementById('t_id').value = '';
-            document.getElementById('t_date').value = date;
-            document.getElementById('modalTurnoTitle').innerText = `Turno: ${date}`;
-            document.getElementById('btnDelTurno').style.display = 'none';
-            document.getElementById('modalTurno').classList.add('active');
-        }
-
-        function openEditTurno(t) {
-            document.getElementById('t_id').value = t.id;
-            document.getElementById('t_pat').value = t.paciente;
-            document.getElementById('t_time').value = t.time;
-            document.getElementById('t_wa').value = t.whatsapp;
-            document.getElementById('btnDelTurno').style.display = 'block';
-            document.getElementById('modalTurno').classList.add('active');
-        }
-
-        document.getElementById('formTurno').onsubmit = async (e) => {
+        function openFoodModal() { document.getElementById('formFood').reset(); document.getElementById('modalFood').classList.add('active'); }
+        document.getElementById('formFood').onsubmit = async (e) => {
             e.preventDefault();
-            const id = document.getElementById('t_id').value;
             const data = {
-                paciente: document.getElementById('t_pat').value,
-                time: document.getElementById('t_time').value,
-                whatsapp: document.getElementById('t_wa').value,
-                date: id ? state.turnos.find(x=>x.id===id).date : document.getElementById('t_date').value
+                name: document.getElementById('f_n').value, category: document.getElementById('f_c').value,
+                protein: parseFloat(document.getElementById('f_p').value), carbs: parseFloat(document.getElementById('f_ca').value), fats: parseFloat(document.getElementById('f_g').value)
             };
-            if(id) await db.collection(getColPath("turnos")).doc(id).update(data);
-            else await db.collection(getColPath("turnos")).add(data);
+            await db.collection(getPath("alimentos")).add(data);
             closeModals();
         };
 
-        async function deleteTurno() {
-            if(confirm("¿Borrar?")) {
-                await db.collection(getColPath("turnos")).doc(document.getElementById('t_id').value).delete();
-                closeModals();
-            }
-        }
-
         function renderFoods() {
-            const v = document.getElementById('foodSearch').value.toLowerCase();
-            document.getElementById('foodGrid').innerHTML = state.foods.filter(f => f.name.toLowerCase().includes(v)).map(f => `
+            const q = document.getElementById('foodSearch').value.toLowerCase();
+            document.getElementById('foodGrid').innerHTML = state.foods.filter(f => f.name.toLowerCase().includes(q)).map(f => `
                 <div class="card">
                     <strong>${f.name}</strong><br><small>${f.category}</small>
-                    <div style="font-size:12px; margin-top:8px">P: ${f.protein}g | C: ${f.carbs}g | G: ${f.fats}g</div>
+                    <div style="font-size:12px; margin-top:8px">P: ${f.protein} | C: ${f.carbs} | G: ${f.fats}</div>
                 </div>
             `).join('');
         }
 
-        function openFoodModal() { document.getElementById('formFood').reset(); document.getElementById('modalFood').classList.add('active'); }
-        document.getElementById('formFood').onsubmit = async (e) => {
-            e.preventDefault();
-            await db.collection(getColPath("alimentos")).add({
-                name: document.getElementById('f_n').value,
-                category: document.getElementById('f_c').value,
-                protein: parseFloat(document.getElementById('f_p').value || 0),
-                carbs: parseFloat(document.getElementById('f_ca').value || 0),
-                fats: parseFloat(document.getElementById('f_g').value || 0)
-            });
-            closeModals();
-        };
+        async function deleteTurno() {
+            if(confirm("¿Eliminar este turno definitivamente?")) {
+                await db.collection(getPath("turnos")).doc(document.getElementById('t_id').value).delete();
+                closeModals();
+            }
+        }
+
+        function sendWaReminder(ph, n, d, t) {
+            const m = encodeURIComponent(`Hola ${n}, te recuerdo tu turno el ${d} a las ${t} hs. ¡Saludos!`);
+            window.open(`https://wa.me/${ph}?text=${m}`, '_blank');
+        }
 
         function quickBMI() {
-            const w = parseFloat(document.getElementById('calcW').value);
-            const h = parseFloat(document.getElementById('calcH').value) / 100;
+            const w = parseFloat(document.getElementById('calcW').value), h = parseFloat(document.getElementById('calcH').value)/100;
             if(!w || !h) return;
-            const bmi = (w / (h*h)).toFixed(1);
-            document.getElementById('bmiRes').innerHTML = `<h3>IMC: ${bmi}</h3>`;
+            const r = (w/(h*h)).toFixed(1);
+            let cat = r < 18.5 ? "Bajo peso" : r < 25 ? "Normal" : r < 30 ? "Sobrepeso" : "Obesidad";
+            document.getElementById('bmiRes').innerHTML = `IMC: ${r} - ${cat}`;
             document.getElementById('bmiRes').style.display = 'block';
         }
 
-        function updateBadge() {
-            const tStr = new Date().toISOString().split('T')[0];
-            const upcoming = state.turnos.filter(x => x.date >= tStr);
-            document.getElementById('notifCount').innerText = upcoming.length;
-            document.getElementById('notifCount').style.display = upcoming.length > 0 ? 'block' : 'none';
-        }
-
-        function showNotifications() {
-            const tStr = new Date().toISOString().split('T')[0];
-            const list = state.turnos.filter(x => x.date >= tStr).sort((a,b) => a.date.localeCompare(b.date));
-            if(list.length === 0) return alert("No hay turnos próximos.");
-            alert("Próximos Turnos:\n" + list.slice(0,5).map(x => `- ${x.date}: ${x.paciente}`).join('\n'));
+        async function exportEvolutionPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            const p = state.selPat;
+            pdf.text(p.nombreCompleto, 15, 20);
+            pdf.autoTable({
+                startY: 30, head: [['Fecha', 'Peso (kg)', '% Grasa']],
+                body: state.measures.map(m => [m.fecha.toDate().toLocaleDateString(), m.resultados.pesoActual, m.resultados.tejidoGrasoPorcentaje.toFixed(1)])
+            });
+            pdf.save(`Informe_${p.nombreCompleto}.pdf`);
         }
 
         function viewSavedPlan(mid) {
             const m = state.measures.find(x => x.id === mid);
             if(m && m.plan) {
-                document.getElementById('planContainer').innerHTML = m.plan;
+                document.getElementById('planDisplayArea').innerHTML = m.plan;
                 document.getElementById('modalPlan').classList.add('active');
             }
+        }
+
+        function showUpcomingAlert() {
+            const today = new Date().toISOString().split('T')[0];
+            const up = state.turnos.filter(x => x.date >= today).sort((a,b) => a.date.localeCompare(b.date));
+            if(!up.length) return alert("No hay turnos próximos.");
+            alert("Próximos Turnos:\n" + up.slice(0,3).map(x => `- ${x.date} ${x.time}: ${x.paciente}`).join('\n'));
         }
     </script>
 </body>
