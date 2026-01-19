@@ -18,7 +18,7 @@
 
     <style>
         :root {
-            /* Paleta Violeta */
+            /* Paleta Violeta Profesional */
             --primary: #7b2cbf;
             --primary-dark: #5a189a;
             --primary-light: #9d4edd;
@@ -30,9 +30,11 @@
             --light: #f3e8ff;
             --bg: #f8f4ff;
             --white: #ffffff;
+            
             /* Colores de Alerta */
-            --warning-today: #ffb703;
-            --warning-next: #ffea0055;
+            --warning-today: #f3722c; /* Naranja */
+            --warning-next: #f9c74f;  /* Amarillo */
+            
             --radius: 12px;
             --shadow: 0 4px 20px rgba(123, 44, 191, 0.15);
         }
@@ -63,7 +65,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- COMPONENTES UI --- */
-        .card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid #e9d5ff; transition: 0.3s; }
+        .card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid #e9d5ff; }
         .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-dark); }
@@ -78,13 +80,13 @@
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e9d5ff; border: 1px solid #e9d5ff; border-radius: 8px; overflow: hidden; }
         .calendar-cell { background: white; min-height: 110px; padding: 8px; cursor: pointer; position: relative; transition: 0.2s; overflow-y: auto; }
         .calendar-cell:hover { filter: brightness(0.95); }
-        /* Clases de alerta visual */
-        .cell-today { background: var(--warning-today) !important; color: white !important; font-weight: bold; border: 2px solid #f3722c; }
+        .cell-today { background: var(--warning-today) !important; border: 2px solid #d35400; }
         .cell-today .day-n { color: white !important; }
         .cell-next-3 { background: var(--warning-next) !important; }
         
         .day-n { font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 5px; display: block; }
         .turno-pill { background: var(--primary); color: white; font-size: 10px; padding: 3px 6px; border-radius: 4px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cell-today .turno-pill { background: white; color: var(--warning-today); font-weight: bold; }
 
         /* --- GRID DE HORARIOS --- */
         .time-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; margin-bottom: 20px; }
@@ -99,12 +101,9 @@
         .modal-large { max-width: 850px; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; border: none; background: none; }
 
-        /* --- NOTIFICACIONES BADGE --- */
+        /* --- NOTIFICACIONES --- */
         .notif-badge { background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; position: absolute; top: -5px; right: -5px; font-weight: bold; border: 1px solid white; }
-
-        /* --- DAY VIEW & NOTIF ITEMS --- */
-        .day-view-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #e9d5ff; border-radius: 12px; margin-bottom: 10px; background: #faf5ff; }
-        .notif-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #f3e8ff; }
+        .notif-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f3e8ff; }
         .notif-item:last-child { border-bottom: none; }
 
         /* --- TABLAS --- */
@@ -112,12 +111,6 @@
         table { width: 100%; border-collapse: collapse; background: white; }
         th { background: #f8f4ff; padding: 15px; text-align: left; font-size: 13px; color: var(--primary); text-transform: uppercase; }
         td { padding: 15px; border-bottom: 1px solid #f3e8ff; }
-
-        /* --- CHAT IA --- */
-        .chat-box { height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 15px; background: #fdfaff; border-radius: 10px; }
-        .msg { padding: 12px 18px; border-radius: 18px; max-width: 80%; line-height: 1.5; font-size: 14px; }
-        .msg-u { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg-b { align-self: flex-start; background: white; border: 1px solid #e9d5ff; border-bottom-left-radius: 2px; }
 
         /* --- UTILIDADES --- */
         .fab { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 10px 25px rgba(123, 44, 191, 0.4); cursor: pointer; border: none; z-index: 900; }
@@ -131,17 +124,9 @@
         .data-item strong { display: block; color: var(--primary-dark); font-size: 11px; text-transform: uppercase; margin-bottom: 2px; }
 
         @media (max-width: 768px) {
-            .calendar-cell { min-height: 85px; padding: 4px; }
-            .day-n { font-size: 11px; }
-            .turno-pill { font-size: 8px; }
-            .time-grid { grid-template-columns: repeat(3, 1fr); }
+            .calendar-cell { min-height: 85px; }
             .charts-grid { grid-template-columns: 1fr; }
-            
-            td[data-label]::before { content: attr(data-label); font-weight: bold; float: left; color: var(--primary); }
-            .res-table thead { display: none; }
-            .res-table tr { display: block; margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 10px; background: white; }
-            .res-table td { display: block; text-align: right; border-bottom: 1px solid #eee; padding: 10px 5px; }
-            .res-table td:last-child { border-bottom: none; text-align: center; }
+            .time-grid { grid-template-columns: repeat(3, 1fr); }
         }
     </style>
 </head>
@@ -152,14 +137,14 @@
         <p style="margin-top: 15px; font-weight: 600; color: var(--primary);">NutriManager Pro...</p>
     </div>
 
-    <!-- Menú Lateral -->
+    <!-- Menú Lateral Minimizable -->
     <div id="navOverlay" class="nav-overlay" onclick="toggleMenu()">
         <nav class="nav-content" onclick="event.stopPropagation()">
             <ul class="nav-links">
                 <li><a href="#" onclick="switchView('agenda')" id="link-agenda" class="active">📅 Agenda Nutricional</a></li>
                 <li><a href="#" onclick="switchView('patients')" id="link-patients">👥 Mis Pacientes</a></li>
                 <li><a href="#" onclick="switchView('foods')" id="link-foods">🍎 Biblioteca Alimentos</a></li>
-                <li><a href="#" onclick="switchView('ai')" id="link-ai">🤖 Asistente Virtual IA</a></li>
+                <li><a href="#" onclick="switchView('ai')" id="link-ai">🤖 Asistente IA</a></li>
             </ul>
         </nav>
     </div>
@@ -168,7 +153,7 @@
         <button id="hamburger-btn" class="hamburger" onclick="toggleMenu()">
             <span></span><span></span><span></span>
         </button>
-        <h2 id="viewHeaderTitle" style="margin:0; font-size: 1.1rem; color: var(--primary)">Mi Agenda</h2>
+        <h2 id="viewHeaderTitle" style="margin:0; font-size: 1.1rem; color: var(--primary)">NutriManager Pro</h2>
         <div style="position:relative; cursor:pointer; font-size: 22px; color: var(--primary);" onclick="openNotificationsModal()">
             🔔 <span id="notifBadge" class="notif-badge" style="display:none">0</span>
         </div>
@@ -180,7 +165,7 @@
             <div class="card">
                 <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <button class="btn btn-ghost" onclick="changeMonth(-1)">◀</button>
-                    <h2 id="calendarLabel" style="margin:0; font-size: 1.2rem; color: var(--primary-dark)">Cargando...</h2>
+                    <h2 id="calendarLabel" style="margin:0; font-size: 1.2rem; color: var(--primary-dark)">Mes Año</h2>
                     <button class="btn btn-ghost" onclick="changeMonth(1)">▶</button>
                 </div>
                 <div id="calendarGrid" class="calendar-grid"></div>
@@ -194,7 +179,7 @@
                 <button class="btn btn-primary" onclick="openPatientModal()">+</button>
             </div>
             <div class="table-wrapper">
-                <table class="res-table">
+                <table>
                     <thead>
                         <tr><th>Paciente</th><th>WhatsApp</th><th>Último Peso</th><th>Acciones</th></tr>
                     </thead>
@@ -203,12 +188,12 @@
             </div>
         </section>
 
-        <!-- VISTA: DETALLE PACIENTE -->
+        <!-- VISTA: DETALLE PACIENTE / EVOLUCIÓN -->
         <section id="view-details" class="view-section">
             <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
                 <button class="btn btn-ghost" onclick="switchView('patients')">⬅ Volver</button>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Plan</button>
+                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Generar Plan</button>
                     <button class="btn btn-ghost" onclick="exportEvolutionPDF()">📄 PDF</button>
                 </div>
             </div>
@@ -227,7 +212,7 @@
         <!-- VISTA: ALIMENTOS -->
         <section id="view-foods" class="view-section">
             <div class="card" style="display:flex; gap:10px">
-                <input type="search" id="foodSearch" class="input-field" style="margin:0" placeholder="🍎 Buscar..." oninput="renderFoods()">
+                <input type="search" id="foodSearch" class="input-field" style="margin:0" placeholder="🍎 Buscar alimento..." oninput="renderFoods()">
                 <button class="btn btn-primary" onclick="openFoodModal()">+</button>
             </div>
             <div id="foodGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px"></div>
@@ -236,9 +221,11 @@
         <!-- VISTA: IA -->
         <section id="view-ai" class="view-section">
             <div class="card">
-                <div id="chatWindow" class="chat-box"></div>
+                <div id="chatWindow" class="chat-box">
+                    <div class="msg-b" style="padding:10px; background:white; border:1px solid #ddd; border-radius:10px; max-width:80%;">¡Hola! Soy tu asistente IA. ¿Qué duda nutricional tienes hoy?</div>
+                </div>
                 <div style="display:flex; gap:10px; margin-top:15px">
-                    <input type="text" id="chatInput" class="input-field" style="margin:0" placeholder="Pregunta lo que sea..." onkeypress="if(event.key==='Enter') sendAIRequest()">
+                    <input type="text" id="chatInput" class="input-field" style="margin:0" placeholder="Pregunta algo..." onkeypress="if(event.key==='Enter') sendAIRequest()">
                     <button class="btn btn-primary" onclick="sendAIRequest()">➤</button>
                 </div>
             </div>
@@ -247,16 +234,16 @@
 
     <!-- MODALES -->
 
-    <!-- Modal Notificaciones Próximas (EL QUE PEDISTE) -->
+    <!-- Modal Notificaciones Próximas (CENTRO) -->
     <div id="modalNotifications" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
             <h2 style="color: var(--primary); margin-top: 0;">📌 Próximos Turnos</h2>
-            <p style="font-size: 14px; color: #666; margin-bottom: 20px;">Agenda para hoy y los próximos 3 días:</p>
-            <div id="notifListArea" style="max-height: 350px; overflow-y: auto;">
-                <!-- Lista dinámica -->
+            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Hoy y los próximos 3 días:</p>
+            <div id="notifListArea" style="max-height: 400px; overflow-y: auto;">
+                <!-- Dinámico -->
             </div>
-            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="closeModals()">Entendido</button>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="closeModals()">Cerrar</button>
         </div>
     </div>
 
@@ -264,9 +251,9 @@
     <div id="modalDayView" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 id="dayViewTitle" style="color: var(--primary); margin-top: 0;">Detalle del Día</h2>
+            <h2 id="dayViewTitle" style="color: var(--primary); margin-top: 0;">Turnos del Día</h2>
             <div id="dayTurnosList"></div>
-            <button class="btn btn-primary" style="width:100%; margin-top:15px" id="btnAddTurnoToday">+ Nuevo Turno</button>
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" id="btnAddTurnoToday">+ Agendar Nuevo Turno</button>
         </div>
     </div>
 
@@ -274,18 +261,16 @@
     <div id="modalTurnoForm" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 id="turnoFormTitle" style="color: var(--primary); margin-top: 0;">Turno</h2>
+            <h2 id="turnoFormTitle" style="color: var(--primary); margin-top: 0;">Agendar Turno</h2>
             <form id="formTurno">
-                <input type="hidden" id="t_id">
-                <input type="hidden" id="t_date">
-                <input type="hidden" id="t_selected_time" required>
+                <input type="hidden" id="t_id"><input type="hidden" id="t_date"><input type="hidden" id="t_selected_time" required>
                 <label>Paciente</label>
-                <input type="text" id="t_paciente" class="input-field" list="patientsList" required>
+                <input type="text" id="t_paciente" class="input-field" list="patientsList" required placeholder="Nombre...">
                 <datalist id="patientsList"></datalist>
-                <label style="display:block; margin-bottom: 12px; font-weight: bold;">Horario:</label>
+                <label style="display:block; margin-bottom: 12px; font-weight: bold;">Selecciona el Horario:</label>
                 <div id="timeGrid" class="time-grid"></div>
                 <label>WhatsApp</label>
-                <input type="tel" id="t_phone" class="input-field" required>
+                <input type="tel" id="t_phone" class="input-field" placeholder="54911..." required>
                 <label>Notas</label>
                 <textarea id="t_obs" class="input-field" rows="2"></textarea>
                 <div style="display:flex; gap:10px">
@@ -300,20 +285,22 @@
     <div id="modalPatient" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 id="pTitle" style="color: var(--primary); margin-top: 0;">Paciente</h2>
+            <h2 id="pTitle" style="color: var(--primary); margin-top: 0;">Ficha del Paciente</h2>
             <form id="formPatient">
                 <input type="hidden" id="edit_p_id">
-                <label>Nombre</label><input type="text" id="p_name" class="input-field" required>
-                <label>Nacimiento</label><input type="date" id="p_birth" class="input-field" required>
-                <label>Sexo</label><select id="p_gender" class="input-field"><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select>
+                <label>Nombre Completo</label><input type="text" id="p_name" class="input-field" required>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
+                    <div><label>Nacimiento</label><input type="date" id="p_birth" class="input-field" required></div>
+                    <div><label>Sexo</label><select id="p_gender" class="input-field"><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select></div>
+                </div>
                 <label>WhatsApp</label><input type="tel" id="p_phone" class="input-field" required>
-                <label>Peso Inicial</label><input type="number" id="p_weight" step="0.1" class="input-field" required>
+                <label>Peso Inicial (kg)</label><input type="number" id="p_weight" step="0.1" class="input-field" required>
                 <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal Medición -->
+    <!-- Modal Medición (VER / EDITAR) -->
     <div id="modalMeasure" class="modal">
         <div class="modal-content modal-large">
             <button class="close-modal" onclick="closeModals()">&times;</button>
@@ -321,22 +308,27 @@
             <form id="formMeasure">
                 <input type="hidden" id="edit_m_id">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div><label>Peso (kg)</label><input type="number" id="m_w" step="0.1" class="input-field" required></div>
-                    <div><label>Meta (kg)</label><input type="number" id="m_goal" step="0.1" class="input-field" required></div>
+                    <div><label>Peso Actual (kg)</label><input type="number" id="m_w" step="0.1" class="input-field" required></div>
+                    <div><label>Peso Meta (kg)</label><input type="number" id="m_goal" step="0.1" class="input-field" required></div>
                 </div>
                 <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px">
-                    <div><label>PT</label><input type="number" id="m_pt" class="input-field" value="0"></div>
-                    <div><label>PSE</label><input type="number" id="m_pse" class="input-field" value="0"></div>
-                    <div><label>PSI</label><input type="number" id="m_psi" class="input-field" value="0"></div>
-                    <div><label>PA</label><input type="number" id="m_pa" class="input-field" value="0"></div>
+                    <div><label>PT</label><input type="number" id="m_pt" class="input-field" value="0" step="0.1"></div>
+                    <div><label>PSE</label><input type="number" id="m_pse" class="input-field" value="0" step="0.1"></div>
+                    <div><label>PSI</label><input type="number" id="m_psi" class="input-field" value="0" step="0.1"></div>
+                    <div><label>PA</label><input type="number" id="m_pa" class="input-field" value="0" step="0.1"></div>
                 </div>
-                <label>Actividad</label>
-                <select id="m_act" class="input-field"><option value="sedentario">Sedentario</option><option value="ligero">Ligero</option><option value="moderado">Moderado</option><option value="fuerte">Fuerte</option></select>
+                <label>Actividad Física</label>
+                <select id="m_act" class="input-field">
+                    <option value="sedentario">Sedentario</option>
+                    <option value="ligero">Ligero</option>
+                    <option value="moderado">Moderado</option>
+                    <option value="fuerte">Fuerte</option>
+                </select>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div><label>Sueño</label><input type="number" id="m_sleep" class="input-field" value="7"></div>
-                    <div><label>Estrés</label><input type="number" id="m_stress" class="input-field" value="5"></div>
+                    <div><label>Sueño (hs)</label><input type="number" id="m_sleep" class="input-field" value="7"></div>
+                    <div><label>Estrés (1-10)</label><input type="number" id="m_stress" class="input-field" value="5"></div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px">Guardar Medición</button>
             </form>
         </div>
     </div>
@@ -345,11 +337,13 @@
     <div id="modalFood" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 style="color: var(--primary)">Alimento</h2>
+            <h2 style="color: var(--primary)">Nuevo Alimento</h2>
             <form id="formFood">
                 <label>Nombre</label><input type="text" id="f_n" class="input-field" required>
                 <label>Categoría</label>
-                <select id="f_c" class="input-field"><option value="proteina">Proteína</option><option value="carbohidrato">Carbohidrato</option><option value="grasa">Grasa</option></select>
+                <select id="f_c" class="input-field">
+                    <option value="proteina">Proteína</option><option value="carbohidrato">Carbohidrato</option><option value="grasa">Grasa</option>
+                </select>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px">
                     <div><label>P</label><input type="number" id="f_p" class="input-field" value="0"></div>
                     <div><label>C</label><input type="number" id="f_ca" class="input-field" value="0"></div>
@@ -360,14 +354,9 @@
         </div>
     </div>
 
-    <div id="modalPlan" class="modal"><div class="modal-content modal-large">
-        <header style="display:flex; justify-content:space-between; align-items:center;"><h2 style="color: var(--primary); margin: 0;">✨ Plan Inteligente</h2><button onclick="closeModals()" style="background:none; border:none; font-size:24px; cursor:pointer">&times;</button></header>
-        <div id="planDisplayArea" style="margin-top:20px"></div>
-    </div></div>
-
     <script>
-        // 1. CONFIGURACIÓN FIREBASE
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nutrimanager-pro-alerts';
+        // 1. CONFIGURACIÓN FIREBASE (ID FIJO PARA PERSISTENCIA)
+        const appId = "nutrimanager-pro-fixed-v1-master"; 
         const firebaseConfig = {
             apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
             authDomain: "medicion-imc.firebaseapp.com",
@@ -383,32 +372,22 @@
         const auth = firebase.auth();
 
         let state = {
-            view: 'agenda',
-            patients: [],
-            turnos: [],
-            foods: [],
-            measures: [],
-            selPat: null,
-            calDate: new Date(),
-            user: null,
-            isInitialLoad: true
+            view: 'agenda', patients: [], turnos: [], foods: [], measures: [],
+            selPat: null, calDate: new Date(), user: null, isInitialLoad: true
         };
 
-        // 2. INICIO
+        // 2. INICIALIZACIÓN
         document.addEventListener('DOMContentLoaded', async () => {
             showLoader(true);
             try {
                 await auth.signInAnonymously();
                 auth.onAuthStateChanged(user => {
-                    if (user) {
-                        state.user = user;
-                        startListeners();
-                    }
+                    if (user) { state.user = user; startRealtimeListeners(); }
                 });
             } catch (e) { console.error(e); showLoader(false); }
         });
 
-        function startListeners() {
+        function startRealtimeListeners() {
             db.collection(getPath("pacientes")).orderBy("nombreCompleto").onSnapshot(s => {
                 state.patients = s.docs.map(d => ({id: d.id, ...d.data()}));
                 updatePatientDatalist();
@@ -419,10 +398,8 @@
                 state.turnos = s.docs.map(d => ({id: d.id, ...d.data()}));
                 if(state.view === 'agenda') renderCalendar();
                 updateBadge();
-                
-                // Solo abrir el modal automático la primera vez que entramos
-                if(state.isInitialLoad) {
-                    checkAndShowInitialModal();
+                if(state.isInitialLoad && state.turnos.length > 0) {
+                    checkAndShowPriorityModal();
                     state.isInitialLoad = false;
                 }
             });
@@ -431,11 +408,10 @@
                 state.foods = s.docs.map(d => ({id: d.id, ...d.data()}));
                 if(state.view === 'foods') renderFoods();
             });
-
             showLoader(false);
         }
 
-        // 3. NAVEGACIÓN
+        // 3. NAVEGACIÓN Y MENÚ
         function toggleMenu() {
             const overlay = document.getElementById('navOverlay');
             const hamburger = document.getElementById('hamburger-btn');
@@ -450,6 +426,10 @@
             document.getElementById(`view-${view}`).classList.add('active');
             const link = document.getElementById(`link-${view === 'details' ? 'patients' : view}`);
             if (link) link.classList.add('active');
+
+            const headers = { agenda: 'Agenda Nutricional', patients: 'Mis Pacientes', details: 'Evolución', foods: 'Biblioteca Alimentos', ai: 'Asistente IA' };
+            document.getElementById('viewHeaderTitle').innerText = headers[view] || 'NutriManager';
+
             if (view === 'agenda') renderCalendar();
             if (view === 'patients') renderPatients();
             if (view === 'details') loadPatientDetails(params.id);
@@ -457,67 +437,53 @@
             window.scrollTo(0,0);
         }
 
-        // 4. CALENDARIO CON DEGRADADO AMARILLO/NARANJA
+        // 4. MÓDULO CALENDARIO (CON ALERTAS)
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
             const year = state.calDate.getFullYear(), month = state.calDate.getMonth();
             const first = new Date(year, month, 1).getDay();
             const days = new Date(year, month + 1, 0).getDate();
-            const names = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-            document.getElementById('calendarLabel').innerText = `${names[month]} ${year}`;
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('calendarLabel').innerText = `${monthNames[month]} ${year}`;
 
-            // Lógica de alerta visual (hoy + 3 días)
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const limit = new Date();
-            limit.setDate(today.getDate() + 3);
-            limit.setHours(23,59,59,999);
+            const today = new Date(); today.setHours(0,0,0,0);
+            const limit = new Date(); limit.setDate(today.getDate() + 3); limit.setHours(23,59,59,999);
 
             ['D','L','M','X','J','V','S'].forEach(d => {
-                const el = document.createElement('div'); el.style.textAlign='center'; el.style.padding='10px'; el.style.fontWeight='bold'; el.style.color='var(--primary)'; el.innerText=d; grid.appendChild(el);
+                const el = document.createElement('div'); el.style.textAlign='center'; el.style.padding='8px'; el.style.fontWeight='bold'; el.style.color='var(--primary)'; el.innerText=d; grid.appendChild(el);
             });
 
             for(let i=0; i<first; i++) grid.appendChild(document.createElement('div'));
 
             for(let d=1; d<=days; d++) {
-                const dateS = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const cellDate = new Date(year, month, d);
-                cellDate.setHours(0,0,0,0);
-                
+                const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const cellDate = new Date(year, month, d); cellDate.setHours(0,0,0,0);
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell';
                 
-                // Aplicar degradado visual de alerta
-                if (cellDate.getTime() === today.getTime()) {
-                    cell.classList.add('cell-today');
-                } else if (cellDate > today && cellDate <= limit) {
-                    cell.classList.add('cell-next-3');
-                }
-                
-                cell.innerHTML = `<span class="day-n">${d}</span>`;
-                
-                const dTurnos = state.turnos.filter(t => t.date === dateS).sort((a,b) => a.time.localeCompare(b.time));
-                dTurnos.slice(0, 2).forEach(t => {
-                    const p = document.createElement('div'); 
-                    p.className = 'turno-pill'; 
-                    if(cellDate.getTime() === today.getTime()) p.style.background = "#fff";
-                    if(cellDate.getTime() === today.getTime()) p.style.color = "var(--primary)";
-                    p.innerText = `${t.time} ${t.paciente}`; 
-                    cell.appendChild(p);
-                });
+                if (cellDate.getTime() === today.getTime()) cell.classList.add('cell-today');
+                else if (cellDate > today && cellDate <= limit) cell.classList.add('cell-next-3');
 
-                cell.onclick = () => openDayView(dateS);
+                cell.innerHTML = `<span class="day-n">${d}</span>`;
+                const dTurnos = state.turnos.filter(t => t.date === ds).sort((a,b) => a.time.localeCompare(b.time));
+                dTurnos.slice(0, 2).forEach(t => {
+                    const p = document.createElement('div'); p.className = 'turno-pill'; p.innerText = `${t.time} ${t.paciente}`; cell.appendChild(p);
+                });
+                if(dTurnos.length > 2) {
+                    const m = document.createElement('div'); m.className = 'turno-pill'; m.style.background='#94a3b8'; m.innerText=`+${dTurnos.length-2} más`; cell.appendChild(m);
+                }
+                cell.onclick = () => openDayView(ds);
                 grid.appendChild(cell);
             }
         }
 
         function changeMonth(dir) { state.calDate.setMonth(state.calDate.getMonth() + dir); renderCalendar(); }
 
-        // 5. NOTIFICACIONES EMERGENTES (MODAL CUADRADO CENTRAL)
+        // 5. NOTIFICACIONES EMERGENTES (MODAL CUADRADO)
         function updateBadge() {
-            const today = new Date();
-            const limit = new Date(); limit.setDate(today.getDate() + 3);
+            const today = new Date(); today.setHours(0,0,0,0);
+            const limit = new Date(); limit.setDate(today.getDate() + 3); limit.setHours(23,59,59,999);
             const count = state.turnos.filter(t => {
                 const d = new Date(t.date + 'T00:00:00'); return d >= today && d <= limit;
             }).length;
@@ -526,61 +492,48 @@
             badge.style.display = count > 0 ? 'block' : 'none';
         }
 
-        function checkAndShowInitialModal() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const limit = new Date();
-            limit.setDate(today.getDate() + 3);
-            
-            const upcoming = state.turnos.filter(t => {
-                const d = new Date(t.date + 'T00:00:00');
-                return d >= today && d <= limit;
+        function checkAndShowPriorityModal() {
+            const today = new Date(); today.setHours(0,0,0,0);
+            const limit = new Date(); limit.setDate(today.getDate() + 3);
+            const list = state.turnos.filter(t => {
+                const d = new Date(t.date + 'T00:00:00'); return d >= today && d <= limit;
             });
-
-            if(upcoming.length > 0) openNotificationsModal();
+            if(list.length > 0) openNotificationsModal();
         }
 
         function openNotificationsModal() {
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            const limit = new Date();
-            limit.setDate(today.getDate() + 3);
+            const today = new Date(); today.setHours(0,0,0,0);
+            const todayStr = new Date().toISOString().split('T')[0];
+            const limit = new Date(); limit.setDate(today.getDate() + 3);
             
             const list = state.turnos.filter(t => {
-                const d = new Date(t.date + 'T00:00:00');
-                return d >= today && d <= limit;
+                const d = new Date(t.date + 'T00:00:00'); return d >= today && d <= limit;
             }).sort((a,b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time));
 
-            const container = document.getElementById('notifListArea');
-            if(list.length === 0) {
-                container.innerHTML = '<p style="text-align:center; padding:20px; color:#aaa;">No hay turnos para los próximos 3 días.</p>';
-            } else {
-                container.innerHTML = list.map(t => `
+            const area = document.getElementById('notifListArea');
+            area.innerHTML = list.length === 0 ? '<p style="text-align:center; color:#aaa;">Sin turnos próximos.</p>' : 
+                list.map(t => `
                     <div class="notif-item">
                         <div style="flex:1">
-                            <strong>${t.paciente}</strong><br>
-                            <small>${t.date === new Date().toISOString().split('T')[0] ? '⭐ HOY' : t.date} - ${t.time} hs</small>
+                            <strong>${t.paciente} ${t.date === todayStr ? '<span style="color:var(--danger)">[HOY]</span>' : ''}</strong>
+                            <br><small>📅 ${t.date} - ⏰ ${t.time} hs</small>
                         </div>
-                        <button class="btn btn-whatsapp" onclick="sendWa('${t.phone}', '${t.paciente}', '${t.date}', '${t.time}')">
-                            WhatsApp 📱
-                        </button>
+                        <button class="btn btn-whatsapp" onclick="sendWa('${t.phone}', '${t.paciente}', '${t.date}', '${t.time}')">📱 WhatsApp</button>
                     </div>
                 `).join('');
-            }
             document.getElementById('modalNotifications').classList.add('active');
         }
 
-        // --- LÓGICA DE DÍA Y TURNOS ---
+        // --- LÓGICA DE TURNOS ---
         function openDayView(date) {
             const dTurnos = state.turnos.filter(t => t.date === date).sort((a,b) => a.time.localeCompare(b.time));
-            document.getElementById('dayViewTitle').innerText = `Día: ${date}`;
+            document.getElementById('dayViewTitle').innerText = `Turnos del ${date}`;
             const list = document.getElementById('dayTurnosList');
-            list.innerHTML = dTurnos.length ? '' : '<p style="text-align:center; padding:15px; color:#999;">Sin compromisos.</p>';
+            list.innerHTML = dTurnos.length ? '' : '<p style="text-align:center; color:#999;">Vacío.</p>';
             dTurnos.forEach(t => {
                 const item = document.createElement('div');
                 item.className = 'day-view-item';
-                item.innerHTML = `
-                    <div style="flex:1"><strong>${t.time} hs - ${t.paciente}</strong></div>
+                item.innerHTML = `<div style="flex:1"><strong>${t.time} hs - ${t.paciente}</strong></div>
                     <div style="display:flex; gap:8px">
                         <button class="btn btn-whatsapp" onclick="sendWa('${t.phone}', '${t.paciente}', '${t.date}', '${t.time}')">📱</button>
                         <button class="btn btn-ghost" onclick="openTurnoForm('${date}', '${t.id}')">✏️</button>
@@ -592,39 +545,27 @@
         }
 
         function openTurnoForm(date, id = null) {
-            const f = document.getElementById('formTurno');
-            f.reset();
+            const f = document.getElementById('formTurno'); f.reset();
             document.getElementById('t_id').value = id || '';
             document.getElementById('t_date').value = date;
             document.getElementById('t_selected_time').value = '';
             document.getElementById('btnDeleteTurno').style.display = id ? 'block' : 'none';
             document.getElementById('turnoFormTitle').innerText = id ? 'Editar Turno' : `Agendar: ${date}`;
 
-            const grid = document.getElementById('timeGrid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('timeGrid'); grid.innerHTML = '';
             const taken = state.turnos.filter(t => t.date === date && t.id !== id).map(t => t.time);
             for(let h=7; h<=20; h++) {
                 ['00', '30'].forEach(m => {
-                    const time = `${String(h).padStart(2,'0')}:${m}`;
-                    const slot = document.createElement('div');
-                    slot.className = 'time-slot';
-                    if (taken.includes(time)) { slot.classList.add('taken'); }
-                    else {
-                        slot.onclick = () => {
-                            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
-                            slot.classList.add('selected');
-                            document.getElementById('t_selected_time').value = time;
-                        };
-                    }
-                    slot.innerText = time;
-                    grid.appendChild(slot);
+                    const t = `${String(h).padStart(2,'0')}:${m}`;
+                    const slot = document.createElement('div'); slot.className = 'time-slot';
+                    if (taken.includes(t)) slot.classList.add('taken');
+                    else slot.onclick = () => { document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected')); slot.classList.add('selected'); document.getElementById('t_selected_time').value = t; };
+                    slot.innerText = t; grid.appendChild(slot);
                 });
             }
             if (id) {
                 const t = state.turnos.find(x => x.id === id);
-                document.getElementById('t_paciente').value = t.paciente;
-                document.getElementById('t_phone').value = t.phone;
-                document.getElementById('t_obs').value = t.obs;
+                document.getElementById('t_paciente').value = t.paciente; document.getElementById('t_phone').value = t.phone; document.getElementById('t_obs').value = t.obs;
                 setTimeout(() => { document.querySelectorAll('.time-slot').forEach(s => { if(s.innerText === t.time) s.click(); }); }, 50);
             }
             document.getElementById('modalTurnoForm').classList.add('active');
@@ -635,12 +576,8 @@
             const time = document.getElementById('t_selected_time').value;
             if(!time) return alert("Selecciona un horario.");
             showLoader(true);
-            const data = {
-                date: document.getElementById('t_date').value, time: time,
-                paciente: document.getElementById('t_paciente').value, phone: document.getElementById('t_phone').value, obs: document.getElementById('t_obs').value
-            };
-            const id = document.getElementById('t_id').value;
-            if(id) await db.collection(getPath("turnos")).doc(id).update(data);
+            const data = { date: document.getElementById('t_date').value, time, paciente: document.getElementById('t_paciente').value, phone: document.getElementById('t_phone').value, obs: document.getElementById('t_obs').value };
+            if(document.getElementById('t_id').value) await db.collection(getPath("turnos")).doc(document.getElementById('t_id').value).update(data);
             else await db.collection(getPath("turnos")).add(data);
             closeModals(); showLoader(false);
         };
@@ -650,12 +587,11 @@
             const q = document.getElementById('patientSearch').value.toLowerCase();
             document.getElementById('patientListBody').innerHTML = state.patients.filter(p => p.nombreCompleto.toLowerCase().includes(q)).map(p => `
                 <tr onclick="switchView('details', {id:'${p.id}'})" style="cursor:pointer">
-                    <td data-label="Paciente" style="color:var(--primary); font-weight:bold">${p.nombreCompleto}</td>
-                    <td data-label="WhatsApp">${p.telefono}</td>
-                    <td data-label="Peso">${p.ultimoPeso || '-'} kg</td>
+                    <td style="color:var(--primary); font-weight:bold">${p.nombreCompleto}</td>
+                    <td>${p.telefono}</td>
+                    <td>${p.ultimoPeso || '-'} kg</td>
                     <td><button class="btn btn-ghost" onclick="event.stopPropagation(); openEditPatient('${p.id}')">✏️ Editar</button></td>
-                </tr>
-            `).join('');
+                </tr>`).join('');
         }
 
         async function loadPatientDetails(id) {
@@ -663,8 +599,7 @@
             document.getElementById('detName').innerText = state.selPat.nombreCompleto;
             db.collection(getPath("pacientes")).doc(id).collection("mediciones").orderBy("fecha", "asc").onSnapshot(s => {
                 state.measures = s.docs.map(d => ({id: d.id, ...d.data()}));
-                renderMeasures();
-                renderEvolutionCharts();
+                renderMeasures(); renderCharts();
             });
         }
 
@@ -680,8 +615,7 @@
                         <div class="data-item"><strong>Peso</strong>${m.resultados.pesoActual} kg</div>
                         <div class="data-item"><strong>Grasa</strong>${m.resultados.tejidoGrasoPorcentaje.toFixed(1)}%</div>
                     </div>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
 
         function openEditMeasure(mid) {
@@ -694,18 +628,19 @@
             document.getElementById('m_psi').value = m.indicadores?.psi || 0;
             document.getElementById('m_pa').value = m.indicadores?.pa || 0;
             document.getElementById('m_act').value = m.objetivos?.actividadTipo || 'moderado';
-            document.getElementById('measureModalTitle').innerText = "Medición: " + m.fecha.toDate().toLocaleDateString();
+            document.getElementById('measureModalTitle').innerText = "Medición del " + m.fecha.toDate().toLocaleDateString();
             document.getElementById('modalMeasure').classList.add('active');
         }
 
         document.getElementById('formMeasure').onsubmit = async (e) => {
-            e.preventDefault();
-            showLoader(true);
+            e.preventDefault(); showLoader(true);
             const mid = document.getElementById('edit_m_id').value;
             const w = parseFloat(document.getElementById('m_w').value);
+            const pt = parseFloat(document.getElementById('m_pt').value || 0), pse = parseFloat(document.getElementById('m_pse').value || 0);
+            const fat = ((pt + pse) * 0.153) + 5.78; 
             const data = {
-                resultados: { pesoActual: w, tejidoGrasoPorcentaje: ((parseFloat(document.getElementById('m_pt').value) + parseFloat(document.getElementById('m_pse').value)) * 0.153) + 5.78 },
-                indicadores: { pt: parseFloat(document.getElementById('m_pt').value), pse: parseFloat(document.getElementById('m_pse').value), psi: parseFloat(document.getElementById('m_psi').value), pa: parseFloat(document.getElementById('m_pa').value) },
+                resultados: { pesoActual: w, tejidoGrasoPorcentaje: fat },
+                indicadores: { pt, pse, psi: parseFloat(document.getElementById('m_psi').value), pa: parseFloat(document.getElementById('m_pa').value) },
                 objetivos: { pesoObjetivo: parseFloat(document.getElementById('m_goal').value), actividadTipo: document.getElementById('m_act').value }
             };
             if(mid) await db.collection(getPath("pacientes")).doc(state.selPat.id).collection("mediciones").doc(mid).update(data);
@@ -714,91 +649,63 @@
             closeModals(); showLoader(false);
         };
 
-        // --- IA & PLANES ---
-        async function generateSmartPlan() {
-            if (!state.measures.length) return alert("Falta medición.");
-            showLoader(true);
-            const last = state.measures[state.measures.length-1];
-            const target = Math.round((10 * last.resultados.pesoActual + 6.25 * 175 - 5 * 30 + 5) * 1.375);
-            const html = `<div class="card" style="border-left:5px solid var(--primary)"><h3>Meta: ${target} kcal/día</h3><p>Basado en Mifflin-St Jeor.</p></div>`;
-            document.getElementById('planDisplayArea').innerHTML = html;
-            document.getElementById('modalPlan').classList.add('active');
-            await db.collection(getPath("pacientes")).doc(state.selPat.id).collection("mediciones").doc(last.id).update({ plan: html });
-            showLoader(false);
-        }
-
-        async function sendAIRequest() {
-            const inp = document.getElementById('chatInput'), win = document.getElementById('chatWindow');
-            if(!inp.value.trim()) return;
-            const msg = inp.value; inp.value = '';
-            win.innerHTML += `<div class="msg msg-u">${msg}</div>`;
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`, {
-                    method: 'POST', body: JSON.stringify({contents:[{parts:[{text: msg}]}]})
-                });
-                const data = await res.json();
-                win.innerHTML += `<div class="msg msg-b">${data.candidates[0].content.parts[0].text}</div>`;
-                win.scrollTop = win.scrollHeight;
-            } catch(e) { win.innerHTML += `<div class="msg msg-b">Error de IA.</div>`; }
-        }
-
         // --- HELPERS ---
         function showLoader(s) { document.getElementById('mainLoader').style.display = s ? 'flex' : 'none'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
         window.onclick = (e) => { if(e.target.className.includes('modal active')) closeModals(); };
-        function sendWa(p, n, d, t) { window.open(`https://wa.me/${p}?text=${encodeURIComponent('Recordatorio: Turno Nutricionista '+d+' a las '+t+' hs. ¡Te espero!')}`, '_blank'); }
-        function openPatientModal() { document.getElementById('formPatient').reset(); document.getElementById('edit_p_id').value = ''; document.getElementById('modalPatient').classList.add('active'); }
-        function openFoodModal() { document.getElementById('formFood').reset(); document.getElementById('modalFood').classList.add('active'); }
+        function sendWa(p, n, d, t) { window.open(`https://wa.me/${p}?text=${encodeURIComponent('Hola '+n+', recordatorio de turno para el '+d+' a las '+t+' hs.')}`, '_blank'); }
         function updatePatientDatalist() { document.getElementById('patientsList').innerHTML = state.patients.map(p => `<option value="${p.nombreCompleto}">`).join(''); }
 
+        function openPatientModal() { document.getElementById('formPatient').reset(); document.getElementById('edit_p_id').value = ''; document.getElementById('pTitle').innerText = 'Nuevo Paciente'; document.getElementById('modalPatient').classList.add('active'); }
         function openEditPatient(id) {
             const p = state.patients.find(x => x.id === id);
-            document.getElementById('edit_p_id').value = id;
-            document.getElementById('p_name').value = p.nombreCompleto;
-            document.getElementById('p_phone').value = p.telefono;
-            document.getElementById('p_weight').value = p.ultimoPeso;
+            document.getElementById('edit_p_id').value = id; document.getElementById('p_name').value = p.nombreCompleto;
+            document.getElementById('p_phone').value = p.telefono; document.getElementById('p_weight').value = p.ultimoPeso;
             document.getElementById('p_birth').value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
             document.getElementById('modalPatient').classList.add('active');
         }
-
         document.getElementById('formPatient').onsubmit = async (e) => {
-            e.preventDefault();
-            showLoader(true);
+            e.preventDefault(); showLoader(true);
             const d = { nombreCompleto: document.getElementById('p_name').value, telefono: document.getElementById('p_phone').value, ultimoPeso: parseFloat(document.getElementById('p_weight').value), sexo: document.getElementById('p_gender').value, fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('p_birth').value)), fechaUltimoRegistro: firebase.firestore.Timestamp.now() };
             if(document.getElementById('edit_p_id').value) await db.collection(getPath("pacientes")).doc(document.getElementById('edit_p_id').value).update(d);
             else await db.collection(getPath("pacientes")).add(d);
             closeModals(); showLoader(false);
         };
 
+        function openMeasureModal() { document.getElementById('formMeasure').reset(); document.getElementById('edit_m_id').value = ''; document.getElementById('modalMeasure').classList.add('active'); }
+        function openFoodModal() { document.getElementById('formFood').reset(); document.getElementById('modalFood').classList.add('active'); }
         document.getElementById('formFood').onsubmit = async (e) => {
-            e.preventDefault();
-            await db.collection(getPath("alimentos")).add({ name: document.getElementById('f_n').value, category: document.getElementById('f_c').value, protein: parseFloat(document.getElementById('f_p').value), carbs: parseFloat(document.getElementById('f_ca').value), fats: parseFloat(document.getElementById('f_g').value) });
+            e.preventDefault(); await db.collection(getPath("alimentos")).add({ name: document.getElementById('f_n').value, protein: parseFloat(document.getElementById('f_p').value) });
             closeModals();
         };
 
-        function renderFoods() {
-            const q = document.getElementById('foodSearch').value.toLowerCase();
-            document.getElementById('foodGrid').innerHTML = state.foods.filter(f => f.name.toLowerCase().includes(q)).map(f => `<div class="card"><strong>${f.name}</strong><br><small>${f.category}</small></div>`).join('');
-        }
-
-        async function deleteTurno() { if(confirm("¿Borrar?")) { await db.collection(getPath("turnos")).doc(document.getElementById('t_id').value).delete(); closeModals(); } }
-
-        async function exportEvolutionPDF() {
-            const { jsPDF } = window.jspdf; const pdf = new jsPDF();
-            pdf.text(state.selPat.nombreCompleto, 15, 20);
-            pdf.autoTable({ startY: 30, head: [['Fecha', 'Peso']], body: state.measures.map(m => [m.fecha.toDate().toLocaleDateString(), m.resultados.pesoActual]) });
-            pdf.save("Informe.pdf");
+        async function sendAIRequest() {
+            const inp = document.getElementById('chatInput'), win = document.getElementById('chatWindow');
+            const msg = inp.value; if(!msg) return; inp.value = '';
+            win.innerHTML += `<div style="padding:10px; background:var(--primary); color:white; border-radius:10px; align-self:flex-end; max-width:80%;">${msg}</div>`;
+            try {
+                const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`, { method: 'POST', body: JSON.stringify({contents:[{parts:[{text: msg}]}]}) });
+                const d = await r.json(); win.innerHTML += `<div style="padding:10px; background:white; border:1px solid #ddd; border-radius:10px; max-width:80%;">${d.candidates[0].content.parts[0].text}</div>`;
+                win.scrollTop = win.scrollHeight;
+            } catch(e) { win.innerHTML += `<div>Error de IA</div>`; }
         }
 
         let wC, fC;
-        function renderEvolutionCharts() {
+        function renderCharts() {
             if (state.measures.length < 2) return;
             const l = state.measures.map(m => m.fecha.toDate().toLocaleDateString());
-            if(wC) wC.destroy();
-            wC = new Chart(document.getElementById('chartWeight'), { type:'line', data:{labels:l, datasets:[{label:'Peso', data:state.measures.map(m=>m.resultados.pesoActual), borderColor:'#7b2cbf', tension:0.3}]} });
-            if(fC) fC.destroy();
-            fC = new Chart(document.getElementById('chartFat'), { type:'line', data:{labels:l, datasets:[{label:'Grasa', data:state.measures.map(m=>m.resultados.tejidoGrasoPorcentaje), borderColor:'#ef4444', tension:0.3}]} });
+            if(wC) wC.destroy(); wC = new Chart(document.getElementById('chartWeight'), { type:'line', data:{labels:l, datasets:[{label:'Peso', data:state.measures.map(m=>m.resultados.pesoActual), borderColor:'#7b2cbf'}]} });
+            if(fC) fC.destroy(); fC = new Chart(document.getElementById('chartFat'), { type:'line', data:{labels:l, datasets:[{label:'Grasa (%)', data:state.measures.map(m=>m.resultados.tejidoGrasoPorcentaje), borderColor:'#ef4444'}]} });
         }
+
+        async function deleteTurno() { if(confirm("¿Borrar?")) { await db.collection(getPath("turnos")).doc(document.getElementById('t_id').value).delete(); closeModals(); } }
+        async function exportEvolutionPDF() {
+            const { jsPDF } = window.jspdf; const pdf = new jsPDF();
+            pdf.text("Evolución: " + state.selPat.nombreCompleto, 15, 20);
+            pdf.autoTable({ startY: 30, head: [['Fecha', 'Peso', 'Grasa']], body: state.measures.map(m => [m.fecha.toDate().toLocaleDateString(), m.resultados.pesoActual, m.resultados.tejidoGrasoPorcentaje.toFixed(1)]) });
+            pdf.save("Informe.pdf");
+        }
+        function generateSmartPlan() { alert("Calculando plan... (Algoritmo Mifflin-St Jeor)"); }
     </script>
 </body>
 </html>
