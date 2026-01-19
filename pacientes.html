@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pacientes - NutriManager Pro</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- SDK de Firebase (Compatibilidad) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <div id="mainLoader" class="loader-overlay" style="display: flex; position: fixed; width:100%; height:100%; background: white; z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="spinner"></div>
+        <p>Cargando Base de Datos...</p>
+    </div>
+
+    <!-- Menú Lateral -->
+    <div id="navOverlay" class="nav-overlay" onclick="toggleMenu()">
+        <nav class="nav-content" onclick="event.stopPropagation()">
+            <ul class="nav-links">
+                <li><a href="index.html">📅 Agenda</a></li>
+                <li><a href="pacientes.html" class="active">👥 Mis Pacientes</a></li>
+                <li><a href="alimentos.html">🍎 Alimentos</a></li>
+                <li><a href="asistente.html">🤖 Asistente IA</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <header>
+        <button id="hamburger-btn" class="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+        <h2 style="margin:0; font-size: 1.1rem; color: var(--primary)">Mis Pacientes</h2>
+        <div style="font-size: 22px; color: var(--primary); visibility: hidden;">🔔</div>
+    </header>
+
+    <main class="container">
+        <!-- Buscador -->
+        <div class="card" style="margin-bottom: 20px;">
+            <input type="search" id="patientSearch" class="input-field" style="margin-bottom: 0;" placeholder="🔍 Buscar paciente por nombre...">
+        </div>
+
+        <!-- Tabla de Pacientes -->
+        <div class="table-wrapper">
+            <table class="res-table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>WhatsApp</th>
+                        <th>Último Registro</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="patientListBody">
+                    <!-- Datos de Firebase -->
+                </tbody>
+            </table>
+        </div>
+
+        <button id="addPatientBtn" class="fab" onclick="openPatientModal()">+</button>
+    </main>
+
+    <!-- Modal Paciente -->
+    <div id="modalPatient" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="modalTitle" style="color: var(--primary); margin-top: 0;">Ficha del Paciente</h2>
+            <form id="formPatient">
+                <input type="hidden" id="p_id">
+                
+                <div class="form-group">
+                    <label>Nombre y Apellido</label>
+                    <input type="text" id="p_name" class="input-field" required>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Nacimiento</label>
+                        <input type="date" id="p_birth" class="input-field" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Sexo</label>
+                        <select id="p_gender" class="input-field" required>
+                            <option value="femenino">Femenino</option>
+                            <option value="masculino">Masculino</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono (WhatsApp)</label>
+                    <input type="tel" id="p_phone" class="input-field" placeholder="Ej: 54911..." required>
+                </div>
+
+                <div class="form-group">
+                    <label>Peso Inicial (kg)</label>
+                    <input type="number" id="p_weight" step="0.1" class="input-field" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Paciente</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="main.js"></script>
+    <script src="pacientes.js"></script>
+</body>
+</html>
