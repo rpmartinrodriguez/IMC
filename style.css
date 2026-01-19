@@ -1,5 +1,5 @@
 /* =================================================================
-   1. VARIABLES Y BASE (VIOLET PRO)
+   1. VARIABLES Y CONFIGURACIÓN BASE (VIOLET PRO)
    ================================================================= */
 :root {
     --primary: #7b2cbf;
@@ -9,8 +9,8 @@
     --accent: #e0aaff;
     --success: #2ecc71;
     --danger: #ef4444;
-    --warning: #f3722c;
-    --warning-light: #f9c74f77;
+    --warning: #f3722c; /* Naranja vibrante para hoy */
+    --warning-light: #f9c74f77; /* Amarillo suave para próximos días */
     --dark: #240046;
     --light: #f3e8ff;
     --bg: #f8f4ff;
@@ -19,11 +19,26 @@
     --shadow: 0 4px 20px rgba(123, 44, 191, 0.15);
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--dark); line-height: 1.5; min-height: 100vh; overflow-x: hidden; }
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg);
+    color: var(--dark);
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
 
 /* Bloqueo de scroll cuando el menú está abierto */
-body.menu-open { overflow: hidden; }
+body.menu-open {
+    overflow: hidden;
+}
 
 /* =================================================================
    2. HEADER Y BOTÓN HAMBURGUESA
@@ -41,6 +56,15 @@ header {
     height: 65px;
 }
 
+header h1, header h2 {
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: 700;
+    margin: 0;
+    flex-grow: 1;
+    text-align: center;
+}
+
 .hamburger-button {
     width: 32px;
     height: 24px;
@@ -50,7 +74,7 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    z-index: 2500; /* Siempre arriba de todo */
+    z-index: 2500; /* Por encima del overlay */
     transition: 0.3s;
 }
 
@@ -62,15 +86,13 @@ header {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Animación a X */
+/* Animación a X del botón */
 .hamburger-button.open .bar:nth-child(1) { transform: translateY(10px) rotate(45deg); background-color: var(--white); }
 .hamburger-button.open .bar:nth-child(2) { opacity: 0; }
 .hamburger-button.open .bar:nth-child(3) { transform: translateY(-11px) rotate(-45deg); background-color: var(--white); }
 
-header h2 { font-size: 1.1rem; color: var(--primary); font-weight: 700; margin: 0; flex-grow: 1; text-align: center; }
-
 /* =================================================================
-   3. OVERLAY DE NAVEGACIÓN (MENÚ)
+   3. OVERLAY DE NAVEGACIÓN (MENÚ PANTALLA COMPLETA)
    ================================================================= */
 .navigation-overlay {
     position: fixed;
@@ -88,18 +110,46 @@ header h2 { font-size: 1.1rem; color: var(--primary); font-weight: 700; margin: 
     transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.navigation-overlay.show { left: 0; }
+.navigation-overlay.show {
+    left: 0;
+}
 
-.nav-links { list-style: none; text-align: center; width: 100%; padding: 20px; }
-.nav-links li { margin: 20px 0; opacity: 0; transform: translateY(20px); transition: 0.4s; }
-.navigation-overlay.show .nav-links li { opacity: 1; transform: translateY(0); }
+.close-nav-button {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    font-size: 45px;
+    color: white;
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+}
 
-/* Retraso en la aparición de links */
+.nav-links {
+    list-style: none;
+    text-align: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.nav-links li {
+    margin: 20px 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: 0.4s;
+}
+
+.navigation-overlay.show .nav-links li {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Efecto de aparición escalonada */
 .nav-links li:nth-child(1) { transition-delay: 0.1s; }
 .nav-links li:nth-child(2) { transition-delay: 0.2s; }
 .nav-links li:nth-child(3) { transition-delay: 0.3s; }
 .nav-links li:nth-child(4) { transition-delay: 0.4s; }
-.nav-links li:nth-child(5) { transition-delay: 0.5s; }
 
 .nav-links a {
     color: var(--white);
@@ -111,54 +161,327 @@ header h2 { font-size: 1.1rem; color: var(--primary); font-weight: 700; margin: 
     transition: 0.3s;
 }
 
-.nav-links a:hover, .nav-links a.active { color: var(--secondary); transform: scale(1.1); }
+.nav-links a:hover, .nav-links a.active {
+    color: var(--secondary);
+    transform: scale(1.05);
+}
 
 /* =================================================================
-   4. COMPONENTES: CARDS Y BOTONES
+   4. COMPONENTES: CARDS, BOTONES Y TABLAS
    ================================================================= */
-.container { max-width: 1100px; margin: 20px auto; padding: 0 15px 100px 15px; }
-.card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid #e9d5ff; }
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 15px 100px 15px;
+}
 
-.btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; text-decoration: none; }
+.card {
+    background: var(--white);
+    padding: 20px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    border: 1px solid #e9d5ff;
+}
+
+.btn {
+    padding: 12px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
+    text-decoration: none;
+}
+
 .btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-secondary { background: #6c757d; color: white; }
 .btn-ghost { background: var(--light); color: var(--primary); }
-.btn-whatsapp { background: #25d366; color: white; border-radius: 8px; font-size: 12px; padding: 8px 12px; }
+.btn-whatsapp { background: #25d366; color: white; }
+.btn-danger { background: var(--danger); color: white; }
 
-.input-field { width: 100%; padding: 12px 15px; border: 2px solid #e9d5ff; border-radius: 8px; font-size: 16px; margin-bottom: 15px; outline: none; transition: 0.3s; }
-.input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(123, 44, 191, 0.1); }
+.fab {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(123, 44, 191, 0.4);
+    cursor: pointer;
+    z-index: 999;
+    transition: transform 0.3s;
+}
+
+.fab:hover { transform: rotate(90deg) scale(1.1); }
+
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius);
+    border: 1px solid #e9d5ff;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th {
+    background: #f8f4ff;
+    padding: 15px;
+    text-align: left;
+    font-size: 13px;
+    color: var(--primary);
+    text-transform: uppercase;
+}
+
+td {
+    padding: 15px;
+    border-bottom: 1px solid #f3e8ff;
+}
 
 /* =================================================================
-   5. CALENDARIO Y TABLAS (RESPONSIVO)
+   5. FORMULARIOS E INPUTS
    ================================================================= */
-.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e9d5ff; border: 1px solid #e9d5ff; border-radius: 8px; overflow: hidden; }
-.calendar-cell { background: white; min-height: 110px; padding: 8px; cursor: pointer; position: relative; transition: 0.2s; overflow-y: auto; }
-.cell-today { background: var(--warning) !important; color: white !important; }
+.form-group {
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+}
+
+.input-field {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e9d5ff;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-field:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(123, 44, 191, 0.1);
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+/* =================================================================
+   6. CALENDARIO Y AGENDA
+   ================================================================= */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #e9d5ff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.calendar-cell {
+    background: white;
+    min-height: 110px;
+    padding: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s;
+}
+
+.cell-today { background: var(--warning) !important; border: 2px solid #d35400; }
 .cell-today .day-n { color: white !important; }
 .cell-warning-next { background: var(--warning-light) !important; }
 
-.table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid #e9d5ff; }
-table { width: 100%; border-collapse: collapse; background: white; }
-th { background: #f8f4ff; padding: 15px; text-align: left; font-size: 13px; color: var(--primary); text-transform: uppercase; }
-td { padding: 15px; border-bottom: 1px solid #f3e8ff; }
+.day-n { font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 5px; display: block; }
+
+.turno-pill {
+    background: var(--primary);
+    color: white;
+    font-size: 10px;
+    padding: 3px 6px;
+    border-radius: 4px;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 /* =================================================================
-   6. MODALES
+   7. MODALES
    ================================================================= */
-.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(36, 0, 70, 0.6); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 15px; backdrop-filter: blur(4px); }
-.modal.active, .modal.show { display: flex; }
-.modal-content { background: white; width: 100%; max-width: 550px; border-radius: 20px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; border-top: 8px solid var(--primary); }
-.close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; border: none; background: none; }
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(36, 0, 70, 0.6);
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal.active, .modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    border-top: 8px solid var(--primary);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    cursor: pointer;
+    color: #aaa;
+    border: none;
+    background: none;
+}
 
 /* =================================================================
-   7. UTILIDADES
+   8. VISUALIZACIÓN DE DATOS Y GRÁFICOS
    ================================================================= */
-.notif-badge { background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; position: absolute; top: -5px; right: -5px; font-weight: bold; border: 1px solid white; }
-.loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
-.spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+.charts-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-wrapper {
+    background: white;
+    padding: 15px;
+    border-radius: var(--radius);
+    border: 1px solid #e9d5ff;
+    box-shadow: var(--shadow);
+    height: 320px;
+}
+
+.data-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.data-item {
+    background-color: #f8f4ff;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e9d5ff;
+}
+
+.data-item strong { display: block; color: var(--primary-dark); font-size: 11px; text-transform: uppercase; margin-bottom: 4px; }
+
+.result-display {
+    background-color: #e9ecef;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+/* =================================================================
+   9. UTILIDADES (NOTIF, LOADER, TAGS)
+   ================================================================= */
+.notif-badge {
+    background: var(--danger);
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    font-weight: bold;
+    border: 1px solid white;
+}
+
+.loader-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: white;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+.category-tag {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    color: white;
+    text-transform: uppercase;
+}
+.category-tag.proteina { background: #e67e22; }
+.category-tag.carbohidrato { background: #3498db; }
+.category-tag.grasa { background: #f1c40f; }
+
+/* =================================================================
+   10. RESPONSIVIDAD FINAL
+   ================================================================= */
 @media (max-width: 768px) {
+    .container { padding: 10px 15px 100px; }
+    .charts-container { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; gap: 0; }
     .calendar-cell { min-height: 85px; }
+    
+    /* Transformar tablas en tarjetas para móvil */
+    .res-table thead { display: none; }
+    .res-table tr { display: block; margin-bottom: 15px; border: 1px solid #e9d5ff; border-radius: 10px; padding: 10px; background: white; }
+    .res-table td { display: flex; justify-content: space-between; padding: 8px 5px; border-bottom: 1px solid #f8f4ff; }
+    .res-table td:last-child { border-bottom: none; }
+    .res-table td::before { content: attr(data-label); font-weight: bold; color: var(--primary); }
+    
     .nav-links a { font-size: 1.4rem; }
     header h2 { font-size: 0.95rem; }
 }
