@@ -1,29 +1,30 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Seleccionar los elementos del DOM para el menú
-    const hamburgerBtn = document.getElementById('hamburger-button');
-    const navOverlay = document.getElementById('navigation-overlay');
-    const closeNavBtn = document.getElementById('close-nav-button');
+/**
+ * ARCHIVO: main.js
+ * Propósito: Controlar el menú de hamburguesa y funciones globales de la UI.
+ */
 
-    // Función para abrir el menú
-    const openMenu = () => {
-        navOverlay.classList.add('show');
-    };
-
-    // Función para cerrar el menú
-    const closeMenu = () => {
-        navOverlay.classList.remove('show');
-    };
-
-    // Asignar eventos
-    if (hamburgerBtn && navOverlay && closeNavBtn) {
-        hamburgerBtn.addEventListener('click', openMenu);
-        closeNavBtn.addEventListener('click', closeMenu);
-
-        // Opcional: cerrar el menú si se hace clic fuera de los enlaces
-        navOverlay.addEventListener('click', (e) => {
-            if (e.target === navOverlay) {
-                closeMenu();
-            }
-        });
+function toggleMenu() {
+    const overlay = document.getElementById('navOverlay');
+    const hamburger = document.getElementById('hamburger-btn');
+    if (overlay && hamburger) {
+        overlay.classList.toggle('active');
+        hamburger.classList.toggle('open');
     }
-});
+}
+
+function closeModals() {
+    document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+}
+
+// Cerrar modales al hacer clic fuera
+window.onclick = (e) => {
+    if (e.target.classList.contains('modal')) {
+        closeModals();
+    }
+};
+
+// Formatear WhatsApp
+function sendWa(phone, name, date, time) {
+    const msg = encodeURIComponent(`Hola ${name}, te recuerdo tu turno el ${date} a las ${time} hs. ¡Te espero!`);
+    window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+}
