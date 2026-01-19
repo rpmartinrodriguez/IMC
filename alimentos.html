@@ -3,86 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biblioteca de Alimentos</title>
+    <title>Alimentos - NutriManager Pro</title>
     <link rel="stylesheet" href="style.css">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- Menú de Navegación -->
-    <div id="navigation-overlay" class="navigation-overlay">
-        <button id="close-nav-button" class="close-nav-button">&times;</button>
-        <ul class="nav-links">
-            <li><a href="index.html">Pacientes</a></li>
-            <li><a href="menus.html">Menús</a></li>
-            <li><a href="alimentos.html">Alimentos</a></li>
-            <li><a href="calculadora.html">Calculadora IMC</a></li>
-            <li><a href="asistente.html">Asistente IA</a></li>
-        </ul>
+    <div id="mainLoader" class="loader-overlay" style="display: flex; position: fixed; width:100%; height:100%; background: white; z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="spinner"></div>
+        <p>Cargando Alimentos...</p>
     </div>
 
-    <div class="container">
-        <header>
-            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
-            <h1>Biblioteca de Alimentos</h1>
-        </header>
+    <!-- Menú Lateral -->
+    <div id="navOverlay" class="nav-overlay" onclick="toggleMenu()">
+        <nav class="nav-content" onclick="event.stopPropagation()">
+            <ul class="nav-links">
+                <li><a href="index.html">📅 Agenda</a></li>
+                <li><a href="pacientes.html">👥 Mis Pacientes</a></li>
+                <li><a href="alimentos.html" class="active">🍎 Alimentos</a></li>
+                <li><a href="menus.html">📋 Mis Menús</a></li>
+                <li><a href="asistente.html">🤖 Asistente IA</a></li>
+            </ul>
+        </nav>
+    </div>
 
-        <div id="foodListContainer" class="food-list-container">
-            <!-- Las tarjetas de alimentos se cargarán aquí -->
+    <header>
+        <button id="hamburger-btn" class="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+        <h2 style="margin:0; font-size: 1.1rem; color: var(--primary)">Biblioteca Alimentos</h2>
+        <div style="visibility: hidden;">🔔</div>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <input type="search" id="foodSearch" class="input-field" style="margin-bottom: 0;" placeholder="🔍 Buscar alimento...">
         </div>
 
-        <button id="addFoodBtn" class="fab">+</button>
-    </div>
+        <div id="foodListContainer" class="food-list-container">
+            <!-- Cargado por alimentos.js -->
+        </div>
 
-    <!-- Modal para agregar/editar alimento -->
+        <button class="fab" onclick="openFoodModal()">+</button>
+    </main>
+
+    <!-- Modal Alimento -->
     <div id="foodModal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="foodModalTitle">Añadir Nuevo Alimento</h2>
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="foodModalTitle">Gestionar Alimento</h2>
             <form id="foodForm">
                 <input type="hidden" id="foodId">
                 <div class="form-group">
-                    <label for="foodName">Nombre del Alimento</label>
+                    <label>Nombre</label>
                     <input type="text" id="foodName" class="input-field" required>
                 </div>
                 <div class="form-group">
-                    <label for="foodCategory">Categoría</label>
+                    <label>Categoría</label>
                     <select id="foodCategory" class="input-field" required>
-                        <option value="" disabled selected>Selecciona una categoría...</option>
-                        <option value="keto">Keto</option>
-                        <option value="low-hc">Baja en Carbohidratos</option>
-                        <option value="anti-inflammatory">Antiinflamatoria</option>
-                        <option value="proteina">Fuente de Proteína</option>
-                        <option value="grasa">Fuente de Grasa</option>
-                        <option value="carbohidrato">Fuente de Carbohidrato</option>
-                        <option value="general">General</option>
+                        <option value="proteina">Proteína</option>
+                        <option value="carbohidrato">Carbohidrato</option>
+                        <option value="grasa">Grasa</option>
+                        <option value="verdura">Verdura / Fibra</option>
                     </select>
                 </div>
-                <fieldset>
-                    <legend>Información Nutricional (por 100g)</legend>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="foodProtein">Proteínas (g)</label>
-                            <input type="number" id="foodProtein" step="0.1" class="input-field" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="foodCarbs">Carbohidratos (g)</label>
-                            <input type="number" id="foodCarbs" step="0.1" class="input-field" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="foodFats">Grasas (g)</label>
-                            <input type="number" id="foodFats" step="0.1" class="input-field" required>
-                        </div>
-                    </div>
-                </fieldset>
-                <button type="submit" class="btn-guardar">Guardar Alimento</button>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                    <div class="form-group"><label>P (g)</label><input type="number" id="foodProtein" step="0.1" class="input-field" value="0"></div>
+                    <div class="form-group"><label>C (g)</label><input type="number" id="foodCarbs" step="0.1" class="input-field" value="0"></div>
+                    <div class="form-group"><label>G (g)</label><input type="number" id="foodFats" step="0.1" class="input-field" value="0"></div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Alimento</button>
             </form>
         </div>
     </div>
 
-    <!-- SDKs y Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    <script src="alimentos.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="main.js"></script>
+    <script src="alimentos.js"></script>
 </body>
 </html>
