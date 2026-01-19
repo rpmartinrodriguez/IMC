@@ -1,125 +1,106 @@
-// 1. CONFIGURACIÓN DE FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
-  authDomain: "medicion-imc.firebaseapp.com",
-  projectId: "medicion-imc",
-  storageBucket: "medicion-imc.appspot.com",
-  messagingSenderId: "544674177518",
-  appId: "1:544674177518:web:c060519e65a2913e0beeff"
-};
+/**
+ * ARCHIVO: alimentos.js
+ * Propósito: CRUD de la biblioteca de alimentos nutricionales.
+ */
 
-// 2. INICIALIZACIÓN DE SERVICIOS
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+let allFoods = [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    // 3. REFERENCIAS AL DOM
-    const foodListContainer = document.getElementById('foodListContainer');
-    const addFoodBtn = document.getElementById('addFoodBtn');
-    const modal = document.getElementById('foodModal');
-    const closeModalBtn = modal.querySelector('.close-btn');
-    const foodForm = document.getElementById('foodForm');
-    const foodModalTitle = document.getElementById('foodModalTitle');
-    const foodIdInput = document.getElementById('foodId');
-    const foodNameInput = document.getElementById('foodName');
-    const foodCategoryInput = document.getElementById('foodCategory');
-    const foodProteinInput = document.getElementById('foodProtein');
-    const foodCarbsInput = document.getElementById('foodCarbs');
-    const foodFatsInput = document.getElementById('foodFats');
+document.addEventListener('DOMContentLoaded', async () => {
+    await ensureAuth();
+    initFoodListener();
 
-    // 4. LÓGICA DEL MODAL
-    addFoodBtn.addEventListener('click', () => {
-        foodModalTitle.textContent = 'Añadir Nuevo Alimento';
-        foodForm.reset();
-        foodIdInput.value = '';
-        modal.classList.add('show');
-    });
-    closeModalBtn.addEventListener('click', () => modal.classList.remove('show'));
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.remove('show');
-    });
+    const searchInput = document.getElementById('foodSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => filterFoods(e.target.value));
+    }
 
-    // 5. GUARDAR O ACTUALIZAR ALIMENTO
-    foodForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const foodId = foodIdInput.value;
-        const foodData = {
-            name: foodNameInput.value,
-            category: foodCategoryInput.value,
-            protein: parseFloat(foodProteinInput.value),
-            carbs: parseFloat(foodCarbsInput.value),
-            fats: parseFloat(foodFatsInput.value)
+    const form = document.getElementById('foodForm');
+    if (form) {
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            saveFood();
         };
-
-        try {
-            if (foodId) {
-                await db.collection('alimentos').doc(foodId).update(foodData);
-            } else {
-                await db.collection('alimentos').add(foodData);
-            }
-            modal.classList.remove('show');
-        } catch (error) {
-            console.error("Error guardando alimento: ", error);
-        }
-    });
-
-    // 6. CARGAR Y RENDERIZAR ALIMENTOS
-    db.collection('alimentos').orderBy('name').onSnapshot(snapshot => {
-        foodListContainer.innerHTML = '';
-        if (snapshot.empty) {
-            foodListContainer.innerHTML = '<p>No hay alimentos en tu biblioteca. ¡Añade el primero!</p>';
-            return;
-        }
-        snapshot.forEach(doc => {
-            const food = doc.data();
-            const foodCard = document.createElement('div');
-            foodCard.className = 'card food-card';
-            foodCard.innerHTML = `
-                <div class="food-card-header">
-                    <h4>${food.name}</h4>
-                    <span class="category-tag ${food.category}">${food.category.replace('-', ' ')}</span>
-                </div>
-                <div class="food-card-body">
-                    <p><strong>Proteínas:</strong> ${food.protein}g</p>
-                    <p><strong>Carbs:</strong> ${food.carbs}g</p>
-                    <p><strong>Grasas:</strong> ${food.fats}g</p>
-                </div>
-                <div class="food-card-actions">
-                    <button class="btn-icon btn-edit" data-id="${doc.id}">✏️</button>
-                    <button class="btn-icon btn-delete" data-id="${doc.id}">🗑️</button>
-                </div>
-            `;
-            foodListContainer.appendChild(foodCard);
-        });
-    });
-
-    // 7. EVENTOS DE EDICIÓN Y BORRADO
-    foodListContainer.addEventListener('click', async (e) => {
-        const target = e.target.closest('button');
-        if (!target) return;
-        
-        const foodId = target.dataset.id;
-        if (!foodId) return;
-
-        if (target.classList.contains('btn-edit')) {
-            const doc = await db.collection('alimentos').doc(foodId).get();
-            if (doc.exists) {
-                const food = doc.data();
-                foodModalTitle.textContent = 'Editar Alimento';
-                foodIdInput.value = foodId;
-                foodNameInput.value = food.name;
-                foodCategoryInput.value = food.category;
-                foodProteinInput.value = food.protein;
-                foodCarbsInput.value = food.carbs;
-                foodFatsInput.value = food.fats;
-                modal.classList.add('show');
-            }
-        }
-
-        if (target.classList.contains('btn-delete')) {
-            if (confirm(`¿Seguro que quieres borrar este alimento de tu biblioteca?`)) {
-                await db.collection('alimentos').doc(foodId).delete();
-            }
-        }
-    });
+    }
 });
+
+function initFoodListener() {
+    db.collection(getPath("alimentos")).orderBy("name").onSnapshot(snapshot => {
+        allFoods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderFoods(allFoods);
+        document.getElementById('mainLoader').style.display = 'none';
+    });
+}
+
+function renderFoods(list) {
+    const container = document.getElementById('foodListContainer');
+    if (!container) return;
+
+    if (list.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:20px;">No hay alimentos registrados.</p>';
+        return;
+    }
+
+    container.innerHTML = list.map(f => `
+        <div class="card food-card" style="margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <strong>${f.name}</strong><br>
+                <small class="category-tag ${f.category}">${f.category}</small>
+                <div style="font-size: 12px; color: #666; margin-top:5px;">
+                    P: ${f.protein}g | C: ${f.carbs}g | G: ${f.fats}g
+                </div>
+            </div>
+            <div style="display:flex; gap:5px;">
+                <button class="btn btn-ghost" style="padding:5px 10px;" onclick="editFood('${f.id}')">✏️</button>
+                <button class="btn btn-ghost" style="padding:5px 10px; color:var(--danger);" onclick="deleteFood('${f.id}')">🗑️</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function filterFoods(term) {
+    const filtered = allFoods.filter(f => f.name.toLowerCase().includes(term.toLowerCase()));
+    renderFoods(filtered);
+}
+
+function openFoodModal() {
+    document.getElementById('foodForm').reset();
+    document.getElementById('foodId').value = '';
+    document.getElementById('foodModalTitle').innerText = 'Nuevo Alimento';
+    document.getElementById('foodModal').classList.add('active');
+}
+
+function editFood(id) {
+    const f = allFoods.find(x => x.id === id);
+    if (!f) return;
+    document.getElementById('foodId').value = f.id;
+    document.getElementById('foodName').value = f.name;
+    document.getElementById('foodCategory').value = f.category;
+    document.getElementById('foodProtein').value = f.protein;
+    document.getElementById('foodCarbs').value = f.carbs;
+    document.getElementById('foodFats').value = f.fats;
+    document.getElementById('foodModalTitle').innerText = 'Editar Alimento';
+    document.getElementById('foodModal').classList.add('active');
+}
+
+async function saveFood() {
+    const id = document.getElementById('foodId').value;
+    const data = {
+        name: document.getElementById('foodName').value,
+        category: document.getElementById('foodCategory').value,
+        protein: parseFloat(document.getElementById('foodProtein').value || 0),
+        carbs: parseFloat(document.getElementById('foodCarbs').value || 0),
+        fats: parseFloat(document.getElementById('foodFats').value || 0)
+    };
+
+    try {
+        if (id) await db.collection(getPath("alimentos")).doc(id).update(data);
+        else await db.collection(getPath("alimentos")).add(data);
+        closeModals();
+    } catch (e) { alert("Error al guardar."); }
+}
+
+async function deleteFood(id) {
+    if (confirm("¿Borrar este alimento?")) {
+        await db.collection(getPath("alimentos")).doc(id).delete();
+    }
+}
