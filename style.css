@@ -1,5 +1,5 @@
 /* =================================================================
-   VARIABLES Y CONFIGURACIÓN BASE
+   1. VARIABLES Y CONFIGURACIÓN BASE
    ================================================================= */
 :root {
     --primary: #7b2cbf;
@@ -10,7 +10,7 @@
     --success: #2ecc71;
     --danger: #ef4444;
     --warning: #f3722c; /* Naranja para hoy */
-    --warning-light: #f9c74f77; /* Amarillo para próximos días */
+    --warning-light: #f9c74f77; /* Amarillo para alertas */
     --dark: #240046;
     --light: #f3e8ff;
     --bg: #f8f4ff;
@@ -35,7 +35,7 @@ body {
 }
 
 /* =================================================================
-   HEADER Y MENÚ DE NAVEGACIÓN
+   2. HEADER Y MENÚ DE NAVEGACIÓN (HAMBURGUESA)
    ================================================================= */
 header {
     background: var(--white);
@@ -49,18 +49,16 @@ header {
     box-shadow: 0 2px 10px rgba(123, 44, 191, 0.1);
 }
 
-header h1, header h2 {
-    margin: 0;
-    font-size: 1.1rem;
+header h1 {
+    font-size: 1.2rem;
     color: var(--primary);
-    flex-grow: 1;
     text-align: center;
+    flex-grow: 1;
 }
 
-/* Botón Hamburguesa */
 .hamburger-button {
     width: 35px;
-    height: 30px;
+    height: 25px;
     background: none;
     border: none;
     cursor: pointer;
@@ -68,73 +66,63 @@ header h1, header h2 {
     flex-direction: column;
     justify-content: space-between;
     z-index: 2100;
+    position: relative;
 }
 
 .hamburger-button .bar {
     width: 100%;
-    height: 4px;
+    height: 3px;
     background-color: var(--primary);
-    border-radius: 2px;
-    transition: 0.3s;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
 }
 
-/* Animación Hamburguesa a X */
-.hamburger-button.open .bar:nth-child(1) { transform: rotate(45deg) translate(8px, 8px); }
+/* Animación a X */
+.hamburger-button.open .bar:nth-child(1) { transform: translateY(11px) rotate(45deg); }
 .hamburger-button.open .bar:nth-child(2) { opacity: 0; }
-.hamburger-button.open .bar:nth-child(3) { transform: rotate(-45deg) translate(8px, -9px); }
+.hamburger-button.open .bar:nth-child(3) { transform: translateY(-11px) rotate(-45deg); }
 
-/* Overlay de Navegación */
 .navigation-overlay {
     position: fixed;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background-color: rgba(36, 0, 70, 0.8);
-    backdrop-filter: blur(5px);
+    background-color: rgba(36, 0, 70, 0.95);
+    backdrop-filter: blur(8px);
     z-index: 2000;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: left 0.4s ease-in-out;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.navigation-overlay.show {
-    left: 0;
-}
+.navigation-overlay.show { left: 0; }
 
 .close-nav-button {
     position: absolute;
-    top: 20px;
-    right: 30px;
-    font-size: 40px;
+    top: 25px;
+    right: 25px;
+    font-size: 45px;
     color: white;
     background: none;
     border: none;
     cursor: pointer;
 }
 
-.nav-links {
-    list-style: none;
-    text-align: center;
-}
-
+.nav-links { list-style: none; text-align: center; }
 .nav-links li { margin-bottom: 25px; }
-
 .nav-links a {
     color: white;
     text-decoration: none;
     font-size: 24px;
     font-weight: 600;
-    transition: color 0.3s;
+    transition: 0.3s;
 }
-
-.nav-links a:hover, .nav-links a.active {
-    color: var(--secondary);
-}
+.nav-links a:hover, .nav-links a.active { color: var(--secondary); }
 
 /* =================================================================
-   CONTENEDORES Y TARJETAS (CARDS)
+   3. COMPONENTES UI: CARDS, BOTONES Y TABLAS
    ================================================================= */
 .container {
     max-width: 1200px;
@@ -151,9 +139,6 @@ header h1, header h2 {
     border: 1px solid #e9d5ff;
 }
 
-/* =================================================================
-   BOTONES Y ELEMENTOS DE ACCIÓN
-   ================================================================= */
 .btn {
     padding: 12px 20px;
     border-radius: 8px;
@@ -170,13 +155,8 @@ header h1, header h2 {
 }
 
 .btn-primary { background: var(--primary); color: white; }
-.btn-primary:hover { background: var(--primary-dark); }
-
 .btn-secondary { background: #6c757d; color: white; }
-
 .btn-ghost { background: var(--light); color: var(--primary); }
-.btn-ghost:hover { background: #ebd9ff; }
-
 .btn-whatsapp { background: #25d366; color: white; }
 .btn-danger { background: var(--danger); color: white; }
 
@@ -209,10 +189,15 @@ header h1, header h2 {
     z-index: 999;
 }
 
+.table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid #e9d5ff; }
+table { width: 100%; border-collapse: collapse; background: white; }
+th { background: #f8f4ff; padding: 15px; text-align: left; font-size: 13px; color: var(--primary); text-transform: uppercase; }
+td { padding: 15px; border-bottom: 1px solid #f3e8ff; }
+
 /* =================================================================
-   FORMULARIOS
+   4. FORMULARIOS E INPUTS
    ================================================================= */
-.form-group { margin-bottom: 15px; flex: 1; }
+.form-group { margin-bottom: 15px; flex: 1; padding: 0 5px; }
 .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #555; }
 
 .input-field {
@@ -222,23 +207,19 @@ header h1, header h2 {
     border-radius: 8px;
     font-size: 16px;
     outline: none;
-    transition: border-color 0.3s;
 }
 
 .input-field:focus { border-color: var(--primary); }
-.input-field:disabled { background-color: #f1f1f1; cursor: not-allowed; }
-
-.form-row { display: flex; gap: 15px; margin-bottom: 10px; }
+.form-row { display: flex; flex-wrap: wrap; margin: 0 -5px; }
 
 /* =================================================================
-   CALENDARIO Y AGENDA
+   5. CALENDARIO Y AGENDA
    ================================================================= */
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 1px;
     background: #e9d5ff;
-    border: 1px solid #e9d5ff;
     border-radius: 8px;
     overflow: hidden;
 }
@@ -252,7 +233,7 @@ header h1, header h2 {
     transition: 0.2s;
 }
 
-.cell-today { background: var(--warning) !important; border: 2px solid #d35400; }
+.cell-today { background: var(--warning) !important; color: white !important; }
 .cell-today .day-n { color: white !important; }
 .cell-warning-next { background: var(--warning-light) !important; }
 
@@ -270,98 +251,51 @@ header h1, header h2 {
     text-overflow: ellipsis;
 }
 
-/* Cuadrícula de horarios en el modal */
-.time-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.time-slot {
-    padding: 10px;
-    border-radius: 8px;
-    border: 2px solid #e9d5ff;
-    background: white;
-    color: var(--primary);
-    font-weight: bold;
-    text-align: center;
-    cursor: pointer;
-    font-size: 13px;
-}
-
-.time-slot.selected { background: var(--primary); color: white; border-color: var(--primary-dark); }
-.time-slot.taken { background: #f1f1f1; color: #aaa; text-decoration: line-through; border-color: #eee; cursor: not-allowed; }
-
 /* =================================================================
-   MODALES
+   6. MODALES Y VISUALIZACIÓN DE DATOS
    ================================================================= */
 .modal {
     display: none;
     position: fixed;
     z-index: 3000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(36, 0, 70, 0.6);
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6);
     justify-content: center;
     align-items: center;
     backdrop-filter: blur(4px);
 }
 
-.modal.active, .modal.show { display: flex; }
+.modal.active { display: flex; }
 
 .modal-content {
     background: white;
     padding: 30px;
     border-radius: 20px;
     width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
+    max-width: 650px;
     position: relative;
     border-top: 8px solid var(--primary);
 }
 
-.modal-large { max-width: 850px; }
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; border: none; background: none; }
 
-.close-modal, .close-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 28px;
-    cursor: pointer;
-    color: #aaa;
-    border: none;
-    background: none;
-}
-
-/* =================================================================
-   VISUALIZACIÓN DE DATOS Y GRÁFICOS
-   ================================================================= */
-.data-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-.data-item {
-    background-color: #f8f4ff;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #e9d5ff;
-}
-
-.data-item strong { display: block; color: var(--primary-dark); font-size: 12px; text-transform: uppercase; margin-bottom: 4px; }
+.data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; }
+.data-item { background-color: #e9ecef; padding: 12px; border-radius: 8px; border: 1px solid #ddd; }
+.data-item strong { display: block; color: #555; font-size: 12px; margin-bottom: 5px; }
 
 .result-display {
     background-color: #e9ecef;
     padding: 10px;
-    border-radius: 5px;
+    border-radius: 8px;
     text-align: center;
     font-weight: bold;
+    font-size: 18px;
+    min-height: 45px;
 }
 
+/* =================================================================
+   7. GRÁFICOS Y BIBLIOTECA DE ALIMENTOS
+   ================================================================= */
 .charts-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -369,84 +303,90 @@ header h1, header h2 {
     margin-bottom: 30px;
 }
 
-.chart-wrapper {
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid #e9d5ff;
-    height: 300px;
+.chart-wrapper { background: white; padding: 15px; border-radius: 12px; border: 1px solid #e9d5ff; box-shadow: var(--shadow); }
+
+.food-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
 }
 
-/* =================================================================
-   TABLAS RESPONSIVAS
-   ================================================================= */
-.table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid #e9d5ff; }
-table { width: 100%; border-collapse: collapse; background: white; }
-th { background: #f8f4ff; padding: 15px; text-align: left; font-size: 13px; color: var(--primary); text-transform: uppercase; }
-td { padding: 15px; border-bottom: 1px solid #f3e8ff; }
-
-/* =================================================================
-   NOTIFICACIONES Y BADGES
-   ================================================================= */
-.notif-badge {
-    background: var(--danger);
-    color: white;
-    font-size: 10px;
-    padding: 2px 6px;
+.category-tag {
+    font-size: 11px;
+    padding: 3px 8px;
     border-radius: 10px;
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    font-weight: bold;
-    border: 1px solid white;
+    color: white;
+    text-transform: uppercase;
 }
 
-.notif-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #f3e8ff;
+.category-tag.proteina { background-color: #e67e22; }
+.category-tag.carbohidrato { background-color: #3498db; }
+.category-tag.grasa { background-color: #f1c40f; }
+
+/* =================================================================
+   8. CONSTRUCTOR DE MENÚS Y PLANES
+   ================================================================= */
+.meal-card-builder { margin-bottom: 20px; border-left: 5px solid var(--primary); }
+.tabs { display: flex; border-bottom: 1px solid #ddd; margin-bottom: 20px; }
+.tab-link { padding: 10px 20px; cursor: pointer; background: none; border: none; font-size: 16px; border-bottom: 3px solid transparent; }
+.tab-link.active { border-bottom-color: var(--primary); font-weight: bold; color: var(--primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.4s; }
+
+.best-month-card {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+    padding: 20px;
+    border-radius: var(--radius);
+    text-align: center;
+    margin-bottom: 25px;
 }
 
 /* =================================================================
-   CARGA Y FEEDBACK
+   9. EXPORTACIÓN PDF Y CARGA
    ================================================================= */
-.loader-overlay {
+.loading-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: white;
-    z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 5000;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
+    color: white;
 }
 
 .spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid var(--primary);
+    border-radius: 50%;
     width: 50px;
     height: 50px;
-    border: 5px solid #f3f3f3;
-    border-top: 5px solid var(--primary);
-    border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* =================================================================
-   RESPONSIVIDAD MÓVIL
+   10. RESPONSIVIDAD FINAL (MÓVILES)
    ================================================================= */
 @media (max-width: 768px) {
-    .calendar-cell { min-height: 85px; }
-    .charts-container { grid-template-columns: 1fr; }
-    .time-grid { grid-template-columns: repeat(2, 1fr); }
-    .form-row { flex-direction: column; gap: 0; }
+    .container { padding: 10px 15px 100px; }
+    .charts-container, .data-grid { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
     
-    /* Convertir tablas en tarjetas para móvil */
-    .res-table thead { display: none; }
-    .res-table tr { display: block; margin-bottom: 15px; border: 1px solid #e9d5ff; border-radius: 10px; padding: 10px; background: white; }
-    .res-table td { display: flex; justify-content: space-between; padding: 8px 5px; border-bottom: 1px solid #f8f4ff; }
-    .res-table td:last-child { border-bottom: none; }
-    .res-table td::before { content: attr(data-label); font-weight: bold; color: var(--primary); }
+    .table-container thead { display: none; }
+    .table-container tr { display: block; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; }
+    .table-container td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        text-align: right;
+    }
+    .table-container td::before { content: attr(data-label); font-weight: bold; color: var(--primary); }
+    
+    .nav-links a { font-size: 20px; }
 }
