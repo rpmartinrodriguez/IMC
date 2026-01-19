@@ -1,49 +1,24 @@
 /**
  * ARCHIVO: pacientes.js
  * Propósito: Gestión de pacientes con búsqueda y navegación.
- * Fix: Se integra ensureAuth para evitar ReferenceError.
+ * Nota: Depende de que 'firebase-config.js' se cargue antes en el HTML.
  */
 
-// 1. CONFIGURACIÓN DE FIREBASE (Aseguramos el ID permanente)
-const appId = "nutrimanager_fixed_prod_official"; 
-const firebaseConfig = {
-    apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
-    authDomain: "medicion-imc.firebaseapp.com",
-    projectId: "medicion-imc",
-    storageBucket: "medicion-imc.appspot.com",
-    messagingSenderId: "544674177518",
-    appId: "1:544674177518:web:c060519e65a2913e0beeff"
-};
-
-// Inicialización de Firebase
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.firestore();
-const auth = firebase.auth();
-
-// Helpers de ruta y auth
-const getPath = (col) => `artifacts/${appId}/public/data/${col}`;
-
-const ensureAuth = async () => {
-    return new Promise((resolve) => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                unsubscribe();
-                resolve(user);
-            } else {
-                auth.signInAnonymously().catch(console.error);
-            }
-        });
-    });
-};
+// Ya no declaramos firebaseConfig ni inicializamos Firebase aquí, 
+// ya que 'firebase-config.js' se encarga de eso.
 
 // Variables de estado
 let allPatients = [];
 
-// 2. INICIO DE LA APLICACIÓN
+// 1. INICIO DE LA APLICACIÓN
 document.addEventListener('DOMContentLoaded', async () => {
-    // Primero aseguramos la conexión (Soluciona el error de consola)
+    // Verificamos que la función centralizada exista (viene de firebase-config.js)
+    if (typeof ensureAuth === 'undefined') {
+        console.error("Error: firebase-config.js no está cargado o no contiene ensureAuth.");
+        return;
+    }
+
+    // Primero aseguramos la conexión
     await ensureAuth();
     
     // Una vez autenticados, cargamos los datos
@@ -69,19 +44,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
     }
 
-    // Modal Events
+    // Configuración del botón para abrir modal
     const addBtn = document.getElementById('addPatientBtn');
-    if (addBtn) {
+    const modal = document.getElementById('addPatientModal'); // Ajustado al ID de tu HTML
+    if (addBtn && modal) {
         addBtn.addEventListener('click', () => {
-            document.getElementById('addPatientForm').reset();
-            document.getElementById('patientId').value = '';
-            document.querySelector('.modal').classList.add('show');
+            if (typeof addPatientForm !== 'undefined') document.getElementById('addPatientForm').reset();
+            const pIdInput = document.getElementById('patientId');
+            if (pIdInput) pIdInput.value = '';
+            modal.classList.add('show');
         });
     }
 });
 
-// 3. COMUNICACIÓN CON FIRESTORE
+// 2. COMUNICACIÓN CON FIRESTORE
 function initPatientsListener() {
+    // Usamos getPath() que está definido globalmente en firebase-config.js
     db.collection(getPath("pacientes")).orderBy("nombreCompleto").onSnapshot(snapshot => {
         allPatients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderPatients(allPatients);
@@ -94,6 +72,7 @@ function initPatientsListener() {
 }
 
 async function savePatient() {
+    // Referencias a inputs
     const id = document.getElementById('patientId').value;
     const name = document.getElementById('nombre').value;
     const phone = document.getElementById('telefono').value;
@@ -119,13 +98,18 @@ async function savePatient() {
             data.fechaPrimerRegistro = data.fechaUltimoRegistro;
             await db.collection(getPath("pacientes")).add(data);
         }
-        document.querySelector('.modal').classList.remove('show');
+        // Cerrar modal usando la función global de main.js
+        if (typeof closeModals === 'function') {
+            closeModals();
+        } else {
+            document.querySelector('.modal').classList.remove('show');
+        }
     } catch (error) {
         alert("Error al guardar: " + error.message);
     }
 }
 
-// 4. RENDERIZADO DE TABLA
+// 3. RENDERIZADO DE TABLA
 function renderPatients(list) {
     const tbody = document.getElementById('patientListBody');
     if (!tbody) return;
@@ -139,8 +123,8 @@ function renderPatients(list) {
         <tr onclick="goToDetails('${p.id}')" style="cursor:pointer">
             <td data-label="Nombre"><strong>${p.nombreCompleto}</strong></td>
             <td data-label="Teléfono">${p.telefono}</td>
-            <td data-label="Primer Registro">${p.fechaPrimerRegistro ? p.fechaPrimerRegistro.toDate().toLocaleDateString() : '-'}</td>
-            <td data-label="Último Registro">${p.fechaUltimoRegistro ? p.fechaUltimoRegistro.toDate().toLocaleDateString() : '-'}</td>
+            <td data-label="Primer Registro">${p.fechaPrimerRegistro ? p.fechaPrimerRegistro.toDate().toLocaleDateString('es-ES') : '-'}</td>
+            <td data-label="Último Registro">${p.fechaUltimoRegistro ? p.fechaUltimoRegistro.toDate().toLocaleDateString('es-ES') : '-'}</td>
             <td style="text-align:center">
                 <button class="btn-edit" onclick="event.stopPropagation(); editPatient('${p.id}')">✏️</button>
             </td>
@@ -152,20 +136,28 @@ function editPatient(id) {
     const p = allPatients.find(x => x.id === id);
     if (!p) return;
 
-    document.getElementById('patientId').value = p.id;
-    document.getElementById('nombre').value = p.nombreCompleto;
-    document.getElementById('telefono').value = p.telefono;
-    document.getElementById('peso').value = p.ultimoPeso;
-    document.getElementById('sexo').value = p.sexo || 'femenino';
+    const idInput = document.getElementById('patientId');
+    const nameInput = document.getElementById('nombre');
+    const phoneInput = document.getElementById('telefono');
+    const weightInput = document.getElementById('peso');
+    const genderInput = document.getElementById('sexo');
+    const birthInput = document.getElementById('fechaNacimiento');
+    const entryInput = document.getElementById('fechaIngreso');
+
+    if (idInput) idInput.value = p.id;
+    if (nameInput) nameInput.value = p.nombreCompleto;
+    if (phoneInput) phoneInput.value = p.telefono;
+    if (weightInput) weightInput.value = p.ultimoPeso;
+    if (genderInput) genderInput.value = p.sexo || 'femenino';
     
-    if (p.fechaNacimiento) {
-        document.getElementById('fechaNacimiento').value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
+    if (p.fechaNacimiento && birthInput) {
+        birthInput.value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
     }
-    if (p.fechaUltimoRegistro) {
-        document.getElementById('fechaIngreso').value = p.fechaUltimoRegistro.toDate().toISOString().split('T')[0];
+    if (p.fechaUltimoRegistro && entryInput) {
+        entryInput.value = p.fechaUltimoRegistro.toDate().toISOString().split('T')[0];
     }
 
-    document.querySelector('.modal').classList.add('show');
+    document.getElementById('addPatientModal').classList.add('show');
 }
 
 function goToDetails(id) {
