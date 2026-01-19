@@ -3,74 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Constructor de Menús</title>
+    <title>Constructor - NutriManager Pro</title>
     <link rel="stylesheet" href="style.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- Menú de Navegación -->
-    <div id="navigation-overlay" class="navigation-overlay">
-        <button id="close-nav-button" class="close-nav-button">&times;</button>
-        <ul class="nav-links">
-            <li><a href="index.html">Pacientes</a></li>
-            <li><a href="menus.html">Menús</a></li>
-            <li><a href="alimentos.html">Alimentos</a></li>
-            <li><a href="calculadora.html">Calculadora IMC</a></li>
-        </ul>
+    <div id="mainLoader" class="loader-overlay" style="display: flex; position: fixed; width:100%; height:100%; background: white; z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
+        <div class="spinner"></div>
+        <p>Iniciando Constructor...</p>
     </div>
 
-    <div class="container">
-        <header>
-            <button id="hamburger-button" class="hamburger-button"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
-            <h1>Constructor de Menús</h1>
-        </header>
-
-        <div class="menu-builder-container">
-            <!-- Detalles Generales del Menú -->
-            <div class="form-group">
-                <label for="menuName">Nombre del Plan de Menú</label>
-                <input type="text" id="menuName" class="input-field" placeholder="Ej: Plan Keto - Día 1">
-            </div>
-
-            <!-- Contenedor para las Comidas -->
-            <div id="mealsContainer">
-                <!-- Las comidas (Desayuno, Almuerzo, etc.) se añadirán aquí -->
-            </div>
-
-            <button id="addMealBtn" class="btn-secondary">Añadir Comida</button>
-
-            <!-- Resumen Total de Macros -->
-            <div class="card total-macros-summary">
-                <h3>Resumen Total del Día</h3>
-                <div class="macros-grid">
-                    <p><strong>Proteínas:</strong> <span id="totalProtein">0</span>g</p>
-                    <p><strong>Carbohidratos:</strong> <span id="totalCarbs">0</span>g</p>
-                    <p><strong>Grasas:</strong> <span id="totalFats">0</span>g</p>
-                </div>
-            </div>
-
-            <button id="saveMenuBtn" class="btn-guardar">Guardar Menú Completo</button>
-        </div>
-    </div>
-
-    <!-- Modal para buscar y añadir alimentos -->
-    <div id="addFoodToMealModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Añadir Alimento</h2>
-            <div class="search-container">
-                <input type="search" id="foodSearchInput" class="input-field" placeholder="Buscar en la biblioteca de alimentos...">
-            </div>
-            <ul id="foodLibraryList" class="food-library-list">
-                <!-- Lista de alimentos de la biblioteca -->
+    <!-- Menú Lateral -->
+    <div id="navOverlay" class="nav-overlay" onclick="toggleMenu()">
+        <nav class="nav-content" onclick="event.stopPropagation()">
+            <ul class="nav-links">
+                <li><a href="index.html">📅 Agenda</a></li>
+                <li><a href="pacientes.html">👥 Mis Pacientes</a></li>
+                <li><a href="alimentos.html">🍎 Alimentos</a></li>
+                <li><a href="menus.html" class="active">📋 Mis Menús</a></li>
+                <li><a href="asistente.html">🤖 Asistente IA</a></li>
             </ul>
+        </nav>
+    </div>
+
+    <header>
+        <button id="hamburger-btn" class="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+        <h2 style="margin:0; font-size: 1.1rem; color: var(--primary)">Constructor de Menú</h2>
+        <button class="btn btn-primary" style="padding: 8px 15px;" onclick="saveCompleteMenu()">Guardar Plan</button>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <label>Nombre del Plan</label>
+            <input type="text" id="menuPlanName" class="input-field" placeholder="Ej: Plan Descenso Grasa - Fase 1">
+        </div>
+
+        <div id="mealsContainer">
+            <!-- Comidas añadidas dinámicamente -->
+        </div>
+
+        <button class="btn btn-ghost" style="width:100%; border: 2px dashed var(--primary);" onclick="addNewMeal()">+ Añadir Tiempo de Comida (Desayuno, Almuerzo...)</button>
+
+        <div class="card" style="margin-top: 20px; border-top: 4px solid var(--primary);">
+            <h3 style="margin-top:0;">Resumen Total</h3>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); text-align:center;">
+                <div><small>Proteínas</small><br><strong id="totalP">0</strong>g</div>
+                <div><small>Carbohidratos</small><br><strong id="totalC">0</strong>g</div>
+                <div><small>Grasas</small><br><strong id="totalG">0</strong>g</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Selector de Alimentos -->
+    <div id="modalFoodSelector" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2>Seleccionar Alimento</h2>
+            <input type="search" id="searchInSelector" class="input-field" placeholder="Buscar en biblioteca...">
+            <div id="selectorList" style="max-height: 300px; overflow-y:auto; margin-top:15px;"></div>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    <script src="constructor-menu.js"></script>
+    <script src="firebase-config.js"></script>
     <script src="main.js"></script>
+    <script src="constructor-menu.js"></script>
 </body>
 </html>
