@@ -16,10 +16,10 @@
     <!-- Overlay de Carga -->
     <div id="mainLoader" class="loader-overlay" style="display: flex; position: fixed; width:100%; height:100%; background: white; z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
         <div class="spinner"></div>
-        <p style="margin-top: 15px; font-weight: 600; color: var(--primary);">Cargando tu Agenda...</p>
+        <p style="margin-top: 15px; font-weight: 600; color: #7b2cbf;">Cargando tu Agenda...</p>
     </div>
 
-    <!-- Menú Lateral (Navegación Desplegable) -->
+    <!-- Menú Lateral -->
     <div id="navigation-overlay" class="navigation-overlay">
         <button id="close-nav-button" class="close-nav-button">&times;</button>
         <ul class="nav-links">
@@ -32,15 +32,13 @@
     </div>
 
     <header>
-        <!-- Botón de Hamburguesa Minimizable -->
         <button id="hamburger-button" class="hamburger-button">
             <span class="bar"></span>
             <span class="bar"></span>
             <span class="bar"></span>
         </button>
-        <h2 style="margin:0; font-size: 1.1rem; color: var(--primary)">NutriManager Pro</h2>
-        <!-- Campana con Badge de próximos 3 días -->
-        <div style="position:relative; cursor:pointer; font-size: 22px; color: var(--primary);" onclick="openNotificationsModal()">
+        <h2 style="margin:0; font-size: 1.1rem; color: #7b2cbf">NutriManager Pro</h2>
+        <div style="position:relative; cursor:pointer; font-size: 22px; color: #7b2cbf;" onclick="openNotificationsModal()">
             🔔 <span id="notifBadge" class="notif-badge" style="display:none">0</span>
         </div>
     </header>
@@ -50,7 +48,7 @@
         <div class="card">
             <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <button class="btn btn-ghost" onclick="changeMonth(-1)">◀</button>
-                <h2 id="calendarLabel" style="margin:0; font-size: 1.2rem; color: var(--primary-dark)">Mes Año</h2>
+                <h2 id="calendarLabel" style="margin:0; font-size: 1.2rem; color: #240046">Mes Año</h2>
                 <button class="btn btn-ghost" onclick="changeMonth(1)">▶</button>
             </div>
             <div id="calendarGrid" class="calendar-grid">
@@ -59,19 +57,12 @@
         </div>
     </main>
 
-    <!-- ==========================================
-         MODALES
-         ========================================== -->
-
-    <!-- Modal Notificaciones Próximas (Cuadrado Central) -->
+    <!-- Modal Notificaciones Próximas -->
     <div id="modalNotifications" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 style="color: var(--primary); margin-top: 0; font-size: 1.3rem;">📌 Turnos Próximos</h2>
-            <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Agenda para hoy y los próximos 3 días:</p>
-            <div id="notifListArea" style="max-height: 400px; overflow-y: auto;">
-                <!-- Lista de recordatorios con botones WhatsApp -->
-            </div>
+            <h2 style="color: #7b2cbf; margin-top: 0; font-size: 1.3rem;">📌 Turnos Próximos</h2>
+            <div id="notifListArea" style="max-height: 400px; overflow-y: auto;"></div>
             <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="closeModals()">Cerrar</button>
         </div>
     </div>
@@ -80,46 +71,37 @@
     <div id="modalDayView" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 id="dayViewTitle" style="color: var(--primary); margin-top: 0;">Detalle del Día</h2>
+            <h2 id="dayViewTitle" style="color: #7b2cbf; margin-top: 0;">Detalle del Día</h2>
             <div id="dayTurnosList"></div>
-            <button class="btn btn-primary" style="width:100%; margin-top:15px" id="btnAddTurnoToday">+ Agendar Nuevo Turno</button>
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" id="btnAddTurnoToday">+ Nuevo Turno</button>
         </div>
     </div>
 
-    <!-- Modal Formulario Turno (Con Cuadrícula de Tiempos) -->
+    <!-- Modal Formulario Turno -->
     <div id="modalTurnoForm" class="modal">
         <div class="modal-content">
             <button class="close-modal" onclick="closeModals()">&times;</button>
-            <h2 id="turnoFormTitle" style="color: var(--primary); margin-top: 0;">Agendar Turno</h2>
+            <h2 id="turnoFormTitle" style="color: #7b2cbf; margin-top: 0;">Agendar</h2>
             <form id="formTurno">
-                <input type="hidden" id="t_id">
-                <input type="hidden" id="t_date">
-                <input type="hidden" id="t_selected_time" required>
-                
+                <input type="hidden" id="t_id"><input type="hidden" id="t_date"><input type="hidden" id="t_selected_time" required>
                 <div class="form-group">
-                    <label>Nombre del Paciente</label>
-                    <input type="text" id="t_paciente" class="input-field" list="patientsList" required placeholder="Escriba o seleccione...">
+                    <label>Paciente</label>
+                    <input type="text" id="t_paciente" class="input-field" list="patientsList" required>
                     <datalist id="patientsList"></datalist>
                 </div>
-
-                <label style="display:block; margin-bottom: 12px; font-weight: bold;">Selecciona el Horario:</label>
-                <div id="timeGrid" class="time-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;">
-                    <!-- Botones de 07:00 a 20:00 se generan en index.js -->
-                </div>
-                
+                <label style="display:block; margin-bottom: 12px; font-weight: bold;">Horario:</label>
+                <div id="timeGrid" class="time-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;"></div>
                 <div class="form-group">
-                    <label>WhatsApp del Paciente</label>
+                    <label>WhatsApp</label>
                     <input type="tel" id="t_phone" class="input-field" placeholder="Ej: 54911..." required>
                 </div>
-                
                 <div class="form-group">
-                    <label>Notas / Obra Social</label>
+                    <label>Notas</label>
                     <textarea id="t_obs" class="input-field" rows="2"></textarea>
                 </div>
-                
                 <div style="display:flex; gap:10px">
-                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar Turno</button>
-                    <button type="button" id="btnDeleteTurno" class="btn btn-danger" style="display:none" onclick="deleteTurno()">Eliminar</button>
+                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar</button>
+                    <button type="button" id="btnDeleteTurno" class="btn btn-danger" style="display:none" onclick="deleteTurno()">Borrar</button>
                 </div>
             </form>
         </div>
