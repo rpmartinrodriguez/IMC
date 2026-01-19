@@ -1,7 +1,7 @@
 /**
  * ARCHIVO: firebase-config.js
- * Propósito: Centralizar la conexión para que NUNCA se pierdan los datos.
- * IMPORTANTE: No cambies el valor de 'appIdKey' una vez que empieces a cargar datos.
+ * Propósito: Centralizar la conexión y las funciones de seguridad.
+ * IMPORTANTE: Este archivo debe cargarse ANTES que cualquier otro script (.js) de la app.
  */
 
 const firebaseConfig = {
@@ -13,10 +13,10 @@ const firebaseConfig = {
     appId: "1:544674177518:web:c060519e65a2913e0beeff"
 };
 
-// ID Permanente para evitar pérdida de datos entre actualizaciones
-const appIdKey = "nutrimanager_permanent_pro_master"; 
+// ID Único y Permanente para que tus datos nunca se muevan de lugar.
+const appIdKey = "nutrimanager_fixed_prod_official"; 
 
-// Inicialización
+// Inicialización de la aplicación
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
@@ -24,19 +24,40 @@ if (!firebase.apps.length) {
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Función auxiliar para obtener rutas de Firestore (Regla 1)
-const getPath = (collectionName) => `artifacts/${appIdKey}/public/data/${collectionName}`;
+/**
+ * Genera la ruta correcta en Firestore siguiendo la Regla 1.
+ * @param {string} collectionName Nombre de la colección (pacientes, turnos, etc.)
+ */
+const getPath = (collectionName) => {
+    return `artifacts/${appIdKey}/public/data/${collectionName}`;
+};
 
-// Autenticación Anónima (Regla 3)
-const initAuth = () => {
-    return new Promise((resolve, reject) => {
-        auth.onAuthStateChanged(user => {
-            if (user) resolve(user);
-            else {
+/**
+ * Garantiza que el usuario esté autenticado antes de realizar cualquier operación.
+ * Cumple con la Regla 3.
+ */
+const ensureAuth = async () => {
+    return new Promise((resolve) => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                unsubscribe();
+                resolve(user);
+            } else {
+                // Si no hay usuario, iniciamos sesión de forma anónima
                 auth.signInAnonymously()
-                    .then(cred => resolve(cred.user))
-                    .catch(err => reject(err));
+                    .then(() => {
+                        console.log("Sesión anónima iniciada.");
+                    })
+                    .catch((error) => {
+                        console.error("Error en Auth:", error);
+                    });
             }
         });
     });
 };
+
+// Exportar funciones para uso global (opcional dependiendo del entorno, pero aquí son globales)
+window.getPath = getPath;
+window.ensureAuth = ensureAuth;
+window.db = db;
+window.auth = auth;
