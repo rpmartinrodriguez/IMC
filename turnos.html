@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Turnos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Menú de Navegación -->
+    <div id="navigation-overlay" class="navigation-overlay">
+        <button id="close-nav-button" class="close-nav-button">&times;</button>
+        <ul class="nav-links">
+            <li><a href="index.html">Pacientes</a></li>
+            <li><a href="turnos.html">Agenda de Turnos</a></li>
+            <li><a href="menus.html">Menús</a></li>
+            <li><a href="alimentos.html">Alimentos</a></li>
+            <li><a href="calculadora.html">Calculadora IMC</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <header>
+            <button id="hamburger-button" class="hamburger-button">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+            <h1>Agenda de Turnos</h1>
+        </header>
+
+        <!-- Barra de Búsqueda y Notificaciones -->
+        <div class="calendar-tools">
+            <div class="search-container" style="flex-grow: 1;">
+                <input type="search" id="searchTurnoInput" placeholder="Buscar turno por nombre del paciente...">
+            </div>
+            <button id="notifBtn" class="btn-secondary" style="position: relative;">
+                🔔 Recordatorios
+                <span id="notifBadge" class="badge" style="display: none;">0</span>
+            </button>
+        </div>
+
+        <!-- Controles del Calendario -->
+        <div class="calendar-controls">
+            <button id="prevMonth" class="btn-icon">◀</button>
+            <h2 id="currentMonthYear">Mes Año</h2>
+            <button id="nextMonth" class="btn-icon">▶</button>
+        </div>
+
+        <!-- El Calendario -->
+        <div id="calendar" class="calendar-grid">
+            <!-- Los días se generarán dinámicamente -->
+        </div>
+    </div>
+
+    <!-- Modal para Agendar Turno -->
+    <div id="turnoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeTurnoModal">&times;</span>
+            <h2 id="turnoModalTitle">Agendar Turno</h2>
+            <form id="turnoForm">
+                <input type="hidden" id="turnoId">
+                <input type="hidden" id="selectedDate">
+                
+                <div class="form-group">
+                    <label for="pacienteNombre">Nombre del Paciente</label>
+                    <input type="text" id="pacienteNombre" required class="input-field">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="turnoHora">Hora</label>
+                        <input type="time" id="turnoHora" required class="input-field">
+                    </div>
+                    <div class="form-group">
+                        <label for="pacienteTelefono">Teléfono (WhatsApp)</label>
+                        <input type="tel" id="pacienteTelefono" placeholder="Ej: 54911..." required class="input-field">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="obraSocial">Obra Social / Prepaga</label>
+                    <input type="text" id="obraSocial" class="input-field">
+                </div>
+                <div class="form-group">
+                    <label for="observaciones">Observaciones</label>
+                    <textarea id="observaciones" rows="3" class="input-field"></textarea>
+                </div>
+                <button type="submit" class="btn-guardar">Guardar Turno</button>
+                <button type="button" id="deleteTurnoBtn" class="btn-danger" style="display: none; margin-top: 10px; width: 100%;">Eliminar Turno</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Notificaciones (Push Inteligente) -->
+    <div id="notifModal" class="modal">
+        <div class="modal-content large">
+            <span class="close-btn" id="closeNotifModal">&times;</span>
+            <h2>Recordatorios (Próximos 3 días)</h2>
+            <div id="notifList" class="notif-list">
+                <!-- Turnos próximos aparecerán aquí -->
+            </div>
+        </div>
+    </div>
+
+    <!-- SDKs de Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    
+    <script src="turnos.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
