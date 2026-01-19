@@ -3,136 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle del Paciente</title>
+    <title>Evolución - NutriManager Pro</title>
     <link rel="stylesheet" href="style.css">
-    <!-- LIBRERÍAS -->
+    
+    <!-- Librerías de Terceros -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- SDK de Firebase (Compatibilidad) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
-    <!-- Menú de Navegación -->
-    <div id="navigation-overlay" class="navigation-overlay">
-        <button id="close-nav-button" class="close-nav-button">&times;</button>
-        <ul class="nav-links">
-            <li><a href="index.html">Pacientes</a></li>
-            <li><a href="asistente.html">Asistente IA</a></li>
-            <li><a href="menus.html">Menús</a></li>
-            <li><a href="alimentos.html">Alimentos</a></li>
-            <li><a href="ejercicios.html">Ejercicios</a></li>
-            <li><a href="calculadora.html">Calculadora IMC</a></li>
-        </ul>
-    </div>
-
-    <div class="container">
-        <header>
-            <button id="hamburger-button" class="hamburger-button">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </button>
-            <h1 id="patientName">Cargando paciente...</h1>
-            <div class="header-actions">
-                <button id="generatePlanBtn" class="btn-primary">Generar Plan Inteligente</button>
-                <button id="exportPdfBtn" class="btn-secondary">Exportar a PDF</button>
-            </div>
-        </header>
-
-        <!-- Gráficos -->
-        <div id="chartsSection" class="charts-container" style="display: none;">
-            <div class="chart-wrapper">
-                <h3>Variación de Peso y Masa Magra (kg)</h3>
-                <canvas id="weightChart"></canvas>
-            </div>
-            <div class="chart-wrapper">
-                <h3>Porcentaje de Grasa Corporal (%)</h3>
-                <canvas id="fatPercentageChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Historial -->
-        <div class="historial-container">
-            <h2>Historial de Mediciones</h2>
-            <div id="measurementHistoryList"></div>
-        </div>
-
-        <button id="addMeasurementBtn" class="fab">+</button>
-    </div>
-
-    <!-- MODAL PARA AÑADIR/EDITAR MEDICIÓN -->
-    <div id="addMeasurementModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="measurementModalTitle">Registrar Nueva Medición</h2>
-            <form id="addMeasurementForm">
-                <input type="hidden" id="measurementId">
-                <fieldset><legend>Medición Actual</legend><div class="form-row"><div class="form-group"><label for="fecha">Fecha de la Medición</label><input type="date" id="fecha" class="input-field" required></div><div class="form-group"><label for="pesoAnterior">Peso Anterior (kg)</label><input type="number" id="pesoAnterior" class="input-field" disabled></div></div><div class="form-row"><div class="form-group"><label for="pesoActual">Peso Actual (kg)</label><input type="number" id="pesoActual" step="0.1" class="input-field" required></div><div class="form-group"><label>Resultado</label><p id="diferenciaPeso" class="result-display">-</p></div></div></fieldset>
-                <fieldset><legend>Indicadores (Pliegues)</legend><div class="form-row"><div class="form-group"><label for="pt">PT</label><input type="number" id="pt" class="indicator-input" step="0.1" required></div><div class="form-group"><label for="pse">PSE</label><input type="number" id="pse" class="indicator-input" step="0.1" required></div><div class="form-group"><label for="psi">PSI</label><input type="number" id="psi" class="indicator-input" step="0.1" required></div><div class="form-group"><label for="pa">PA</label><input type="number" id="pa" class="indicator-input" step="0.1" required></div></div><div class="form-group"><label>Tejido Graso (%)</label><p id="tejidoGraso" class="result-display">-</p></div></fieldset>
-                <fieldset><legend>Objetivos y Estilo de Vida</legend><div class="form-row"><div class="form-group"><label for="pesoObjetivo">Peso Objetivo (kg)</label><input type="number" id="pesoObjetivo" step="0.1" class="input-field" required></div><div class="form-group"><label for="actividadTipo">Tipo de Actividad Física</label><select id="actividadTipo" class="input-field" required><option value="sedentario">Sedentario</option><option value="ligero">Ligero</option><option value="moderado">Moderado</option><option value="fuerte">Fuerte</option><option value="muy-fuerte">Muy Fuerte</option></select></div></div><div class="form-row"><div class="form-group"><label for="actividadDuracion">Duración por Sesión (min)</label><input type="number" id="actividadDuracion" class="input-field" required></div><div class="form-group"><label for="horasSueno">Horas de Sueño (promedio)</label><input type="number" id="horasSueno" step="0.5" class="input-field" required></div></div><div class="form-group"><label for="nivelEstres">Nivel de Estrés (1 al 10)</label><input type="range" id="nivelEstres" min="1" max="10" value="5" class="input-range"><span id="nivelEstresValor">5</span></div></fieldset>
-                <button type="submit" class="btn-guardar">Guardar</button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- MODAL PARA VER MEDICIÓN GUARDADA -->
-    <div id="viewMeasurementModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="viewModalTitle">Detalle de Medición</h2>
-            <fieldset><legend>Análisis de Peso</legend><div class="data-grid"><div class="data-item"><strong>Peso Anterior:</strong> <span id="viewPesoAnterior"></span></div><div class="data-item"><strong>Peso Actual:</strong> <span id="viewPesoActual"></span></div><div class="data-item"><strong>Diferencia:</strong> <span id="viewDiferenciaPeso"></span></div></div></fieldset>
-            <fieldset><legend>Indicadores (Pliegues)</legend><div class="data-grid"><div class="data-item"><strong>PT:</strong> <span id="viewPT"></span></div><div class="data-item"><strong>PSE:</strong> <span id="viewPSE"></span></div><div class="data-item"><strong>PSI:</strong> <span id="viewPSI"></span></div><div class="data-item"><strong>PA:</strong> <span id="viewPA"></span></div></div></fieldset>
-            <fieldset><legend>Resultados Calculados</legend><div class="data-grid"><div class="data-item"><strong>% Tejido Graso:</strong> <span id="viewTejidoGraso"></span></div><div class="data-item"><strong>Kilos de Grasa:</strong> <span id="viewKilosGrasa"></span></div><div class="data-item"><strong>Cambio Grasa:</strong> <span id="viewCambioGrasa"></span></div><div class="data-item"><strong>Cambio Masa Magra:</strong> <span id="viewCambioMasaMagra"></span></div></div></fieldset>
-            <fieldset><legend>Objetivos y Estilo de Vida Registrados</legend><div class="data-grid"><div class="data-item"><strong>Peso Objetivo:</strong> <span id="viewPesoObjetivo"></span></div><div class="data-item"><strong>Actividad Física:</strong> <span id="viewActividadTipo"></span></div><div class="data-item"><strong>Duración Sesión:</strong> <span id="viewActividadDuracion"></span></div><div class="data-item"><strong>Horas de Sueño:</strong> <span id="viewHorasSueno"></span></div><div class="data-item"><strong>Nivel de Estrés:</strong> <span id="viewNivelEstres"></span></div></div></fieldset>
-            <div id="viewSavedPlanContainer" style="display:none;">
-                <button id="viewSavedPlanBtn" class="btn-primary full-width">Ver Plan Inteligente Guardado</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PARA OPCIONES DE EXPORTACIÓN A PDF -->
-    <div id="exportPdfModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2>Opciones de Exportación a PDF</h2>
-            <form id="exportOptionsForm">
-                <p>El informe incluirá los gráficos de evolución, las últimas 5 mediciones y el plan inteligente más reciente.</p>
-                <div class="form-group-checkbox"><input type="checkbox" id="includeMenuCheck"><label for="includeMenuCheck">Adjuntar un menú manual adicional</label></div>
-                <div id="menuSelectionContainer" class="form-group" style="display: none;"><label for="menuSelect">Selecciona un menú</label><select id="menuSelect" class="input-field"></select></div>
-                <button type="submit" class="btn-guardar">Generar PDF</button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- MODAL PARA MOSTRAR EL PLAN GENERADO -->
-    <div id="planResultModal" class="modal">
-        <div class="modal-content large">
-            <span class="close-btn">&times;</span>
-            <h2>Plan Inteligente Sugerido</h2>
-            <div class="tabs">
-                <button class="tab-link active" data-tab="plan-interpretacion">Análisis de Evolución</button>
-                <button class="tab-link" data-tab="plan-alimentacion">Plan de Alimentación</button>
-                <button class="tab-link" data-tab="plan-ejercicio">Recomendaciones</button>
-            </div>
-            <div id="plan-interpretacion" class="tab-content active"></div>
-            <div id="plan-alimentacion" class="tab-content"></div>
-            <div id="plan-ejercicio" class="tab-content"></div>
-        </div>
-    </div>
-
-    <!-- OVERLAY DE CARGA -->
-    <div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div id="mainLoader" class="loader-overlay" style="display: flex; position: fixed; width:100%; height:100%; background: white; z-index: 9999; justify-content: center; align-items: center; flex-direction: column;">
         <div class="spinner"></div>
-        <p id="loading-text">Cargando...</p>
+        <p>Analizando evolución...</p>
     </div>
 
-    <!-- SDKs de Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
-    
-    <!-- Scripts de la página -->
-    <script src="mediciones.js"></script>
+    <!-- Menú Lateral -->
+    <div id="navOverlay" class="nav-overlay" onclick="toggleMenu()">
+        <nav class="nav-content" onclick="event.stopPropagation()">
+            <ul class="nav-links">
+                <li><a href="index.html">📅 Agenda</a></li>
+                <li><a href="pacientes.html" class="active">👥 Mis Pacientes</a></li>
+                <li><a href="alimentos.html">🍎 Alimentos</a></li>
+                <li><a href="asistente.html">🤖 Asistente IA</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <header>
+        <button id="hamburger-btn" class="hamburger" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </button>
+        <h2 id="patientHeaderName" style="margin:0; font-size: 1.1rem; color: var(--primary)">Cargando...</h2>
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-primary" style="padding: 8px 12px; font-size: 12px;" onclick="generateSmartPlan()">✨ Plan</button>
+            <button class="btn btn-ghost" style="padding: 8px 12px; font-size: 12px;" onclick="exportPDF()">📄 PDF</button>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Resumen de Éxito -->
+        <div id="reportContainer"></div>
+
+        <!-- Panel de Gráficos -->
+        <div class="evolution-charts-container">
+            <div class="chart-box">
+                <canvas id="chartGeneral"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="chartFat"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="chartPliegues"></canvas>
+            </div>
+            <div class="chart-box">
+                <canvas id="chartWeightComparison"></canvas>
+            </div>
+        </div>
+
+        <!-- Lista de Mediciones -->
+        <h3>Historial Antropométrico</h3>
+        <div id="measurementList">
+            <!-- Cargado por mediciones.js -->
+        </div>
+
+        <button class="fab" onclick="openMeasureModal()">+</button>
+    </main>
+
+    <!-- Modal Medición (Añadir/Editar) -->
+    <div id="modalMeasure" class="modal">
+        <div class="modal-content modal-large">
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="measureModalTitle">Registrar Evaluación</h2>
+            <form id="formMeasure">
+                <input type="hidden" id="edit_m_id">
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Peso Actual (kg)</label>
+                        <input type="number" id="m_w" step="0.1" class="input-field" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Peso Meta (kg)</label>
+                        <input type="number" id="m_goal" step="0.1" class="input-field" required>
+                    </div>
+                </div>
+
+                <fieldset style="border: 1px solid #e9d5ff; border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                    <legend style="padding: 0 10px; color: var(--primary); font-weight: bold;">Pliegues (mm)</legend>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                        <div class="form-group"><label>PT</label><input type="number" id="m_pt" step="0.1" class="input-field" value="0"></div>
+                        <div class="form-group"><label>PSE</label><input type="number" id="m_pse" step="0.1" class="input-field" value="0"></div>
+                        <div class="form-group"><label>PSI</label><input type="number" id="m_psi" step="0.1" class="input-field" value="0"></div>
+                        <div class="form-group"><label>PA</label><input type="number" id="m_pa" step="0.1" class="input-field" value="0"></div>
+                    </div>
+                </fieldset>
+
+                <div class="form-group">
+                    <label>Actividad Física</label>
+                    <select id="m_act" class="input-field">
+                        <option value="sedentario">Sedentario (Oficina / Reposo)</option>
+                        <option value="ligero">Ligero (1-2 días entreno)</option>
+                        <option value="moderado">Moderado (3-5 días entreno)</option>
+                        <option value="fuerte">Fuerte (Atleta / Diario)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Evaluación</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="firebase-config.js"></script>
     <script src="main.js"></script>
+    <script src="mediciones.js"></script>
 </body>
 </html>
