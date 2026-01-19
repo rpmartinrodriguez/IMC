@@ -18,7 +18,7 @@
 
     <style>
         :root {
-            /* Gama de Violetas y Purpuras */
+            /* Gama de Violetas Profesional */
             --primary: #7b2cbf;
             --primary-dark: #5a189a;
             --primary-light: #9d4edd;
@@ -35,237 +35,68 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--dark); margin: 0; padding: 0; min-height: 100vh; }
+
+        /* --- NAVEGACIÓN Y MENÚ --- */
+        header { background: var(--white); padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(123, 44, 191, 0.1); }
         
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            background-color: var(--bg); 
-            color: var(--dark); 
-            margin: 0; 
-            padding: 0; 
-            min-height: 100vh; 
-        }
-
-        /* --- NAVEGACIÓN --- */
-        header { 
-            background: var(--white); 
-            padding: 15px 20px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            position: sticky; 
-            top: 0; 
-            z-index: 1000; 
-            box-shadow: 0 2px 10px rgba(123, 44, 191, 0.1); 
-        }
-
-        .hamburger { 
-            background: none; 
-            border: none; 
-            cursor: pointer; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 5px; 
-            z-index: 2100; 
-        }
-
-        .hamburger span { 
-            width: 25px; 
-            height: 3px; 
-            background: var(--primary); 
-            border-radius: 3px; 
-            transition: 0.3s; 
-        }
+        .hamburger { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; z-index: 2100; position: relative; transition: 0.3s; }
+        .hamburger span { width: 25px; height: 3px; background: var(--primary); border-radius: 3px; transition: 0.3s; }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -7px); }
         
-        .nav-overlay { 
-            position: fixed; 
-            top: 0; 
-            left: -100%; 
-            width: 280px; 
-            height: 100%; 
-            background: var(--dark); 
-            z-index: 2000; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            padding-top: 80px; 
-            box-shadow: 10px 0 30px rgba(0,0,0,0.3); 
-        }
-
-        .nav-overlay.active { left: 0; }
-
+        .nav-overlay { position: fixed; top: 0; left: -100%; width: 100%; height: 100%; background: rgba(36, 0, 70, 0.5); z-index: 2000; transition: 0.4s; visibility: hidden; }
+        .nav-overlay.active { left: 0; visibility: visible; }
+        .nav-content { width: 280px; height: 100%; background: var(--dark); padding-top: 80px; box-shadow: 5px 0 20px rgba(0,0,0,0.3); }
         .nav-links { list-style: none; padding: 0; margin: 0; }
-        .nav-links li a { 
-            display: block; 
-            padding: 18px 25px; 
-            color: var(--accent); 
-            text-decoration: none; 
-            font-size: 1.1em; 
-            border-left: 4px solid transparent; 
-            transition: 0.3s; 
-        }
-
-        .nav-links li a:hover, .nav-links li a.active { 
-            color: white; 
-            background: rgba(255,255,255,0.05); 
-            border-left-color: var(--secondary); 
-        }
+        .nav-links li a { display: block; padding: 18px 25px; color: var(--accent); text-decoration: none; font-size: 1.1em; border-left: 4px solid transparent; transition: 0.3s; }
+        .nav-links li a:hover, .nav-links li a.active { color: white; background: rgba(255,255,255,0.05); border-left-color: var(--secondary); }
 
         /* --- CONTENIDO --- */
-        main { 
-            max-width: 1100px; 
-            margin: 20px auto; 
-            padding: 0 15px 100px 15px; 
-        }
-
+        main { max-width: 1100px; margin: 20px auto; padding: 0 15px 100px 15px; }
         .view-section { display: none; }
         .view-section.active { display: block; animation: fadeIn 0.4s ease; }
-
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- COMPONENTES UI --- */
-        .card { 
-            background: var(--white); 
-            padding: 20px; 
-            border-radius: var(--radius); 
-            box-shadow: var(--shadow); 
-            margin-bottom: 20px; 
-            border: 1px solid #e9d5ff; 
-        }
-
-        .btn { 
-            padding: 12px 20px; 
-            border-radius: 8px; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: 600; 
-            font-size: 14px; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 8px; 
-            transition: 0.2s; 
-        }
-
+        .card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 20px; border: 1px solid #e9d5ff; transition: 0.3s; }
+        .btn { padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-dark); }
         .btn-ghost { background: var(--light); color: var(--primary); }
         .btn-whatsapp { background: #25d366; color: white; }
         .btn-danger { background: var(--danger); color: white; }
 
-        .input-field { 
-            width: 100%; 
-            padding: 12px 15px; 
-            border: 2px solid #e9d5ff; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            margin-bottom: 15px; 
-            outline: none; 
-        }
-
+        .input-field { width: 100%; padding: 12px 15px; border: 2px solid #e9d5ff; border-radius: 8px; font-size: 16px; margin-bottom: 15px; outline: none; transition: 0.3s; }
         .input-field:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(123, 44, 191, 0.1); }
         
         /* --- CALENDARIO --- */
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 1px; 
-            background: #e9d5ff; 
-            border: 1px solid #e9d5ff; 
-            border-radius: 8px; 
-            overflow: hidden; 
-        }
-
-        .calendar-cell { 
-            background: white; 
-            min-height: 110px; 
-            padding: 8px; 
-            cursor: pointer; 
-            position: relative; 
-            transition: 0.2s; 
-        }
-
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #e9d5ff; border: 1px solid #e9d5ff; border-radius: 8px; overflow: hidden; }
+        .calendar-cell { background: white; min-height: 110px; padding: 8px; cursor: pointer; position: relative; transition: 0.2s; overflow-y: auto; }
         .calendar-cell:hover { background: #fdfaff; }
         .calendar-cell.today { background: #f3e8ff; border: 2px solid var(--primary-light); }
-        
         .day-n { font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 5px; display: block; }
-        
-        .turno-pill { 
-            background: var(--primary); 
-            color: white; 
-            font-size: 10px; 
-            padding: 3px 6px; 
-            border-radius: 4px; 
-            margin-bottom: 3px; 
-            white-space: nowrap; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
-        }
+        .turno-pill { background: var(--primary); color: white; font-size: 10px; padding: 3px 6px; border-radius: 4px; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* --- GRID DE HORARIOS --- */
-        .time-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); 
-            gap: 10px; 
-            margin-bottom: 20px; 
-        }
-
-        .time-slot { 
-            padding: 10px; 
-            border-radius: 8px; 
-            border: 2px solid #e9d5ff; 
-            background: white; 
-            color: var(--primary); 
-            font-weight: bold; 
-            text-align: center; 
-            cursor: pointer; 
-            font-size: 13px; 
-            transition: 0.2s; 
-        }
-
-        .time-slot:hover:not(.taken) { background: var(--light); border-color: var(--primary); }
-        .time-slot.selected { background: var(--primary); color: white; border-color: var(--primary-dark); transform: scale(1.05); }
+        .time-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .time-slot { padding: 10px; border-radius: 8px; border: 2px solid #e9d5ff; background: white; color: var(--primary); font-weight: bold; text-align: center; cursor: pointer; font-size: 13px; transition: 0.2s; }
+        .time-slot.selected { background: var(--primary); color: white; border-color: var(--primary-dark); }
         .time-slot.taken { background: #f1f1f1; color: #aaa; text-decoration: line-through; border-color: #eee; cursor: not-allowed; }
 
         /* --- MODALES --- */
-        .modal { 
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(36, 0, 70, 0.6); 
-            display: none; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 3000; 
-            padding: 15px; 
-            backdrop-filter: blur(4px); 
-        }
-
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(36, 0, 70, 0.6); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 15px; backdrop-filter: blur(4px); }
         .modal.active { display: flex; }
-        .modal-content { 
-            background: white; 
-            width: 100%; 
-            max-width: 550px; 
-            border-radius: 20px; 
-            max-height: 90vh; 
-            overflow-y: auto; 
-            padding: 30px; 
-            position: relative; 
-            border-top: 8px solid var(--primary); 
-        }
+        .modal-content { background: white; width: 100%; max-width: 550px; border-radius: 20px; max-height: 90vh; overflow-y: auto; padding: 30px; position: relative; border-top: 8px solid var(--primary); }
         .modal-large { max-width: 850px; }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #aaa; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; border: none; background: none; }
+
+        /* --- ALERTAS Y BADGES --- */
+        .notif-badge { background: var(--danger); color: white; font-size: 10px; padding: 2px 6px; border-radius: 10px; position: absolute; top: -5px; right: -5px; font-weight: bold; border: 1px solid white; }
 
         /* --- DAY VIEW --- */
-        .day-view-item { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 15px; 
-            border: 1px solid #e9d5ff; 
-            border-radius: 12px; 
-            margin-bottom: 10px; 
-            background: #faf5ff; 
-        }
+        .day-view-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border: 1px solid #e9d5ff; border-radius: 12px; margin-bottom: 10px; background: #faf5ff; }
 
         /* --- TABLAS --- */
         .table-wrapper { overflow-x: auto; border-radius: var(--radius); border: 1px solid #e9d5ff; }
@@ -280,47 +111,15 @@
         .msg-b { align-self: flex-start; background: white; border: 1px solid #e9d5ff; border-bottom-left-radius: 2px; }
 
         /* --- UTILIDADES --- */
-        .fab { 
-            position: fixed; 
-            bottom: 30px; 
-            right: 30px; 
-            width: 65px; 
-            height: 65px; 
-            background: var(--primary); 
-            color: white; 
-            border-radius: 50%; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 28px; 
-            box-shadow: 0 10px 25px rgba(123, 44, 191, 0.4); 
-            cursor: pointer; 
-            border: none; 
-            z-index: 900; 
-        }
-
-        .loader-overlay { 
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(255,255,255,0.9); 
-            display: none; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            z-index: 9999; 
-        }
-        
-        .spinner { 
-            width: 45px; 
-            height: 45px; 
-            border: 4px solid #f3f3f3; 
-            border-top: 4px solid var(--primary); 
-            border-radius: 50%; 
-            animation: spin 1s linear infinite; 
-        }
+        .fab { position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: 0 10px 25px rgba(123, 44, 191, 0.4); cursor: pointer; border: none; z-index: 900; }
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 10px; }
+        .data-item { background: var(--bg); padding: 10px; border-radius: 8px; border: 1px solid #e9d5ff; }
+        .data-item strong { display: block; color: var(--primary-dark); font-size: 11px; text-transform: uppercase; margin-bottom: 2px; }
 
         @media (max-width: 768px) {
             .calendar-cell { min-height: 85px; padding: 4px; }
@@ -328,6 +127,13 @@
             .turno-pill { font-size: 8px; }
             .time-grid { grid-template-columns: repeat(3, 1fr); }
             .charts-grid { grid-template-columns: 1fr; }
+            
+            /* Responsive Table labels */
+            td[data-label]::before { content: attr(data-label); font-weight: bold; float: left; color: var(--primary); }
+            .res-table thead { display: none; }
+            .res-table tr { display: block; margin-bottom: 15px; border: 1px solid #ddd; padding: 10px; border-radius: 10px; background: white; }
+            .res-table td { display: block; text-align: right; border-bottom: 1px solid #eee; padding: 10px 5px; }
+            .res-table td:last-child { border-bottom: none; text-align: center; }
         }
     </style>
 </head>
@@ -338,23 +144,26 @@
         <p style="margin-top: 15px; font-weight: 600; color: var(--primary);">NutriManager Pro...</p>
     </div>
 
-    <!-- Menú Lateral -->
-    <nav id="navOverlay" class="nav-overlay">
-        <ul class="nav-links">
-            <li><a href="#" onclick="switchView('agenda')" id="link-agenda" class="active">📅 Agenda Nutricional</a></li>
-            <li><a href="#" onclick="switchView('patients')" id="link-patients">👥 Mis Pacientes</a></li>
-            <li><a href="#" onclick="switchView('foods')" id="link-foods">🍎 Biblioteca Alimentos</a></li>
-            <li><a href="#" onclick="switchView('calc')" id="link-calc">⚖️ Calculadora IMC</a></li>
-            <li><a href="#" onclick="switchView('ai')" id="link-ai">🤖 Asistente Virtual IA</a></li>
-        </ul>
-    </nav>
+    <!-- Menú Lateral Minimizable -->
+    <div id="navOverlay" class="nav-overlay" onclick="toggleMenu()">
+        <nav class="nav-content" onclick="event.stopPropagation()">
+            <ul class="nav-links">
+                <li><a href="#" onclick="switchView('agenda')" id="link-agenda" class="active">📅 Agenda de Turnos</a></li>
+                <li><a href="#" onclick="switchView('patients')" id="link-patients">👥 Mis Pacientes</a></li>
+                <li><a href="#" onclick="switchView('foods')" id="link-foods">🍎 Biblioteca Alimentos</a></li>
+                <li><a href="#" onclick="switchView('ai')" id="link-ai">🤖 Asistente Virtual IA</a></li>
+            </ul>
+        </nav>
+    </div>
 
     <header>
-        <button class="hamburger" onclick="toggleMenu()">
+        <button id="hamburger-btn" class="hamburger" onclick="toggleMenu()">
             <span></span><span></span><span></span>
         </button>
         <h2 id="viewHeaderTitle" style="margin:0; font-size: 1.1rem; color: var(--primary)">Mi Agenda</h2>
-        <div style="font-size: 20px; cursor: pointer; color: var(--primary);" onclick="showUpcomingAlert()">🔔</div>
+        <div style="position:relative; cursor:pointer; font-size: 22px;" onclick="showUpcomingAlert()">
+            🔔 <span id="notifBadge" class="notif-badge" style="display:none">0</span>
+        </div>
     </header>
 
     <main>
@@ -363,7 +172,7 @@
             <div class="card">
                 <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <button class="btn btn-ghost" onclick="changeMonth(-1)">◀</button>
-                    <h2 id="calendarLabel" style="margin:0; font-size: 1.2rem; color: var(--primary-dark)">Mes Año</h2>
+                    <h2 id="calendarLabel" style="margin:0; font-size: 1.2rem; color: var(--primary-dark)">Cargando...</h2>
                     <button class="btn btn-ghost" onclick="changeMonth(1)">▶</button>
                 </div>
                 <div id="calendarGrid" class="calendar-grid"></div>
@@ -377,7 +186,7 @@
                 <button class="btn btn-primary" onclick="openPatientModal()">+</button>
             </div>
             <div class="table-wrapper">
-                <table>
+                <table class="res-table">
                     <thead>
                         <tr><th>Paciente</th><th>WhatsApp</th><th>Último Peso</th><th>Acciones</th></tr>
                     </thead>
@@ -386,23 +195,23 @@
             </div>
         </section>
 
-        <!-- VISTA: DETALLE / EVOLUCIÓN -->
+        <!-- VISTA: DETALLE PACIENTE / EVOLUCIÓN -->
         <section id="view-details" class="view-section">
             <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
                 <button class="btn btn-ghost" onclick="switchView('patients')">⬅ Volver</button>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Generar Plan</button>
-                    <button class="btn btn-ghost" onclick="exportEvolutionPDF()">📄 Exportar PDF</button>
+                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Plan</button>
+                    <button class="btn btn-ghost" onclick="exportEvolutionPDF()">📄 PDF</button>
                 </div>
             </div>
             <div class="card">
-                <h2 id="detName" style="margin-top:0">Nombre del Paciente</h2>
+                <h2 id="detName" style="margin-top:0">Paciente</h2>
                 <div class="charts-grid">
                     <div style="height: 220px;"><canvas id="chartWeight"></canvas></div>
                     <div style="height: 220px;"><canvas id="chartFat"></canvas></div>
                 </div>
             </div>
-            <h3>Historial de Evaluaciones</h3>
+            <h3>Historial de Mediciones</h3>
             <div id="measurementList"></div>
             <button class="fab" onclick="openMeasureModal()">+</button>
         </section>
@@ -416,25 +225,14 @@
             <div id="foodGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px"></div>
         </section>
 
-        <!-- VISTA: CALCULADORA -->
-        <section id="view-calc" class="view-section">
-            <div class="card" style="max-width: 500px; margin: 0 auto">
-                <h2 style="color: var(--primary)">Calculadora Nutricional</h2>
-                <label>Peso Actual (kg)</label><input type="number" id="calcW" class="input-field" placeholder="70">
-                <label>Altura (cm)</label><input type="number" id="calcH" class="input-field" placeholder="175">
-                <button class="btn btn-primary" style="width:100%" onclick="quickBMI()">Calcular IMC</button>
-                <div id="bmiRes" class="card" style="display:none; margin-top:20px; text-align:center; background: var(--light); font-weight: bold; color: var(--primary-dark);"></div>
-            </div>
-        </section>
-
-        <!-- VISTA: IA -->
+        <!-- VISTA: ASISTENTE IA -->
         <section id="view-ai" class="view-section">
             <div class="card">
                 <div id="chatWindow" class="chat-box">
-                    <div class="msg msg-b">¡Hola! Soy tu asistente nutricional inteligente. ¿Deseas analizar un menú, calcular macros o necesitas una sugerencia para un paciente?</div>
+                    <div class="msg msg-b">¡Hola! Soy tu asistente IA. ¿Qué duda nutricional tienes hoy?</div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:15px">
-                    <input type="text" id="chatInput" class="input-field" style="margin:0" placeholder="Escribe tu consulta aquí..." onkeypress="if(event.key==='Enter') sendAIRequest()">
+                    <input type="text" id="chatInput" class="input-field" style="margin:0" placeholder="Escribe tu consulta..." onkeypress="if(event.key==='Enter') sendAIRequest()">
                     <button class="btn btn-primary" onclick="sendAIRequest()">➤</button>
                 </div>
             </div>
@@ -446,18 +244,18 @@
     <!-- Modal Day View -->
     <div id="modalDayView" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h2 id="dayViewTitle" style="color: var(--primary); margin-top: 0;">Turnos del Día</h2>
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="dayViewTitle" style="color: var(--primary); margin-top: 0;">Turnos</h2>
             <div id="dayTurnosList"></div>
-            <button class="btn btn-primary" style="width:100%; margin-top:15px" id="btnAddTurnoToday">+ Agendar Nuevo Turno</button>
+            <button class="btn btn-primary" style="width:100%; margin-top:15px" id="btnAddTurnoToday">+ Nuevo Turno</button>
         </div>
     </div>
 
-    <!-- Modal Formulario Turno (CUADRICULA DE TIEMPOS) -->
+    <!-- Modal Formulario Turno (CUADRICULA) -->
     <div id="modalTurnoForm" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h2 id="turnoFormTitle" style="color: var(--primary); margin-top: 0;">Agendar Turno</h2>
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="turnoFormTitle" style="color: var(--primary); margin-top: 0;">Agendar</h2>
             <form id="formTurno">
                 <input type="hidden" id="t_id">
                 <input type="hidden" id="t_date">
@@ -467,17 +265,17 @@
                 <input type="text" id="t_paciente" class="input-field" list="patientsList" required placeholder="Escriba el nombre...">
                 <datalist id="patientsList"></datalist>
                 
-                <label style="display:block; margin-bottom: 12px; font-weight: bold;">Horarios Disponibles:</label>
+                <label style="display:block; margin-bottom: 12px; font-weight: bold;">Horarios:</label>
                 <div id="timeGrid" class="time-grid"></div>
                 
                 <label>WhatsApp</label>
                 <input type="tel" id="t_phone" class="input-field" placeholder="54911..." required>
                 
-                <label>Notas / Obra Social</label>
-                <textarea id="t_obs" class="input-field" rows="2" style="width:100%; padding:10px;"></textarea>
+                <label>Observaciones</label>
+                <textarea id="t_obs" class="input-field" rows="2" style="width:100%; border:2px solid #e9d5ff; border-radius:8px; padding:10px;"></textarea>
                 
                 <div style="display:flex; gap:10px">
-                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar Turno</button>
+                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar</button>
                     <button type="button" id="btnDeleteTurno" class="btn btn-danger" style="display:none" onclick="deleteTurno()">Borrar</button>
                 </div>
             </form>
@@ -487,8 +285,8 @@
     <!-- Modal Paciente -->
     <div id="modalPatient" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h2 id="pTitle" style="color: var(--primary); margin-top: 0;">Nuevo Paciente</h2>
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="pTitle" style="color: var(--primary); margin-top: 0;">Ficha</h2>
             <form id="formPatient">
                 <input type="hidden" id="edit_p_id">
                 <label>Nombre y Apellido</label><input type="text" id="p_name" class="input-field" required>
@@ -498,39 +296,40 @@
                 </div>
                 <label>WhatsApp</label><input type="tel" id="p_phone" class="input-field" placeholder="54911..." required>
                 <label>Peso Inicial (kg)</label><input type="number" id="p_weight" step="0.1" class="input-field" required>
-                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Ficha</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar</button>
             </form>
         </div>
     </div>
 
-    <!-- Modal Medición -->
+    <!-- Modal Medición (AÑADIR / EDITAR) -->
     <div id="modalMeasure" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h2 style="color: var(--primary); margin-top: 0;">Nueva Evaluación</h2>
+        <div class="modal-content modal-large">
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 id="measureModalTitle" style="color: var(--primary); margin-top: 0;">Evaluación</h2>
             <form id="formMeasure">
+                <input type="hidden" id="edit_m_id">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
                     <div><label>Peso (kg)</label><input type="number" id="m_w" step="0.1" class="input-field" required></div>
                     <div><label>Meta (kg)</label><input type="number" id="m_goal" step="0.1" class="input-field" required></div>
                 </div>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px">
-                    <div><label>PT</label><input type="number" id="m_pt" class="input-field" value="0"></div>
-                    <div><label>PSE</label><input type="number" id="m_pse" class="input-field" value="0"></div>
-                    <div><label>PSI</label><input type="number" id="m_psi" class="input-field" value="0"></div>
-                    <div><label>PA</label><input type="number" id="m_pa" class="input-field" value="0"></div>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px">
+                    <div><label>PT</label><input type="number" id="m_pt" class="indicator-input" step="0.1" value="0"></div>
+                    <div><label>PSE</label><input type="number" id="m_pse" class="indicator-input" step="0.1" value="0"></div>
+                    <div><label>PSI</label><input type="number" id="m_psi" class="indicator-input" step="0.1" value="0"></div>
+                    <div><label>PA</label><input type="number" id="m_pa" class="indicator-input" step="0.1" value="0"></div>
                 </div>
                 <label>Actividad Física</label>
                 <select id="m_act" class="input-field">
                     <option value="sedentario">Sedentario</option>
-                    <option value="ligero">Ligero (1-2 días)</option>
-                    <option value="moderado">Moderado (3-5 días)</option>
-                    <option value="fuerte">Fuerte (Atleta)</option>
+                    <option value="ligero">Ligero</option>
+                    <option value="moderado">Moderado</option>
+                    <option value="fuerte">Fuerte</option>
                 </select>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
                     <div><label>Sueño (hs)</label><input type="number" id="m_sleep" class="input-field" value="7"></div>
-                    <div><label>Estrés (1-10)</label><input type="range" id="m_stress" min="1" max="10" value="5" style="width:100%"></div>
+                    <div><label>Estrés (1-10)</label><input type="number" id="m_stress" class="input-field" min="1" max="10" value="5"></div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Registrar Evaluación</button>
+                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px">Guardar Mediciones</button>
             </form>
         </div>
     </div>
@@ -538,40 +337,38 @@
     <!-- Modal Alimento -->
     <div id="modalFood" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModals()">&times;</span>
-            <h2 style="color: var(--primary); margin-top: 0;">Gestionar Alimento</h2>
+            <button class="close-modal" onclick="closeModals()">&times;</button>
+            <h2 style="color: var(--primary)">Alimento</h2>
             <form id="formFood">
-                <input type="hidden" id="edit_f_id">
-                <label>Nombre</label><input type="text" id="f_n" class="input-field" required>
+                <label>Nombre</label><input type="text" id="fn" class="input-field" required>
                 <label>Categoría</label>
-                <select id="f_c" class="input-field">
+                <select id="fc" class="input-field">
                     <option value="proteina">Proteína</option>
                     <option value="carbohidrato">Carbohidrato</option>
                     <option value="grasa">Grasa</option>
-                    <option value="verdura">Verdura / Fibra</option>
                 </select>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px">
-                    <div><label>Prot</label><input type="number" id="f_p" class="input-field" value="0" step="0.1"></div>
-                    <div><label>Carb</label><input type="number" id="f_ca" class="input-field" value="0" step="0.1"></div>
-                    <div><label>Grasa</label><input type="number" id="f_g" class="input-field" value="0" step="0.1"></div>
+                    <div><label>P</label><input type="number" id="fp" class="input-field" value="0"></div>
+                    <div><label>C</label><input type="number" id="fca" class="input-field" value="0"></div>
+                    <div><label>G</label><input type="number" id="fg" class="input-field" value="0"></div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Alimento</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">Añadir</button>
             </form>
         </div>
     </div>
 
     <!-- Modal Plan Resultado -->
     <div id="modalPlan" class="modal"><div class="modal-content modal-large">
-        <header style="display:flex; justify-content:space-between">
-            <h2 style="color: var(--primary); margin-top: 0;">✨ Propuesta de Plan</h2>
+        <header style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="color: var(--primary); margin: 0;">✨ Plan Inteligente</h2>
             <button onclick="closeModals()" style="background:none; border:none; font-size:24px; cursor:pointer">&times;</button>
         </header>
         <div id="planDisplayArea" style="margin-top:20px"></div>
     </div></div>
 
     <script>
-        // 1. CONFIGURACIÓN FIREBASE (REGLAS 1 Y 3)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nutrimanager-pro-master';
+        // 1. CONFIGURACIÓN FIREBASE (REGLA 1 Y 3)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nutrimanager-v8-master';
         const firebaseConfig = {
             apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
             authDomain: "medicion-imc.firebaseapp.com",
@@ -597,11 +394,10 @@
             user: null
         };
 
-        // 2. INICIALIZACIÓN (REGLA 3)
+        // 2. INICIO
         document.addEventListener('DOMContentLoaded', async () => {
             showLoader(true);
             try {
-                // Autenticar antes de cargar datos
                 await auth.signInAnonymously();
                 auth.onAuthStateChanged(user => {
                     if (user) {
@@ -613,20 +409,19 @@
         });
 
         function startRealtimeListeners() {
-            // Escuchar Pacientes
             db.collection(getPath("pacientes")).orderBy("nombreCompleto").onSnapshot(s => {
                 state.patients = s.docs.map(d => ({id: d.id, ...d.data()}));
                 updatePatientDatalist();
                 if(state.view === 'patients') renderPatients();
             });
 
-            // Escuchar Turnos
             db.collection(getPath("turnos")).onSnapshot(s => {
                 state.turnos = s.docs.map(d => ({id: d.id, ...d.data()}));
                 if(state.view === 'agenda') renderCalendar();
+                updateBadge();
+                checkTodayPush();
             });
 
-            // Escuchar Alimentos
             db.collection(getPath("alimentos")).orderBy("name").onSnapshot(s => {
                 state.foods = s.docs.map(d => ({id: d.id, ...d.data()}));
                 if(state.view === 'foods') renderFoods();
@@ -635,9 +430,14 @@
             showLoader(false);
         }
 
-        // 3. NAVEGACIÓN
-        function toggleMenu() { document.getElementById('navOverlay').classList.toggle('active'); }
-        
+        // 3. NAVEGACIÓN Y MENÚ
+        function toggleMenu() {
+            const overlay = document.getElementById('navOverlay');
+            const hamburger = document.getElementById('hamburger-btn');
+            overlay.classList.toggle('active');
+            hamburger.classList.toggle('open');
+        }
+
         function switchView(view, params = {}) {
             state.view = view;
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
@@ -647,33 +447,29 @@
             const link = document.getElementById(`link-${view === 'details' ? 'patients' : view}`);
             if (link) link.classList.add('active');
 
-            const headers = { agenda: 'Mi Agenda', patients: 'Mis Pacientes', details: 'Evolución Paciente', foods: 'Biblioteca Alimentos', calc: 'Calculadora IMC', ai: 'Asistente IA' };
+            const headers = { agenda: 'Mi Agenda', patients: 'Mis Pacientes', details: 'Evolución', foods: 'Alimentos', ai: 'Asistente IA' };
             document.getElementById('viewHeaderTitle').innerText = headers[view] || 'NutriManager';
 
             if (view === 'agenda') renderCalendar();
             if (view === 'patients') renderPatients();
-            if (view === 'foods') renderFoods();
             if (view === 'details') loadPatientDetails(params.id);
 
             if (document.getElementById('navOverlay').classList.contains('active')) toggleMenu();
             window.scrollTo(0,0);
         }
 
-        // 4. MÓDULO CALENDARIO (AGENDA)
+        // 4. MÓDULO CALENDARIO
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
-            
             const year = state.calDate.getFullYear(), month = state.calDate.getMonth();
             const first = new Date(year, month, 1).getDay();
             const days = new Date(year, month + 1, 0).getDate();
-            const names = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            
+            const names = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
             document.getElementById('calendarLabel').innerText = `${names[month]} ${year}`;
 
-            // Labels de días
-            ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d => {
-                const el = document.createElement('div'); el.style.textAlign='center'; el.style.padding='10px'; el.style.fontWeight='bold'; el.style.color='var(--primary)'; el.style.fontSize='12px'; el.innerText=d; grid.appendChild(el);
+            ['D','L','M','M','J','V','S'].forEach(d => {
+                const el = document.createElement('div'); el.style.textAlign='center'; el.style.padding='8px'; el.style.fontWeight='bold'; el.style.color='var(--primary)'; el.innerText=d; grid.appendChild(el);
             });
 
             for(let i=0; i<first; i++) grid.appendChild(document.createElement('div'));
@@ -683,24 +479,15 @@
                 const cell = document.createElement('div');
                 cell.className = 'calendar-cell';
                 if (ds === new Date().toISOString().split('T')[0]) cell.classList.add('today');
-                
                 cell.innerHTML = `<span class="day-n">${d}</span>`;
                 
                 const dTurnos = state.turnos.filter(t => t.date === ds).sort((a,b) => a.time.localeCompare(b.time));
-                dTurnos.slice(0, 3).forEach(t => {
-                    const p = document.createElement('div');
-                    p.className = 'turno-pill';
-                    p.innerText = `${t.time} ${t.paciente}`;
-                    cell.appendChild(p);
+                dTurnos.slice(0, 2).forEach(t => {
+                    const p = document.createElement('div'); p.className = 'turno-pill'; p.innerText = `${t.time} ${t.paciente}`; cell.appendChild(p);
                 });
-                if(dTurnos.length > 3) {
-                    const more = document.createElement('div');
-                    more.className = 'turno-pill';
-                    more.style.background = '#94a3b8';
-                    more.innerText = `+${dTurnos.length-3} más...`;
-                    cell.appendChild(more);
+                if(dTurnos.length > 2) {
+                    const m = document.createElement('div'); m.className = 'turno-pill'; m.style.background='#aaa'; m.innerText=`+${dTurnos.length-2} más`; cell.appendChild(m);
                 }
-
                 cell.onclick = () => openDayView(ds);
                 grid.appendChild(cell);
             }
@@ -708,33 +495,27 @@
 
         function changeMonth(dir) { state.calDate.setMonth(state.calDate.getMonth() + dir); renderCalendar(); }
 
-        // VISOR DEL DÍA
         function openDayView(date) {
             const dTurnos = state.turnos.filter(t => t.date === date).sort((a,b) => a.time.localeCompare(b.time));
             document.getElementById('dayViewTitle').innerText = `Día: ${date}`;
             const list = document.getElementById('dayTurnosList');
-            list.innerHTML = dTurnos.length ? '' : '<p style="text-align:center; color:#aaa; padding:20px;">Sin compromisos para hoy.</p>';
+            list.innerHTML = dTurnos.length ? '' : '<p style="text-align:center; padding:20px; color:#aaa;">Sin turnos programados.</p>';
             
             dTurnos.forEach(t => {
                 const item = document.createElement('div');
                 item.className = 'day-view-item';
                 item.innerHTML = `
-                    <div class="item-info">
-                        <strong>${t.time} hs - ${t.paciente}</strong>
-                        <br><small>${t.obs || 'Sin notas'}</small>
-                    </div>
+                    <div style="flex:1"><strong>${t.time} hs - ${t.paciente}</strong><br><small>${t.obs || ''}</small></div>
                     <div style="display:flex; gap:8px">
-                        <button class="btn btn-whatsapp" onclick="sendWaReminder('${t.phone}', '${t.paciente}', '${t.date}', '${t.time}')">📱</button>
+                        <button class="btn btn-whatsapp" onclick="sendWa('${t.phone}', '${t.paciente}', '${t.date}', '${t.time}')">📱</button>
                         <button class="btn btn-ghost" onclick="openTurnoForm('${date}', '${t.id}')">✏️</button>
                     </div>`;
                 list.appendChild(item);
             });
-
             document.getElementById('btnAddTurnoToday').onclick = () => openTurnoForm(date);
             document.getElementById('modalDayView').classList.add('active');
         }
 
-        // FORMULARIO TURNO + CUADRICULA DE TIEMPOS
         function openTurnoForm(date, id = null) {
             const f = document.getElementById('formTurno');
             f.reset();
@@ -742,13 +523,11 @@
             document.getElementById('t_date').value = date;
             document.getElementById('t_selected_time').value = '';
             document.getElementById('btnDeleteTurno').style.display = id ? 'block' : 'none';
-            document.getElementById('turnoFormTitle').innerText = id ? 'Editar Turno' : `Turno: ${date}`;
 
             const grid = document.getElementById('timeGrid');
             grid.innerHTML = '';
             const taken = state.turnos.filter(t => t.date === date && t.id !== id).map(t => t.time);
             
-            // Generar horas de 7 a 20
             for(let h=7; h<=20; h++) {
                 ['00', '30'].forEach(m => {
                     const time = `${String(h).padStart(2,'0')}:${m}`;
@@ -773,33 +552,26 @@
                 document.getElementById('t_paciente').value = t.paciente;
                 document.getElementById('t_phone').value = t.phone;
                 document.getElementById('t_obs').value = t.obs;
-                // Pre-seleccionar
                 setTimeout(() => {
                     const slots = document.querySelectorAll('.time-slot');
                     slots.forEach(s => { if(s.innerText === t.time) { s.click(); } });
                 }, 50);
             }
-
             document.getElementById('modalTurnoForm').classList.add('active');
         }
 
         document.getElementById('formTurno').onsubmit = async (e) => {
             e.preventDefault();
             const time = document.getElementById('t_selected_time').value;
-            if(!time) return alert("Por favor, selecciona un horario de la cuadrícula.");
-            
+            if(!time) return alert("Selecciona un horario de la cuadrícula.");
             showLoader(true);
             const data = {
-                date: document.getElementById('t_date').value,
-                time: time,
-                paciente: document.getElementById('t_paciente').value,
-                phone: document.getElementById('t_phone').value,
-                obs: document.getElementById('t_obs').value
+                date: document.getElementById('t_date').value, time: time,
+                paciente: document.getElementById('t_paciente').value, phone: document.getElementById('t_phone').value, obs: document.getElementById('t_obs').value
             };
             const id = document.getElementById('t_id').value;
             if(id) await db.collection(getPath("turnos")).doc(id).update(data);
             else await db.collection(getPath("turnos")).add(data);
-            
             closeModals();
             showLoader(false);
         };
@@ -807,29 +579,19 @@
         // 5. MÓDULO PACIENTES
         function renderPatients() {
             const q = document.getElementById('patientSearch').value.toLowerCase();
-            const filtered = state.patients.filter(p => p.nombreCompleto.toLowerCase().includes(q));
-            const body = document.getElementById('patientListBody');
-            body.innerHTML = filtered.map(p => `
+            document.getElementById('patientListBody').innerHTML = state.patients.filter(p => p.nombreCompleto.toLowerCase().includes(q)).map(p => `
                 <tr onclick="switchView('details', {id:'${p.id}'})" style="cursor:pointer">
-                    <td style="color:var(--primary); font-weight:bold">${p.nombreCompleto}</td>
-                    <td>${p.telefono}</td>
-                    <td>${p.ultimoPeso || '-'} kg</td>
-                    <td>
-                        <button class="btn btn-ghost" style="padding:6px 10px" onclick="event.stopPropagation(); openEditPatient('${p.id}')">✏️</button>
-                    </td>
+                    <td data-label="Paciente" style="color:var(--primary); font-weight:bold">${p.nombreCompleto}</td>
+                    <td data-label="WhatsApp">${p.telefono}</td>
+                    <td data-label="Peso">${p.ultimoPeso || '-'} kg</td>
+                    <td><button class="btn btn-ghost" onclick="event.stopPropagation(); openEditPatient('${p.id}')">✏️ Editar</button></td>
                 </tr>
             `).join('');
         }
 
-        function updatePatientDatalist() {
-            document.getElementById('patientsList').innerHTML = state.patients.map(p => `<option value="${p.nombreCompleto}">`).join('');
-        }
-
-        // DETALLES PACIENTE & MEDICIONES
         async function loadPatientDetails(id) {
             state.selPat = state.patients.find(x => x.id === id);
             document.getElementById('detName').innerText = state.selPat.nombreCompleto;
-            
             db.collection(getPath("pacientes")).doc(id).collection("mediciones").orderBy("fecha", "asc").onSnapshot(s => {
                 state.measures = s.docs.map(d => ({id: d.id, ...d.data()}));
                 renderMeasures();
@@ -840,106 +602,131 @@
         function renderMeasures() {
             const list = document.getElementById('measurementList');
             list.innerHTML = [...state.measures].reverse().map(m => `
-                <div class="card" style="cursor:pointer" onclick="viewSavedPlan('${m.id}')">
+                <div class="card" style="cursor:pointer" onclick="openEditMeasure('${m.id}')">
                     <div style="display:flex; justify-content:space-between">
                         <strong>📅 ${m.fecha.toDate().toLocaleDateString()}</strong>
-                        <span style="font-size:12px; color:var(--primary)">${m.plan ? '✨ Plan generado' : 'Ver datos'}</span>
+                        <span style="color:var(--primary); font-size:12px">Ver / Editar datos</span>
                     </div>
-                    <div style="font-size:14px; margin-top:10px; display:grid; grid-template-columns: 1fr 1fr">
-                        <span>Peso: <b>${m.resultados.pesoActual} kg</b></span>
-                        <span>Grasa: <b>${m.resultados.tejidoGrasoPorcentaje.toFixed(1)}%</b></span>
+                    <div class="data-grid">
+                        <div class="data-item"><strong>Peso</strong>${m.resultados.pesoActual} kg</div>
+                        <div class="data-item"><strong>Grasa</strong>${m.resultados.tejidoGrasoPorcentaje.toFixed(1)}%</div>
+                        <div class="data-item"><strong>Meta</strong>${m.objetivos?.pesoObjetivo || '-'} kg</div>
                     </div>
                 </div>
             `).join('');
         }
 
-        // GRÁFICOS
-        let wChart, fChart;
-        function renderEvolutionCharts() {
-            if (state.measures.length < 2) return;
-            const labels = state.measures.map(m => m.fecha.toDate().toLocaleDateString());
-            const wData = state.measures.map(m => m.resultados.pesoActual);
-            const fData = state.measures.map(m => m.resultados.tejidoGrasoPorcentaje);
-
-            if(wChart) wChart.destroy();
-            wChart = new Chart(document.getElementById('chartWeight'), {
-                type:'line', data:{labels, datasets:[{label:'Peso (kg)', data:wData, borderColor:'#7b2cbf', tension:0.3, fill:true, backgroundColor:'rgba(123, 44, 191, 0.1)'}]},
-                options:{responsive:true, maintainAspectRatio:false}
-            });
-
-            if(fChart) fChart.destroy();
-            fChart = new Chart(document.getElementById('chartFat'), {
-                type:'line', data:{labels, datasets:[{label:'Grasa (%)', data:fData, borderColor:'#ef4444', tension:0.3}]},
-                options:{responsive:true, maintainAspectRatio:false}
-            });
+        function openEditMeasure(mid) {
+            const m = state.measures.find(x => x.id === mid);
+            document.getElementById('edit_m_id').value = mid;
+            document.getElementById('m_w').value = m.resultados.pesoActual;
+            document.getElementById('m_goal').value = m.objetivos?.pesoObjetivo || 0;
+            document.getElementById('m_pt').value = m.indicadores?.pt || 0;
+            document.getElementById('m_pse').value = m.indicadores?.pse || 0;
+            document.getElementById('m_psi').value = m.indicadores?.psi || 0;
+            document.getElementById('m_pa').value = m.indicadores?.pa || 0;
+            document.getElementById('m_act').value = m.objetivos?.actividadTipo || 'moderado';
+            document.getElementById('m_sleep').value = m.objetivos?.horasSueno || 7;
+            document.getElementById('m_stress').value = m.objetivos?.nivelEstres || 5;
+            document.getElementById('measureModalTitle').innerText = "Medición del " + m.fecha.toDate().toLocaleDateString();
+            document.getElementById('modalMeasure').classList.add('active');
         }
 
-        // 6. PLAN INTELIGENTE (ALGORITMO)
+        document.getElementById('formMeasure').onsubmit = async (e) => {
+            e.preventDefault();
+            showLoader(true);
+            const mid = document.getElementById('edit_m_id').value;
+            const w = parseFloat(document.getElementById('m_w').value);
+            const pt = parseFloat(document.getElementById('m_pt').value || 0);
+            const fat = ((pt + parseFloat(document.getElementById('m_pse').value)) * 0.153) + 5.78; 
+
+            const data = {
+                resultados: { pesoActual: w, tejidoGrasoPorcentaje: fat },
+                indicadores: { pt, pse: parseFloat(document.getElementById('m_pse').value), psi: parseFloat(document.getElementById('m_psi').value), pa: parseFloat(document.getElementById('m_pa').value) },
+                objetivos: { pesoObjetivo: parseFloat(document.getElementById('m_goal').value), actividadTipo: document.getElementById('m_act').value, horasSueno: parseFloat(document.getElementById('m_sleep').value), nivelEstres: parseInt(document.getElementById('m_stress').value) }
+            };
+            if(mid) await db.collection(getPath("pacientes")).doc(state.selPat.id).collection("mediciones").doc(mid).update(data);
+            else {
+                data.fecha = firebase.firestore.Timestamp.now();
+                await db.collection(getPath("pacientes")).doc(state.selPat.id).collection("mediciones").add(data);
+            }
+            await db.collection(getPath("pacientes")).doc(state.selPat.id).update({ ultimoPeso: w });
+            closeModals(); showLoader(false);
+        }
+
+        // 6. PLAN INTELIGENTE
         async function generateSmartPlan() {
-            if (state.measures.length === 0) return alert("Falta registrar una medición actual.");
+            if (!state.measures.length) return alert("Registra una medición primero.");
             showLoader(true);
             const last = state.measures[state.measures.length-1];
             const p = state.selPat;
-            const hoy = new Date(), nac = p.fechaNacimiento.toDate();
-            let edad = hoy.getFullYear() - nac.getFullYear();
-
-            // Mifflin-St Jeor
-            let bmr = (10 * last.resultados.pesoActual) + (6.25 * 170) - (5 * edad) + (p.sexo==='masculino'?5:-161);
-            const factor = { sedentario:1.2, ligero:1.375, moderado:1.55, fuerte:1.725 }[last.objetivos.actividadTipo] || 1.375;
-            let target = last.objetivos.pesoObjetivo < last.resultados.pesoActual ? (bmr*factor)-500 : (bmr*factor)+300;
-
-            const prots = state.foods.filter(f => f.category==='proteina').sort(() => 0.5 - Math.random());
-            const carbs = state.foods.filter(f => f.category==='carbohidrato').sort(() => 0.5 - Math.random());
-
-            const html = `
-                <div class="card" style="border-left:5px solid var(--primary)">
-                    <h3>Requerimiento: ${Math.round(target)} kcal/día</h3>
-                    <p><b>P:</b> ${Math.round(target*0.3/4)}g | <b>C:</b> ${Math.round(target*0.4/4)}g | <b>G:</b> ${Math.round(target*0.3/9)}g</p>
-                </div>
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px">
-                    <div class="card"><h4>🌅 Desayuno</h4><ul><li>100g ${prots[0]?.name||'Proteína'}</li><li>60g ${carbs[0]?.name||'Carbs'}</li></ul></div>
-                    <div class="card"><h4>🥗 Almuerzo</h4><ul><li>150g ${prots[1]?.name||'Proteína'}</li><li>100g ${carbs[1]?.name||'Carbs'}</li></ul></div>
-                </div>
-                <div class="card" style="background:#fff9db; border-color:#ffe066">
-                    <h4>🏃 Recomendación Actividad</h4>
-                    <p>${last.objetivos.actividadTipo === 'sedentario' ? 'Caminatas diarias de 30 min a paso moderado.' : 'Entrenamiento de fuerza 45 min + cardio ligero.'}</p>
-                </div>
-            `;
+            const age = new Date().getFullYear() - p.fechaNacimiento.toDate().getFullYear();
+            let bmr = (10 * last.resultados.pesoActual) + (6.25 * 170) - (5 * age) + (p.sexo==='masculino'?5:-161);
+            const target = Math.round(bmr * 1.375);
+            const html = `<div class="card" style="border-left:5px solid var(--primary)"><h3>Meta: ${target} kcal/día</h3><p>Cálculo basado en Mifflin-St Jeor.</p></div>`;
             document.getElementById('planDisplayArea').innerHTML = html;
             document.getElementById('modalPlan').classList.add('active');
             await db.collection(getPath("pacientes")).doc(p.id).collection("mediciones").doc(last.id).update({ plan: html });
             showLoader(false);
         }
 
-        // 7. IA GEMINI (ASISTENTE)
+        // 7. IA GEMINI
         async function sendAIRequest() {
             const inp = document.getElementById('chatInput'), win = document.getElementById('chatWindow');
             if(!inp.value.trim()) return;
             const msg = inp.value; inp.value = '';
             win.innerHTML += `<div class="msg msg-u">${msg}</div>`;
-            win.scrollTop = win.scrollHeight;
-
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`, {
-                    method: 'POST', body: JSON.stringify({contents:[{parts:[{text: `Eres un nutricionista experto. El usuario pregunta: ${msg}`}]}]})
+                    method: 'POST', body: JSON.stringify({contents:[{parts:[{text: `Eres un nutricionista profesional. Responde de forma clara: ${msg}`}]}]})
                 });
                 const data = await res.json();
                 win.innerHTML += `<div class="msg msg-b">${data.candidates[0].content.parts[0].text}</div>`;
                 win.scrollTop = win.scrollHeight;
-            } catch(e) { win.innerHTML += `<div class="msg msg-b" style="color:red">Error al conectar con el cerebro IA.</div>`; }
+            } catch(e) { win.innerHTML += `<div class="msg msg-b" style="color:red">Error de conexión IA.</div>`; }
         }
 
-        // 8. CRUD & HELPERS
+        // 8. ALERTAS Y BADGES
+        function updateBadge() {
+            const now = new Date();
+            const limit = new Date(); limit.setDate(now.getDate() + 3);
+            const count = state.turnos.filter(t => {
+                const d = new Date(t.date); return d >= now && d <= limit;
+            }).length;
+            const badge = document.getElementById('notifBadge');
+            badge.innerText = count;
+            badge.style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function checkTodayPush() {
+            if(sessionStorage.getItem('notified')) return;
+            const today = new Date().toISOString().split('T')[0];
+            const found = state.turnos.filter(t => t.date === today);
+            if(found.length > 0) {
+                alert(`📌 Tienes ${found.length} turnos para hoy. Revisa la agenda para enviar los WhatsApp.`);
+                sessionStorage.setItem('notified', 'true');
+            }
+        }
+
+        function showUpcomingAlert() {
+            const now = new Date();
+            const limit = new Date(); limit.setDate(now.getDate() + 3);
+            const list = state.turnos.filter(t => {
+                const d = new Date(t.date); return d >= now && d <= limit;
+            }).sort((a,b) => a.date.localeCompare(b.date));
+            if(!list.length) return alert("No hay turnos próximos en los siguientes 3 días.");
+            alert("Próximos Turnos (3 días):\n" + list.map(x => `📅 ${x.date} ${x.time}: ${x.paciente}`).join('\n'));
+        }
+
+        // --- HELPERS ---
         function showLoader(s) { document.getElementById('mainLoader').style.display = s ? 'flex' : 'none'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
         window.onclick = (e) => { if(e.target.className === 'modal active') closeModals(); };
-
-        function openPatientModal() { 
-            document.getElementById('formPatient').reset(); 
-            document.getElementById('edit_p_id').value = ''; 
-            document.getElementById('pTitle').innerText = 'Nuevo Paciente';
-            document.getElementById('modalPatient').classList.add('active'); 
-        }
+        function sendWa(p, n, d, t) { window.open(`https://wa.me/${p}?text=${encodeURIComponent('Hola '+n+', te recuerdo tu turno el '+d+' a las '+t+' hs. ¡Te esperamos!')}`, '_blank'); }
+        
+        function openPatientModal() { document.getElementById('formPatient').reset(); document.getElementById('edit_p_id').value = ''; document.getElementById('modalPatient').classList.add('active'); }
+        function openMeasureModal() { document.getElementById('formMeasure').reset(); document.getElementById('edit_m_id').value = ''; document.getElementById('modalMeasure').classList.add('active'); }
+        function updatePatientDatalist() { document.getElementById('patientsList').innerHTML = state.patients.map(p => `<option value="${p.nombreCompleto}">`).join(''); }
 
         function openEditPatient(id) {
             const p = state.patients.find(x => x.id === id);
@@ -947,117 +734,59 @@
             document.getElementById('p_name').value = p.nombreCompleto;
             document.getElementById('p_phone').value = p.telefono;
             document.getElementById('p_weight').value = p.ultimoPeso;
-            document.getElementById('p_gender').value = p.sexo;
             document.getElementById('p_birth').value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
-            document.getElementById('pTitle').innerText = 'Editar Paciente';
+            document.getElementById('pTitle').innerText = 'Editar Ficha';
             document.getElementById('modalPatient').classList.add('active');
         }
 
         document.getElementById('formPatient').onsubmit = async (e) => {
             e.preventDefault();
             showLoader(true);
-            const id = document.getElementById('edit_p_id').value;
-            const data = {
-                nombreCompleto: document.getElementById('p_name').value,
-                telefono: document.getElementById('p_phone').value,
-                ultimoPeso: parseFloat(document.getElementById('p_weight').value),
-                sexo: document.getElementById('p_gender').value,
+            const d = {
+                nombreCompleto: document.getElementById('p_name').value, telefono: document.getElementById('p_phone').value,
+                ultimoPeso: parseFloat(document.getElementById('p_weight').value), sexo: document.getElementById('p_gender').value,
                 fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('p_birth').value)),
                 fechaUltimoRegistro: firebase.firestore.Timestamp.now()
             };
-            if(id) await db.collection(getPath("pacientes")).doc(id).update(data);
-            else await db.collection(getPath("pacientes")).add(data);
-            closeModals();
-            showLoader(false);
-        };
-
-        function openMeasureModal() { document.getElementById('formMeasure').reset(); document.getElementById('modalMeasure').classList.add('active'); }
-        document.getElementById('formMeasure').onsubmit = async (e) => {
-            e.preventDefault();
-            showLoader(true);
-            const w = parseFloat(document.getElementById('m_w').value);
-            const pt = parseFloat(document.getElementById('m_pt').value || 0);
-            const pse = parseFloat(document.getElementById('m_pse').value || 0);
-            const fat = ((pt + pse) * 0.15) + 5.7; // Simplificado
-
-            const d = {
-                fecha: firebase.firestore.Timestamp.now(),
-                objetivos: { pesoObjetivo: parseFloat(document.getElementById('m_goal').value), actividadTipo: document.getElementById('m_act').value },
-                resultados: { pesoActual: w, tejidoGrasoPorcentaje: fat }
-            };
-            await db.collection(getPath("pacientes")).doc(state.selPat.id).collection("mediciones").add(d);
-            await db.collection(getPath("pacientes")).doc(state.selPat.id).update({ ultimoPeso: w, fechaUltimoRegistro: d.fecha });
-            closeModals();
-            showLoader(false);
+            const id = document.getElementById('edit_p_id').value;
+            if(id) await db.collection(getPath("pacientes")).doc(id).update(d);
+            else await db.collection(getPath("pacientes")).add(d);
+            closeModals(); showLoader(false);
         };
 
         function openFoodModal() { document.getElementById('formFood').reset(); document.getElementById('modalFood').classList.add('active'); }
         document.getElementById('formFood').onsubmit = async (e) => {
             e.preventDefault();
-            const data = {
+            await db.collection(getPath("alimentos")).add({
                 name: document.getElementById('f_n').value, category: document.getElementById('f_c').value,
                 protein: parseFloat(document.getElementById('f_p').value), carbs: parseFloat(document.getElementById('f_ca').value), fats: parseFloat(document.getElementById('f_g').value)
-            };
-            await db.collection(getPath("alimentos")).add(data);
+            });
             closeModals();
         };
 
         function renderFoods() {
             const q = document.getElementById('foodSearch').value.toLowerCase();
             document.getElementById('foodGrid').innerHTML = state.foods.filter(f => f.name.toLowerCase().includes(q)).map(f => `
-                <div class="card">
-                    <strong>${f.name}</strong><br><small>${f.category}</small>
-                    <div style="font-size:12px; margin-top:8px">P: ${f.protein} | C: ${f.carbs} | G: ${f.fats}</div>
-                </div>
-            `).join('');
+                <div class="card"><strong>${f.name}</strong><br><small>${f.category}</small></div>`).join('');
         }
 
-        async function deleteTurno() {
-            if(confirm("¿Eliminar este turno definitivamente?")) {
-                await db.collection(getPath("turnos")).doc(document.getElementById('t_id').value).delete();
-                closeModals();
-            }
-        }
-
-        function sendWaReminder(ph, n, d, t) {
-            const m = encodeURIComponent(`Hola ${n}, te recuerdo tu turno el ${d} a las ${t} hs. ¡Saludos!`);
-            window.open(`https://wa.me/${ph}?text=${m}`, '_blank');
-        }
-
-        function quickBMI() {
-            const w = parseFloat(document.getElementById('calcW').value), h = parseFloat(document.getElementById('calcH').value)/100;
-            if(!w || !h) return;
-            const r = (w/(h*h)).toFixed(1);
-            let cat = r < 18.5 ? "Bajo peso" : r < 25 ? "Normal" : r < 30 ? "Sobrepeso" : "Obesidad";
-            document.getElementById('bmiRes').innerHTML = `IMC: ${r} - ${cat}`;
-            document.getElementById('bmiRes').style.display = 'block';
-        }
+        async function deleteTurno() { if(confirm("¿Eliminar?")) { await db.collection(getPath("turnos")).doc(document.getElementById('t_id').value).delete(); closeModals(); } }
 
         async function exportEvolutionPDF() {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-            const p = state.selPat;
-            pdf.text(p.nombreCompleto, 15, 20);
-            pdf.autoTable({
-                startY: 30, head: [['Fecha', 'Peso (kg)', '% Grasa']],
-                body: state.measures.map(m => [m.fecha.toDate().toLocaleDateString(), m.resultados.pesoActual, m.resultados.tejidoGrasoPorcentaje.toFixed(1)])
-            });
-            pdf.save(`Informe_${p.nombreCompleto}.pdf`);
+            const { jsPDF } = window.jspdf; const pdf = new jsPDF();
+            pdf.setFontSize(18); pdf.text(state.selPat.nombreCompleto, 15, 20);
+            pdf.autoTable({ startY: 30, head: [['Fecha', 'Peso', 'Grasa %']], body: state.measures.map(m => [m.fecha.toDate().toLocaleDateString(), m.resultados.pesoActual, m.resultados.tejidoGrasoPorcentaje.toFixed(1)]) });
+            pdf.save(`Informe_${state.selPat.nombreCompleto}.pdf`);
         }
 
-        function viewSavedPlan(mid) {
-            const m = state.measures.find(x => x.id === mid);
-            if(m && m.plan) {
-                document.getElementById('planDisplayArea').innerHTML = m.plan;
-                document.getElementById('modalPlan').classList.add('active');
-            }
-        }
-
-        function showUpcomingAlert() {
-            const today = new Date().toISOString().split('T')[0];
-            const up = state.turnos.filter(x => x.date >= today).sort((a,b) => a.date.localeCompare(b.date));
-            if(!up.length) return alert("No hay turnos próximos.");
-            alert("Próximos Turnos:\n" + up.slice(0,3).map(x => `- ${x.date} ${x.time}: ${x.paciente}`).join('\n'));
+        let wC, fC;
+        function renderEvolutionCharts() {
+            if (state.measures.length < 2) return;
+            const l = state.measures.map(m => m.fecha.toDate().toLocaleDateString());
+            if(wC) wC.destroy();
+            wC = new Chart(document.getElementById('chartWeight'), { type:'line', data:{labels:l, datasets:[{label:'Peso', data:state.measures.map(m=>m.resultados.pesoActual), borderColor:'#7b2cbf', tension:0.3}]} });
+            if(fC) fC.destroy();
+            fC = new Chart(document.getElementById('chartFat'), { type:'line', data:{labels:l, datasets:[{label:'Grasa', data:state.measures.map(m=>m.resultados.tejidoGrasoPorcentaje), borderColor:'#ef4444', tension:0.3}]} });
         }
     </script>
 </body>
