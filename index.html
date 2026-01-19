@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NutriManager Pro</title>
+    <title>NutriManager Pro - Sistema Integral</title>
     
     <!-- Librerías Externas -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
-    <!-- Firebase (Modular/Compat compatible) -->
+    <!-- Firebase SDK (Compat) -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
@@ -19,14 +19,14 @@
     <style>
         :root {
             --primary: #4361ee;
-            --primary-hover: #3a0ca3;
+            --primary-dark: #3a0ca3;
             --secondary: #7209b7;
             --success: #4cc9f0;
             --danger: #f72585;
             --dark: #212529;
             --light: #f8f9fa;
             --white: #ffffff;
-            --border-radius: 12px;
+            --radius: 12px;
             --shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
 
@@ -38,10 +38,10 @@
             color: var(--dark);
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* Navegación y Header */
+        /* --- NAVEGACIÓN Y MENÚ HAMBURGUESA --- */
         header {
             background: var(--white);
             padding: 15px 20px;
@@ -54,18 +54,18 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .hamburger-button {
+        .hamburger {
             background: none;
             border: none;
             cursor: pointer;
             padding: 5px;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 5px;
+            z-index: 2100;
         }
 
-        .hamburger-button span {
-            display: block;
+        .hamburger span {
             width: 25px;
             height: 3px;
             background: var(--dark);
@@ -82,7 +82,7 @@
             background: var(--dark);
             z-index: 2000;
             transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding-top: 60px;
+            padding-top: 80px;
             box-shadow: 10px 0 30px rgba(0,0,0,0.2);
         }
 
@@ -100,40 +100,31 @@
         }
 
         .nav-links li a:hover, .nav-links li a.active {
-            color: var(--white);
+            color: white;
             background: rgba(255,255,255,0.05);
             border-left-color: var(--primary);
         }
 
-        .nav-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-        }
-
-        /* Contenedor Principal */
+        /* --- CONTENEDOR PRINCIPAL --- */
         main {
-            max-width: 1200px;
+            max-width: 1100px;
             margin: 20px auto;
             padding: 0 15px 100px 15px;
         }
 
-        .view-section { display: none; animation: fadeIn 0.4s ease; }
-        .view-section.active { display: block; }
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.4s ease; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* UI Components */
+        /* --- COMPONENTES UI --- */
         .card {
             background: var(--white);
             padding: 20px;
-            border-radius: var(--border-radius);
+            border-radius: var(--radius);
             box-shadow: var(--shadow);
             margin-bottom: 20px;
             border: 1px solid #edf2f7;
@@ -145,55 +136,51 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            transition: 0.2s;
             font-size: 14px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 10px;
+            transition: 0.2s;
         }
 
         .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        .btn-success { background: var(--success); color: white; }
+        .btn-success { background: #2ecc71; color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-ghost { background: #f1f3f5; color: var(--dark); }
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; }
         .input-field {
             width: 100%;
             padding: 12px 15px;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 16px;
+            margin-bottom: 15px;
             transition: 0.3s;
         }
-        .input-field:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1); }
+        .input-field:focus { border-color: var(--primary); outline: none; }
 
-        /* Tablas Móviles */
-        .table-wrapper { overflow-x: auto; border-radius: var(--border-radius); border: 1px solid #eee; }
+        /* --- TABLAS RESPONSIVAS --- */
+        .table-wrapper { overflow-x: auto; border-radius: var(--radius); }
         table { width: 100%; border-collapse: collapse; background: white; }
-        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 13px; color: #64748b; text-transform: uppercase; }
+        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase; }
         td { padding: 15px; border-bottom: 1px solid #f1f5f9; }
 
         @media (max-width: 768px) {
-            .responsive-table thead { display: none; }
-            .responsive-table tr { display: block; margin-bottom: 15px; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
-            .responsive-table td { display: flex; justify-content: space-between; padding: 10px 5px; border: none; font-size: 14px; }
-            .responsive-table td::before { content: attr(data-label); font-weight: bold; color: #64748b; }
+            .res-table thead { display: none; }
+            .res-table tr { display: block; margin-bottom: 15px; border: 1px solid #eee; border-radius: 10px; padding: 10px; }
+            .res-table td { display: flex; justify-content: space-between; padding: 10px 5px; border: none; font-size: 14px; }
+            .res-table td::before { content: attr(data-label); font-weight: bold; color: #64748b; }
         }
 
-        /* Calendario Turnos */
+        /* --- CALENDARIO AGENDA --- */
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 2px;
+            gap: 1px;
             background: #e2e8f0;
             border: 1px solid #e2e8f0;
         }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .calendar-day-label { background: #f8fafc; padding: 10px; text-align: center; font-weight: bold; font-size: 12px; }
         .calendar-cell {
             background: white;
             min-height: 100px;
@@ -201,13 +188,12 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .calendar-cell:hover { background: #f1f5f9; }
-        .calendar-cell.other-month { opacity: 0.3; }
-        .day-num { font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block; }
+        .calendar-cell:hover { background: #f8fafc; }
+        .day-n { font-weight: bold; font-size: 12px; color: #94a3b8; display: block; margin-bottom: 4px; }
         .turno-pill {
             background: var(--primary);
             color: white;
-            font-size: 10px;
+            font-size: 9px;
             padding: 2px 4px;
             border-radius: 4px;
             margin-bottom: 2px;
@@ -216,39 +202,7 @@
             text-overflow: ellipsis;
         }
 
-        /* Notificaciones Badge */
-        .badge {
-            background: var(--danger);
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 10px;
-            position: absolute;
-            top: -5px;
-            right: -5px;
-        }
-
-        /* FAB */
-        .fab {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
-            cursor: pointer;
-            z-index: 900;
-            border: none;
-        }
-
-        /* Modal */
+        /* --- MODALES --- */
         .modal {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -269,18 +223,36 @@
             max-height: 90vh;
             overflow-y: auto;
             padding: 25px;
-            position: relative;
         }
         .modal-large { max-width: 900px; }
 
-        /* Chat IA */
-        .chat-box { height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 10px; border: 1px solid #eee; }
-        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; line-height: 1.4; }
-        .msg-user { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg-bot { align-self: flex-start; background: white; border: 1px solid #eee; border-bottom-left-radius: 2px; }
+        /* --- ASISTENTE IA --- */
+        .chat-box { height: 400px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #f9fafb; border-radius: 10px; }
+        .msg { padding: 10px 15px; border-radius: 15px; max-width: 80%; line-height: 1.5; font-size: 14px; }
+        .msg-u { align-self: flex-end; background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .msg-b { align-self: flex-start; background: white; border: 1px solid #e2e8f0; border-bottom-left-radius: 2px; }
 
-        /* Loader */
-        .loading-screen {
+        /* --- UTILIDADES --- */
+        .fab {
+            position: fixed; bottom: 30px; right: 30px; width: 60px; height: 60px;
+            background: var(--primary); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+            cursor: pointer; border: none; z-index: 900;
+        }
+
+        .badge {
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+
+        .loader-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.9);
             display: none; flex-direction: column;
@@ -290,35 +262,34 @@
         .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Gráficos */
         .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <div id="loadingScreen" class="loading-screen">
+    <div id="mainLoader" class="loader-overlay">
         <div class="spinner"></div>
-        <p style="margin-top: 15px; font-weight: 600;">Procesando...</p>
+        <p style="margin-top: 15px; font-weight: 600;">Sincronizando con la nube...</p>
     </div>
 
+    <!-- Menú Lateral -->
     <nav id="navOverlay" class="nav-overlay">
-        <span class="nav-close" onclick="toggleMenu()">&times;</span>
         <ul class="nav-links">
-            <li><a href="#" onclick="showView('patients')" class="active">👥 Pacientes</a></li>
-            <li><a href="#" onclick="showView('agenda')">📅 Agenda de Turnos</a></li>
-            <li><a href="#" onclick="showView('foodLib')">🍎 Biblioteca de Alimentos</a></li>
-            <li><a href="#" onclick="showView('calc')">⚖️ Calculadora IMC</a></li>
-            <li><a href="#" onclick="showView('assistant')">🤖 Asistente IA</a></li>
+            <li><a href="#" onclick="switchView('patients')" id="link-patients" class="active">👥 Mis Pacientes</a></li>
+            <li><a href="#" onclick="switchView('agenda')" id="link-agenda">📅 Agenda de Turnos</a></li>
+            <li><a href="#" onclick="switchView('foods')" id="link-foods">🍎 Biblioteca Alimentos</a></li>
+            <li><a href="#" onclick="switchView('calc')" id="link-calc">⚖️ Calculadora IMC</a></li>
+            <li><a href="#" onclick="switchView('ai')" id="link-ai">🤖 Asistente Virtual</a></li>
         </ul>
     </nav>
 
     <header>
-        <button class="hamburger-button" onclick="toggleMenu()">
+        <button class="hamburger" onclick="toggleMenu()">
             <span></span><span></span><span></span>
         </button>
-        <h2 id="headerTitle" style="margin:0; font-size: 1.2rem;">NutriManager</h2>
-        <div id="headerBadge" style="position:relative; cursor:pointer;" onclick="showUpcomingTurnos()">
+        <h2 id="viewTitle" style="margin:0; font-size: 1.1rem; color: var(--primary)">NutriManager Pro</h2>
+        <div style="position:relative; cursor:pointer" onclick="showNotifications()">
             🔔 <span id="notifCount" class="badge" style="display:none">0</span>
         </div>
     </header>
@@ -330,101 +301,80 @@
                 <input type="search" id="patientSearch" class="input-field" placeholder="🔍 Buscar paciente por nombre..." oninput="filterPatients()">
             </div>
             <div class="table-wrapper">
-                <table class="responsive-table">
+                <table class="res-table">
                     <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Teléfono</th>
-                            <th>Último Peso</th>
-                            <th>Acciones</th>
-                        </tr>
+                        <tr><th>Paciente</th><th>Teléfono</th><th>Último Peso</th><th>Acciones</th></tr>
                     </thead>
-                    <tbody id="patientTableBody">
-                        <!-- Carga Dinámica -->
-                    </tbody>
+                    <tbody id="patientListBody"></tbody>
                 </table>
             </div>
             <button class="fab" onclick="openPatientModal()">+</button>
         </section>
 
-        <!-- VISTA: DETALLE DE PACIENTE (Mediciones) -->
+        <!-- VISTA: DETALLE PACIENTE / EVOLUCIÓN -->
         <section id="view-details" class="view-section">
-            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <button class="btn btn-ghost" onclick="showView('patients')">⬅ Volver</button>
+            <div style="display:flex; justify-content: space-between; margin-bottom: 20px;">
+                <button class="btn btn-ghost" onclick="switchView('patients')">⬅ Atrás</button>
                 <div style="display:flex; gap:10px;">
-                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Generar Plan</button>
-                    <button class="btn btn-ghost" onclick="exportToPdf()">📄 PDF</button>
+                    <button class="btn btn-primary" onclick="generateSmartPlan()">✨ Plan Inteligente</button>
+                    <button class="btn btn-ghost" onclick="exportEvolutionPDF()">📄 PDF</button>
                 </div>
             </div>
 
             <div class="card">
-                <h2 id="detailPatientName" style="margin-top:0">Nombre del Paciente</h2>
+                <h2 id="detName" style="margin-top:0">Cargando...</h2>
                 <div class="charts-grid">
-                    <div style="height: 250px;"><canvas id="weightChart"></canvas></div>
-                    <div style="height: 250px;"><canvas id="fatChart"></canvas></div>
+                    <div style="height: 200px;"><canvas id="chartWeight"></canvas></div>
+                    <div style="height: 200px;"><canvas id="chartFat"></canvas></div>
                 </div>
             </div>
 
-            <h3>Historial de Mediciones</h3>
-            <div id="measurementsHistory">
-                <!-- Tarjetas de mediciones -->
-            </div>
-            <button class="fab" onclick="openMeasurementModal()">+</button>
+            <h3>Historial Antropométrico</h3>
+            <div id="measurementList"></div>
+            <button class="fab" onclick="openMeasureModal()">+</button>
         </section>
 
-        <!-- VISTA: AGENDA (Calendario) -->
+        <!-- VISTA: AGENDA CALENDARIO -->
         <section id="view-agenda" class="view-section">
             <div class="card">
-                <div class="calendar-header">
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <button class="btn btn-ghost" onclick="changeMonth(-1)">◀</button>
-                    <h2 id="calendarMonthYear" style="margin:0">Enero 2024</h2>
+                    <h3 id="calendarMonthLabel" style="margin:0">Mes Año</h3>
                     <button class="btn btn-ghost" onclick="changeMonth(1)">▶</button>
                 </div>
-                <div id="calendarGrid" class="calendar-grid">
-                    <!-- Dinámico -->
-                </div>
+                <div id="calendarGrid" class="calendar-grid"></div>
             </div>
         </section>
 
         <!-- VISTA: ALIMENTOS -->
-        <section id="view-foodLib" class="view-section">
-            <div class="card" style="display:flex; gap:10px;">
-                <input type="search" id="foodSearch" class="input-field" placeholder="🍎 Buscar alimento..." oninput="renderFoodLibrary()">
+        <section id="view-foods" class="view-section">
+            <div class="card" style="display:flex; gap:10px">
+                <input type="search" id="foodSearch" class="input-field" style="margin:0" placeholder="🍎 Buscar alimento..." oninput="renderFoods()">
                 <button class="btn btn-primary" onclick="openFoodModal()">+</button>
             </div>
-            <div id="foodGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px;">
-                <!-- Dinámico -->
-            </div>
+            <div id="foodGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px"></div>
         </section>
 
         <!-- VISTA: CALCULADORA -->
         <section id="view-calc" class="view-section">
-            <div class="card" style="max-width: 500px; margin: 0 auto;">
+            <div class="card" style="max-width: 500px; margin: 0 auto">
                 <h2>Calculadora de IMC</h2>
-                <div class="input-group">
-                    <label>Peso (kg)</label>
-                    <input type="number" id="calcPeso" class="input-field" placeholder="70">
-                </div>
-                <div class="input-group">
-                    <label>Altura (cm)</label>
-                    <input type="number" id="calcAltura" class="input-field" placeholder="175">
-                </div>
-                <button class="btn btn-primary" style="width:100%" onclick="quickCalc()">Calcular</button>
-                <div id="calcResult" class="card" style="margin-top:20px; text-align:center; display:none; background:#e0f2fe;">
-                    <!-- Resultado -->
-                </div>
+                <label>Peso (kg)</label><input type="number" id="calcW" class="input-field">
+                <label>Altura (cm)</label><input type="number" id="calcH" class="input-field">
+                <button class="btn btn-primary" style="width:100%" onclick="quickBMI()">Calcular Ahora</button>
+                <div id="bmiRes" class="card" style="display:none; margin-top:20px; text-align:center; background:#e0f2fe"></div>
             </div>
         </section>
 
         <!-- VISTA: ASISTENTE IA -->
-        <section id="view-assistant" class="view-section">
+        <section id="view-ai" class="view-section">
             <div class="card">
-                <div id="chatBox" class="chat-box">
-                    <div class="msg msg-bot">Hola, soy tu asistente nutricional. ¿Qué duda tienes hoy?</div>
+                <div id="chatWindow" class="chat-box">
+                    <div class="msg msg-b">Hola, soy tu asistente IA especializado en nutrición. ¿En qué puedo ayudarte hoy? Puedes preguntarme sobre recetas, macros o consejos para tus pacientes.</div>
                 </div>
-                <div style="display:flex; gap:10px; margin-top:15px;">
-                    <input type="text" id="chatInput" class="input-field" placeholder="Pregunta sobre alimentación, recetas..." onkeypress="if(event.key==='Enter') sendChatMessage()">
-                    <button class="btn btn-primary" onclick="sendChatMessage()">➤</button>
+                <div style="display:flex; gap:10px; margin-top:15px">
+                    <input type="text" id="chatInput" class="input-field" style="margin:0" placeholder="Escribe tu consulta..." onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button class="btn btn-primary" onclick="sendMessage()">➤</button>
                 </div>
             </div>
         </section>
@@ -436,66 +386,50 @@
     <div id="modalPatient" class="modal">
         <div class="modal-content">
             <h2 id="modalPatientTitle">Nuevo Paciente</h2>
-            <form id="patientForm">
-                <input type="hidden" id="p_id">
-                <div class="input-group"><label>Nombre y Apellido</label><input type="text" id="p_nombre" class="input-field" required></div>
+            <form id="formPatient">
+                <input type="hidden" id="edit_p_id">
+                <label>Nombre Completo</label><input type="text" id="p_name" class="input-field" required>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div class="input-group"><label>Fecha Nacimiento</label><input type="date" id="p_nacimiento" class="input-field" required></div>
-                    <div class="input-group"><label>Sexo</label><select id="p_sexo" class="input-field"><option value="masculino">Masculino</option><option value="femenino">Femenino</option></select></div>
+                    <div><label>Nacimiento</label><input type="date" id="p_birth" class="input-field" required></div>
+                    <div><label>Sexo</label><select id="p_gender" class="input-field"><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select></div>
                 </div>
-                <div class="input-group"><label>Teléfono (WhatsApp)</label><input type="tel" id="p_tel" class="input-field" placeholder="54911..." required></div>
-                <div class="input-group"><label>Peso Inicial (kg)</label><input type="number" id="p_peso" step="0.1" class="input-field" required></div>
-                <div style="display:flex; gap:10px; margin-top:10px">
-                    <button type="submit" class="btn btn-primary" style="flex:1">Guardar</button>
-                    <button type="button" class="btn btn-ghost" onclick="closeModals()">Cancelar</button>
-                </div>
+                <label>WhatsApp (ej: 54911...)</label><input type="tel" id="p_phone" class="input-field" required>
+                <label>Peso Inicial (kg)</label><input type="number" id="p_weight" step="0.1" class="input-field" required>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Paciente</button>
+                <button type="button" class="btn btn-ghost" style="width:100%; margin-top:10px" onclick="closeModals()">Cancelar</button>
             </form>
         </div>
     </div>
 
     <!-- Modal Medición -->
-    <div id="modalMeasurement" class="modal">
+    <div id="modalMeasure" class="modal">
         <div class="modal-content">
-            <h2>Registrar Medición</h2>
-            <form id="measurementForm">
+            <h2>Nueva Evaluación</h2>
+            <form id="formMeasure">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div class="input-group"><label>Peso Actual (kg)</label><input type="number" id="m_peso" step="0.1" class="input-field" required></div>
-                    <div class="input-group"><label>Peso Objetivo (kg)</label><input type="number" id="m_objetivo" step="0.1" class="input-field" required></div>
+                    <div><label>Peso Actual (kg)</label><input type="number" id="m_w" step="0.1" class="input-field" required></div>
+                    <div><label>Peso Meta (kg)</label><input type="number" id="m_goal" step="0.1" class="input-field" required></div>
                 </div>
-                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:8px">
-                    <div class="input-group"><label>PT</label><input type="number" id="m_pt" step="0.1" class="input-field"></div>
-                    <div class="input-group"><label>PSE</label><input type="number" id="m_pse" step="0.1" class="input-field"></div>
-                    <div class="input-group"><label>PSI</label><input type="number" id="m_psi" step="0.1" class="input-field"></div>
-                    <div class="input-group"><label>PA</label><input type="number" id="m_pa" step="0.1" class="input-field"></div>
+                <p style="font-weight: bold; margin-bottom: 5px;">Indicadores (Pliegues mm)</p>
+                <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:5px">
+                    <div><label>PT</label><input type="number" id="m_pt" step="0.1" class="input-field"></div>
+                    <div><label>PSE</label><input type="number" id="m_pse" step="0.1" class="input-field"></div>
+                    <div><label>PSI</label><input type="number" id="m_psi" step="0.1" class="input-field"></div>
+                    <div><label>PA</label><input type="number" id="m_pa" step="0.1" class="input-field"></div>
                 </div>
-                <div class="input-group">
-                    <label>Actividad Física</label>
-                    <select id="m_actividad" class="input-field">
-                        <option value="sedentario">Sedentario</option>
-                        <option value="ligero">Ligero (1-3 días)</option>
-                        <option value="moderado">Moderado (3-5 días)</option>
-                        <option value="fuerte">Fuerte (6-7 días)</option>
-                    </select>
-                </div>
+                <label>Actividad Física</label>
+                <select id="m_act" class="input-field">
+                    <option value="sedentario">Sedentario</option>
+                    <option value="ligero">Ligero (1-2 días)</option>
+                    <option value="moderado">Moderado (3-5 días)</option>
+                    <option value="fuerte">Fuerte (Atleta)</option>
+                </select>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div class="input-group"><label>Horas Sueño</label><input type="number" id="m_sueno" class="input-field" value="7"></div>
-                    <div class="input-group"><label>Nivel Estrés (1-10)</label><input type="range" id="m_estres" min="1" max="10" style="width:100%"></div>
+                    <div><label>Sueño (hs)</label><input type="number" id="m_sleep" value="7" class="input-field"></div>
+                    <div><label>Estrés (1-10)</label><input type="range" id="m_stress" min="1" max="10" style="width:100%"></div>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px">Guardar Medición</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">Registrar Evaluación</button>
             </form>
-        </div>
-    </div>
-
-    <!-- Modal Plan Inteligente (Display) -->
-    <div id="modalPlan" class="modal">
-        <div class="modal-content modal-large">
-            <header>
-                <h2 style="margin:0">✨ Plan Inteligente Generado</h2>
-                <button onclick="closeModals()" style="border:none; background:none; font-size:24px; cursor:pointer;">&times;</button>
-            </header>
-            <div id="planContent" style="margin-top:20px;">
-                <!-- Dinámico -->
-            </div>
         </div>
     </div>
 
@@ -503,16 +437,15 @@
     <div id="modalTurno" class="modal">
         <div class="modal-content">
             <h2 id="modalTurnoTitle">Agendar Turno</h2>
-            <form id="turnoForm">
-                <input type="hidden" id="t_id">
-                <input type="hidden" id="t_fecha">
-                <div class="input-group"><label>Paciente</label><input type="text" id="t_paciente" class="input-field" required></div>
+            <form id="formTurno">
+                <input type="hidden" id="t_id"><input type="hidden" id="t_date">
+                <label>Nombre del Paciente</label><input type="text" id="t_pat" class="input-field" required>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px">
-                    <div class="input-group"><label>Hora</label><input type="time" id="t_hora" class="input-field" required></div>
-                    <div class="input-group"><label>WhatsApp</label><input type="tel" id="t_whatsapp" class="input-field" required></div>
+                    <div><label>Hora</label><input type="time" id="t_time" class="input-field" required></div>
+                    <div><label>WhatsApp</label><input type="tel" id="t_wa" class="input-field" required></div>
                 </div>
-                <div class="input-group"><label>Obra Social</label><input type="text" id="t_os" class="input-field"></div>
-                <div class="input-group"><label>Observaciones</label><textarea id="t_obs" class="input-field" rows="2"></textarea></div>
+                <label>Obra Social</label><input type="text" id="t_os" class="input-field">
+                <label>Observaciones</label><textarea id="t_obs" class="input-field" rows="2"></textarea>
                 <div style="display:flex; gap:10px">
                     <button type="submit" class="btn btn-primary" style="flex:1">Guardar</button>
                     <button type="button" id="btnDelTurno" class="btn btn-danger" style="display:none" onclick="deleteTurno()">Borrar</button>
@@ -524,100 +457,96 @@
     <!-- Modal Alimento -->
     <div id="modalFood" class="modal">
         <div class="modal-content">
-            <h2>Gestionar Alimento</h2>
-            <form id="foodForm">
-                <input type="hidden" id="f_id">
-                <div class="input-group"><label>Nombre</label><input type="text" id="f_nombre" class="input-field" required></div>
-                <div class="input-group">
-                    <label>Categoría</label>
-                    <select id="f_cat" class="input-field">
-                        <option value="proteina">Proteína</option>
-                        <option value="carbohidrato">Carbohidrato</option>
-                        <option value="grasa">Grasa</option>
-                        <option value="verdura">Verdura / Fibra</option>
-                    </select>
+            <h2>Gestión de Alimento</h2>
+            <form id="formFood">
+                <label>Nombre</label><input type="text" id="f_n" class="input-field" required>
+                <label>Categoría</label>
+                <select id="f_c" class="input-field">
+                    <option value="proteina">Proteína</option>
+                    <option value="carbohidrato">Carbohidrato</option>
+                    <option value="grasa">Grasa</option>
+                    <option value="verdura">Verdura / Fibra</option>
+                </select>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px">
+                    <div><label>Prot (g)</label><input type="number" step="0.1" id="f_p" class="input-field"></div>
+                    <div><label>Carb (g)</label><input type="number" step="0.1" id="f_ca" class="input-field"></div>
+                    <div><label>Grasa (g)</label><input type="number" step="0.1" id="f_g" class="input-field"></div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px">
-                    <div class="input-group"><label>Prot (g)</label><input type="number" step="0.1" id="f_p" class="input-field" required></div>
-                    <div class="input-group"><label>Carb (g)</label><input type="number" step="0.1" id="f_c" class="input-field" required></div>
-                    <div class="input-group"><label>Grasa (g)</label><input type="number" step="0.1" id="f_g" class="input-field" required></div>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px">Guardar Alimento</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">Guardar Alimento</button>
             </form>
         </div>
     </div>
 
+    <!-- Modal Plan Resultado -->
+    <div id="modalPlan" class="modal"><div class="modal-content modal-large">
+        <header style="display:flex; justify-content:space-between"><h2>✨ Plan Nutricional Sugerido</h2><button onclick="closeModals()" style="border:none; background:none; font-size:24px; cursor:pointer">&times;</button></header>
+        <div id="planContainer" style="margin-top:20px"></div>
+    </div></div>
+
     <script>
-        // 1. CONFIGURACIÓN Y ESTADO
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nutri-manager-v2';
+        // 1. FIREBASE CONFIG & ESTRUCTURA DE DATOS (REGLA 1)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nutrimanager-pro-v4';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "", // Se requiere apiKey funcional en el entorno real
+            apiKey: "AIzaSyASQiAEMuqx4jAP6q0a4kwHQHcQOYC_EcQ",
             authDomain: "medicion-imc.firebaseapp.com",
             projectId: "medicion-imc",
             storageBucket: "medicion-imc.appspot.com",
             messagingSenderId: "544674177518",
             appId: "1:544674177518:web:c060519e65a2913e0beeff"
         };
-        
-        // Inicialización
+        const getColPath = (col) => `artifacts/${appId}/public/data/${col}`;
+
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // Rutas de colecciones siguiendo REGLA 1
-        const getColPath = (name) => `artifacts/${appId}/public/data/${name}`;
-
         let state = {
-            currentView: 'patients',
-            user: null,
+            view: 'patients',
             patients: [],
-            selectedPatientId: null,
-            selectedPatient: null,
-            measurements: [],
-            foodLibrary: [],
+            foods: [],
             turnos: [],
-            currentCalendarDate: new Date()
+            selPat: null,
+            measures: [],
+            calDate: new Date(),
+            user: null
         };
 
-        // 2. AUTENTICACIÓN Y CARGA INICIAL (REGLA 3)
+        // 2. INICIO Y AUTENTICACIÓN (REGLA 3)
         document.addEventListener('DOMContentLoaded', async () => {
             showLoader(true);
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await auth.signInWithCustomToken(__initial_auth_token);
-                } else {
-                    await auth.signInAnonymously();
-                }
+                } else { await auth.signInAnonymously(); }
                 
                 auth.onAuthStateChanged(user => {
-                    state.user = user;
-                    if (user) initializeDataListeners();
+                    if (user) {
+                        state.user = user;
+                        initDataListeners();
+                    }
                 });
-            } catch (err) {
-                console.error("Auth error:", err);
-                showErrorMessage("Error de conexión. Por favor recargue.");
-            }
+            } catch (e) { console.error("Auth Error", e); showLoader(false); }
         });
 
-        function initializeDataListeners() {
-            if (!state.user) return;
-
-            // Listeners en tiempo real siguiendo REGLA 1
+        function initDataListeners() {
+            // Escuchar Pacientes
             db.collection(getColPath("pacientes")).orderBy("nombreCompleto").onSnapshot(snap => {
                 state.patients = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if(state.currentView === 'patients') renderPatients();
-            }, err => console.error("Patients error:", err));
+                if (state.view === 'patients') renderPatients();
+            });
 
+            // Escuchar Alimentos
             db.collection(getColPath("alimentos")).orderBy("name").onSnapshot(snap => {
-                state.foodLibrary = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if(state.currentView === 'foodLib') renderFoodLibrary();
-            }, err => console.error("Food error:", err));
+                state.foods = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (state.view === 'foods') renderFoods();
+            });
 
+            // Escuchar Turnos
             db.collection(getColPath("turnos")).onSnapshot(snap => {
                 state.turnos = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if(state.currentView === 'agenda') renderCalendar();
-                updateNotifBadge();
-            }, err => console.error("Turnos error:", err));
+                if (state.view === 'agenda') renderCalendar();
+                updateBadge();
+            });
 
             showLoader(false);
         }
@@ -625,342 +554,326 @@
         // 3. NAVEGACIÓN
         function toggleMenu() { document.getElementById('navOverlay').classList.toggle('active'); }
         
-        function showView(view, params = {}) {
-            state.currentView = view;
-            if (document.getElementById('navOverlay').classList.contains('active')) toggleMenu();
-            
+        function switchView(view, params = {}) {
+            state.view = view;
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
             
-            const target = document.getElementById(`view-${view}`);
-            if(target) target.classList.add('active');
-            
-            // Lógica por vista
-            if(view === 'patients') renderPatients();
-            if(view === 'agenda') renderCalendar();
-            if(view === 'foodLib') renderFoodLibrary();
-            if(view === 'details') loadPatientDetails(params.id);
-            
+            document.getElementById(`view-${view}`).classList.add('active');
+            const link = document.getElementById(`link-${view === 'details' ? 'patients' : view}`);
+            if (link) link.classList.add('active');
+
+            if (view === 'patients') renderPatients();
+            if (view === 'agenda') renderCalendar();
+            if (view === 'foods') renderFoods();
+            if (view === 'details') loadDetails(params.id);
+
+            if (document.getElementById('navOverlay').classList.contains('active')) toggleMenu();
             window.scrollTo(0,0);
         }
 
-        // 4. LÓGICA PACIENTES
-        function renderPatients(filtered = null) {
-            const list = filtered || state.patients;
-            const body = document.getElementById('patientTableBody');
-            body.innerHTML = list.map(p => `
-                <tr>
-                    <td data-label="Nombre" style="font-weight:bold; color:var(--primary); cursor:pointer" onclick="showView('details', {id:'${p.id}'})">${p.nombreCompleto}</td>
+        // 4. MÓDULO PACIENTES
+        function renderPatients() {
+            const val = document.getElementById('patientSearch').value.toLowerCase();
+            const filtered = state.patients.filter(p => p.nombreCompleto.toLowerCase().includes(val));
+            const body = document.getElementById('patientListBody');
+            body.innerHTML = filtered.map(p => `
+                <tr onclick="switchView('details', {id:'${p.id}'})" style="cursor:pointer">
+                    <td data-label="Paciente" style="color:var(--primary); font-weight:bold">${p.nombreCompleto}</td>
                     <td data-label="Teléfono">${p.telefono}</td>
                     <td data-label="Último Peso">${p.ultimoPeso || '-'} kg</td>
                     <td data-label="Acciones">
-                        <button class="btn btn-ghost" style="padding:5px 10px" onclick="openPatientModal('${p.id}')">✏️</button>
+                        <button class="btn btn-ghost" style="padding:6px 10px" onclick="event.stopPropagation(); editPatient('${p.id}')">✏️</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        function filterPatients() {
-            const val = document.getElementById('patientSearch').value.toLowerCase();
-            renderPatients(state.patients.filter(p => p.nombreCompleto.toLowerCase().includes(val)));
-        }
+        function filterPatients() { renderPatients(); }
 
-        // 5. DETALLES Y MEDICIONES
-        let weightChart = null, fatChart = null;
-
-        async function loadPatientDetails(id) {
-            state.selectedPatientId = id;
-            const p = state.patients.find(x => x.id === id);
-            state.selectedPatient = p;
-            document.getElementById('detailPatientName').innerText = p.nombreCompleto;
-
-            // Ruta de subcolección según REGLA 1 (mismo prefijo)
+        async function loadDetails(id) {
+            state.selPat = state.patients.find(x => x.id === id);
+            document.getElementById('detName').innerText = state.selPat.nombreCompleto;
+            
+            // Cargar Mediciones (Sub-colección)
             db.collection(getColPath("pacientes")).doc(id).collection("mediciones").orderBy("fecha", "asc").onSnapshot(snap => {
-                state.measurements = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderMeasurements();
-                renderCharts();
-            }, err => console.error("Measurements error:", err));
+                state.measures = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderMeasures();
+                renderEvolutionCharts();
+            });
         }
 
-        function renderMeasurements() {
-            const container = document.getElementById('measurementsHistory');
-            container.innerHTML = [...state.measurements].reverse().map(m => {
-                const r = m.resultados;
-                const date = m.fecha.toDate().toLocaleDateString();
-                return `
-                    <div class="card" style="cursor:pointer" onclick="viewMeasurementDetails('${m.id}')">
-                        <div style="display:flex; justify-content:space-between; align-items:center">
-                            <strong>${date}</strong>
-                            <span class="btn btn-ghost" style="padding:4px 8px; font-size:12px">Ver Detalles</span>
-                        </div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; margin-top:10px; font-size:14px">
-                            <span>Peso: <b>${r.pesoActual} kg</b></span>
-                            <span>Grasa: <b>${r.tejidoGrasoPorcentaje.toFixed(1)}%</b></span>
-                        </div>
+        function renderMeasures() {
+            const list = document.getElementById('measurementList');
+            list.innerHTML = [...state.measures].reverse().map(m => `
+                <div class="card" style="cursor:pointer" onclick="viewSavedPlan('${m.id}')">
+                    <div style="display:flex; justify-content:space-between; align-items:center">
+                        <strong>📅 ${m.fecha.toDate().toLocaleDateString()}</strong>
+                        <span style="font-size:12px; color:var(--primary)">${m.plan ? 'Plan Guardado' : 'Ver Detalles'}</span>
                     </div>
-                `;
-            }).join('');
+                    <div style="display:grid; grid-template-columns: repeat(2, 1fr); margin-top:10px; font-size:14px">
+                        <span>Peso: <b>${m.resultados.pesoActual} kg</b></span>
+                        <span>Grasa: <b>${m.resultados.tejidoGrasoPorcentaje.toFixed(1)}%</b></span>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function renderCharts() {
-            if(state.measurements.length < 2) return;
-            const labels = state.measurements.map(m => m.fecha.toDate().toLocaleDateString());
-            const weights = state.measurements.map(m => m.resultados.pesoActual);
-            const fats = state.measurements.map(m => m.resultados.tejidoGrasoPorcentaje);
+        // 5. GRÁFICOS DE EVOLUCIÓN
+        let wChart, fChart;
+        function renderEvolutionCharts() {
+            if (state.measures.length < 2) return;
+            const labels = state.measures.map(m => m.fecha.toDate().toLocaleDateString());
+            const weights = state.measures.map(m => m.resultados.pesoActual);
+            const fats = state.measures.map(m => m.resultados.tejidoGrasoPorcentaje);
 
-            if(weightChart) weightChart.destroy();
-            weightChart = new Chart(document.getElementById('weightChart'), {
+            if (wChart) wChart.destroy();
+            wChart = new Chart(document.getElementById('chartWeight'), {
                 type: 'line',
                 data: { labels, datasets: [{ label: 'Peso (kg)', data: weights, borderColor: '#4361ee', tension: 0.3, fill: true, backgroundColor: 'rgba(67, 97, 238, 0.1)' }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
 
-            if(fatChart) fatChart.destroy();
-            fatChart = new Chart(document.getElementById('fatChart'), {
+            if (fChart) fChart.destroy();
+            fChart = new Chart(document.getElementById('chartFat'), {
                 type: 'line',
                 data: { labels, datasets: [{ label: 'Grasa (%)', data: fats, borderColor: '#f72585', tension: 0.3 }] },
                 options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        // 6. AGENDA Y CALENDARIO
+        // 6. AGENDA (CALENDARIO)
         function renderCalendar() {
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
-            const date = state.currentCalendarDate;
-            const year = date.getFullYear();
-            const month = date.getMonth();
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const prevMonthLastDay = new Date(year, month, 0).getDate();
-            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('calendarMonthYear').innerText = `${monthNames[month]} ${year}`;
+            
+            const year = state.calDate.getFullYear(), month = state.calDate.getMonth();
+            const first = new Date(year, month, 1).getDay();
+            const days = new Date(year, month + 1, 0).getDate();
+            const names = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            
+            document.getElementById('calendarMonthLabel').innerText = `${names[month]} ${year}`;
 
-            ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'].forEach(d => {
-                const el = document.createElement('div'); el.className = 'calendar-day-label'; el.innerText = d; grid.appendChild(el);
+            // Cabeceras
+            ['D','L','M','M','J','V','S'].forEach(d => {
+                const el = document.createElement('div'); el.style.textAlign='center'; el.style.padding='5px'; el.style.fontWeight='bold'; el.innerText=d; grid.appendChild(el);
             });
 
-            for(let i = firstDay; i > 0; i--) {
-                const el = document.createElement('div'); el.className = 'calendar-cell other-month';
-                el.innerHTML = `<span class="day-num">${prevMonthLastDay - i + 1}</span>`;
-                grid.appendChild(el);
-            }
+            // Espacios vacíos
+            for(let i=0; i<first; i++) grid.appendChild(document.createElement('div'));
 
-            for(let d = 1; d <= daysInMonth; d++) {
-                const el = document.createElement('div'); el.className = 'calendar-cell';
-                const fullDate = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                el.innerHTML = `<span class="day-num">${d}</span>`;
-                const dayTurnos = state.turnos.filter(t => t.fecha === fullDate);
-                dayTurnos.forEach(t => {
-                    const pill = document.createElement('div');
-                    pill.className = 'turno-pill';
-                    pill.innerText = `${t.hora} ${t.paciente}`;
-                    pill.onclick = (e) => { e.stopPropagation(); openTurnoModal(t.id); };
-                    el.appendChild(pill);
+            // Días
+            for(let d=1; d<=days; d++) {
+                const dateS = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const cell = document.createElement('div');
+                cell.className = 'calendar-cell';
+                cell.innerHTML = `<span class="day-n">${d}</span>`;
+                
+                state.turnos.filter(t => t.date === dateS).forEach(t => {
+                    const p = document.createElement('div');
+                    p.className = 'turno-pill';
+                    p.innerText = `${t.time} ${t.paciente}`;
+                    p.onclick = (e) => { e.stopPropagation(); openEditTurno(t); };
+                    cell.appendChild(p);
                 });
-                el.onclick = () => openTurnoModal(null, fullDate);
-                grid.appendChild(el);
+
+                cell.onclick = () => openAddTurno(dateS);
+                grid.appendChild(cell);
             }
         }
 
-        function changeMonth(dir) {
-            state.currentCalendarDate.setMonth(state.currentCalendarDate.getMonth() + dir);
-            renderCalendar();
-        }
+        function changeMonth(dir) { state.calDate.setMonth(state.calDate.getMonth() + dir); renderCalendar(); }
 
-        // 7. PLAN INTELIGENTE Y PDF
+        // 7. PLAN INTELIGENTE (ALGORITMO)
         async function generateSmartPlan() {
-            if(state.measurements.length === 0) return alert("Registra una medición primero");
+            if (state.measures.length === 0) return alert("Faltan mediciones.");
             showLoader(true);
-            const last = state.measurements[state.measurements.length - 1];
-            const p = state.selectedPatient;
-            const hoy = new Date();
-            const nac = p.fechaNacimiento.toDate();
-            let edad = hoy.getFullYear() - nac.getFullYear();
-            if(hoy.getMonth() < nac.getMonth()) edad--;
-
-            let bmr = (10 * last.resultados.pesoActual) + (6.25 * 170) - (5 * edad) + (p.sexo === 'masculino' ? 5 : -161);
-            const factorAct = { sedentario: 1.2, ligero: 1.375, moderado: 1.55, fuerte: 1.725 }[last.objetivos.actividadTipo] || 1.2;
-            let tdee = bmr * factorAct;
-            const kcalTarget = last.objetivos.pesoObjetivo < last.resultados.pesoActual ? tdee - 500 : tdee + 300;
             
-            const prots = state.foodLibrary.filter(f => f.category === 'proteina');
-            const carbs = state.foodLibrary.filter(f => f.category === 'carbohidrato');
-            const fibers = state.foodLibrary.filter(f => f.category === 'verdura');
+            const last = state.measures[state.measures.length - 1];
+            const p = state.selPat;
+            const nac = p.fechaNacimiento.toDate();
+            let edad = new Date().getFullYear() - nac.getFullYear();
 
-            const menuHTML = `
-                <div class="card" style="border-left: 5px solid var(--primary)">
-                    <h3>Meta Diaria: ${Math.round(kcalTarget)} kcal</h3>
-                    <p><b>Proteína:</b> ${Math.round(kcalTarget*0.3/4)}g | <b>Carbs:</b> ${Math.round(kcalTarget*0.4/4)}g | <b>Grasas:</b> ${Math.round(kcalTarget*0.3/9)}g</p>
+            // Lógica Mifflin-St Jeor
+            let bmr = (10 * last.resultados.pesoActual) + (6.25 * 170) - (5 * edad) + (p.sexo === 'masculino' ? 5 : -161);
+            const factor = { sedentario: 1.2, ligero: 1.375, moderado: 1.55, fuerte: 1.725 }[last.objetivos.actividadTipo] || 1.2;
+            let tdee = bmr * factor;
+            let target = last.objetivos.pesoObjetivo < last.resultados.pesoActual ? tdee - 500 : tdee + 300;
+
+            const prots = state.foods.filter(f => f.category === 'proteina').sort(() => 0.5 - Math.random());
+            const carbs = state.foods.filter(f => f.category === 'carbohidrato').sort(() => 0.5 - Math.random());
+
+            const html = `
+                <div class="card" style="border-left:5px solid var(--primary)">
+                    <h3>Meta Diaria: ${Math.round(target)} kcal</h3>
+                    <p><b>P:</b> ${Math.round(target*0.3/4)}g | <b>C:</b> ${Math.round(target*0.4/4)}g | <b>G:</b> ${Math.round(target*0.3/9)}g</p>
                 </div>
-                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px">
-                    <div class="card"><h4>🌅 Desayuno</h4><ul><li>100g ${prots[0]?.name || 'Huevo'}</li><li>60g ${carbs[0]?.name || 'Avena'}</li></ul></div>
-                    <div class="card"><h4>🥗 Almuerzo</h4><ul><li>150g ${prots[1]?.name || 'Pollo'}</li><li>100g ${carbs[1]?.name || 'Arroz'}</li></ul></div>
-                    <div class="card"><h4>☕ Merienda</h4><ul><li>1 Yogurt</li><li>30g Frutos Secos</li></ul></div>
-                    <div class="card"><h4>🍗 Cena</h4><ul><li>150g ${prots[2]?.name || 'Pescado'}</li><li>Verduras libres</li></ul></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+                    <div class="card"><h4>🌅 Desayuno</h4><ul><li>100g ${prots[0]?.name || 'Proteína'}</li><li>60g ${carbs[0]?.name || 'Carbs'}</li></ul></div>
+                    <div class="card"><h4>🥗 Almuerzo</h4><ul><li>150g ${prots[1]?.name || 'Proteína'}</li><li>100g ${carbs[1]?.name || 'Carbs'}</li></ul></div>
+                </div>
+                <div class="card" style="background:#fff9db">
+                    <h4>🏃 Estilo de Vida</h4>
+                    <p>${last.objetivos.actividadTipo === 'sedentario' ? 'Caminatas diarias de 30 min.' : 'Entrenamiento de fuerza 3 veces por semana.'}</p>
                 </div>
             `;
-            document.getElementById('planContent').innerHTML = menuHTML;
+
+            document.getElementById('planContainer').innerHTML = html;
             document.getElementById('modalPlan').classList.add('active');
-            await db.collection(getColPath("pacientes")).doc(p.id).collection("mediciones").doc(last.id).update({
-                planInteligente: { menu: menuHTML, kcal: Math.round(kcalTarget) }
-            });
+            
+            // Guardar en medición
+            await db.collection(getColPath("pacientes")).doc(p.id).collection("mediciones").doc(last.id).update({ plan: html });
             showLoader(false);
         }
 
-        async function exportToPdf() {
-            if(state.measurements.length === 0) return alert("No hay datos para exportar");
+        // 8. ASISTENTE IA (GEMINI)
+        async function sendMessage() {
+            const inp = document.getElementById('chatInput');
+            const box = document.getElementById('chatWindow');
+            if (!inp.value.trim()) return;
+            
+            const msg = inp.value; inp.value = '';
+            box.innerHTML += `<div class="msg msg-u">${msg}</div>`;
+            box.scrollTop = box.scrollHeight;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`, {
+                    method: 'POST',
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `Como nutricionista experto, responde: ${msg}` }] }] })
+                });
+                const data = await res.json();
+                const text = data.candidates[0].content.parts[0].text;
+                box.innerHTML += `<div class="msg msg-b">${text}</div>`;
+                box.scrollTop = box.scrollHeight;
+            } catch (e) { box.innerHTML += `<div class="msg msg-b" style="color:red">Error de conexión con IA.</div>`; }
+        }
+
+        // 9. EXPORTACIÓN PDF
+        async function exportEvolutionPDF() {
             showLoader(true);
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF();
-            const p = state.selectedPatient;
+            const p = state.selPat;
 
-            pdf.setFontSize(22);
-            pdf.setTextColor(67, 97, 238);
-            pdf.text(p.nombreCompleto, 105, 20, { align: 'center' });
-            pdf.setFontSize(14);
-            pdf.setTextColor(33, 37, 41);
-            pdf.text("Informe de Evolución Antropométrica", 105, 30, { align: 'center' });
+            pdf.setFontSize(22); pdf.text(p.nombreCompleto, 105, 20, { align: 'center' });
+            pdf.setFontSize(14); pdf.text("Informe de Evolución Antropométrica", 105, 30, { align: 'center' });
 
-            const charts = await html2canvas(document.querySelector('.charts-grid'));
-            pdf.addImage(charts.toDataURL('image/png'), 'PNG', 10, 40, 190, 80);
+            const canvas = await html2canvas(document.querySelector('.charts-grid'));
+            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 40, 190, 80);
 
             pdf.autoTable({
                 startY: 130,
-                head: [['Fecha', 'Peso (kg)', '% Grasa', 'Kg Grasa']],
-                body: state.measurements.map(m => [
+                head: [['Fecha', 'Peso (kg)', '% Grasa', 'Grasa (kg)']],
+                body: state.measures.map(m => [
                     m.fecha.toDate().toLocaleDateString(),
                     m.resultados.pesoActual,
                     m.resultados.tejidoGrasoPorcentaje.toFixed(1),
-                    m.resultados.kilosGrasaTotal.toFixed(1)
-                ]),
-                theme: 'striped',
-                headStyles: { fillColor: [67, 97, 238] }
+                    (m.resultados.pesoActual * m.resultados.tejidoGrasoPorcentaje / 100).toFixed(1)
+                ])
             });
 
             pdf.save(`Informe_${p.nombreCompleto.replace(' ','_')}.pdf`);
             showLoader(false);
         }
 
-        // 8. ASISTENTE IA
-        async function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const box = document.getElementById('chatBox');
-            const msg = input.value.trim();
-            if(!msg) return;
-            box.innerHTML += `<div class="msg msg-user">${msg}</div>`;
-            input.value = '';
-            box.scrollTop = box.scrollHeight;
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=`, {
-                    method: 'POST',
-                    body: JSON.stringify({ contents: [{ parts: [{ text: `Experto nutricionista: ${msg}` }] }] })
-                });
-                const data = await response.json();
-                const aiText = data.candidates[0].content.parts[0].text;
-                box.innerHTML += `<div class="msg msg-bot">${aiText}</div>`;
-                box.scrollTop = box.scrollHeight;
-            } catch (e) {
-                box.innerHTML += `<div class="msg msg-bot" style="color:red">Error de conexión con IA.</div>`;
-            }
-        }
-
-        // 9. HELPERS Y CRUD
-        function showLoader(show) { document.getElementById('loadingScreen').style.display = show ? 'flex' : 'none'; }
+        // 10. CRUD HELPERS
+        function showLoader(s) { document.getElementById('mainLoader').style.display = s ? 'flex' : 'none'; }
         function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('active')); }
-        function showErrorMessage(msg) { alert(msg); }
-        
-        function openPatientModal(id = null) {
-            const form = document.getElementById('patientForm');
-            form.reset();
-            document.getElementById('p_id').value = id || '';
-            document.getElementById('modalPatientTitle').innerText = id ? 'Editar Paciente' : 'Nuevo Paciente';
-            if(id) {
-                const p = state.patients.find(x => x.id === id);
-                document.getElementById('p_nombre').value = p.nombreCompleto;
-                document.getElementById('p_tel').value = p.telefono;
-                document.getElementById('p_peso').value = p.ultimoPeso;
-                document.getElementById('p_sexo').value = p.sexo;
-                document.getElementById('p_nacimiento').value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
-            }
-            document.getElementById('modalPatient').classList.add('active');
+
+        function openPatientModal() { 
+            document.getElementById('formPatient').reset(); 
+            document.getElementById('edit_p_id').value = ''; 
+            document.getElementById('modalPatientTitle').innerText = 'Nuevo Paciente';
+            document.getElementById('modalPatient').classList.add('active'); 
         }
 
-        document.getElementById('patientForm').onsubmit = async (e) => {
+        document.getElementById('formPatient').onsubmit = async (e) => {
             e.preventDefault();
             showLoader(true);
-            const id = document.getElementById('p_id').value;
+            const id = document.getElementById('edit_p_id').value;
             const data = {
-                nombreCompleto: document.getElementById('p_nombre').value,
-                telefono: document.getElementById('p_tel').value,
-                ultimoPeso: parseFloat(document.getElementById('p_peso').value),
-                sexo: document.getElementById('p_sexo').value,
-                fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('p_nacimiento').value)),
+                nombreCompleto: document.getElementById('p_name').value,
+                telefono: document.getElementById('p_phone').value,
+                ultimoPeso: parseFloat(document.getElementById('p_weight').value),
+                sexo: document.getElementById('p_gender').value,
+                fechaNacimiento: firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('p_birth').value)),
                 fechaUltimoRegistro: firebase.firestore.Timestamp.now()
             };
-            if(id) await db.collection(getColPath("pacientes")).doc(id).update(data);
+            if (id) await db.collection(getColPath("pacientes")).doc(id).update(data);
             else await db.collection(getColPath("pacientes")).add(data);
             closeModals();
             showLoader(false);
         };
 
-        function openMeasurementModal() { document.getElementById('measurementForm').reset(); document.getElementById('modalMeasurement').classList.add('active'); }
-        document.getElementById('measurementForm').onsubmit = async (e) => {
+        function editPatient(id) {
+            const p = state.patients.find(x => x.id === id);
+            document.getElementById('edit_p_id').value = id;
+            document.getElementById('p_name').value = p.nombreCompleto;
+            document.getElementById('p_phone').value = p.telefono;
+            document.getElementById('p_weight').value = p.ultimoPeso;
+            document.getElementById('p_gender').value = p.sexo;
+            document.getElementById('p_birth').value = p.fechaNacimiento.toDate().toISOString().split('T')[0];
+            document.getElementById('modalPatientTitle').innerText = 'Editar Paciente';
+            document.getElementById('modalPatient').classList.add('active');
+        }
+
+        function openMeasureModal() { document.getElementById('formMeasure').reset(); document.getElementById('modalMeasure').classList.add('active'); }
+        
+        document.getElementById('formMeasure').onsubmit = async (e) => {
             e.preventDefault();
             showLoader(true);
-            const peso = parseFloat(document.getElementById('m_peso').value);
+            const w = parseFloat(document.getElementById('m_w').value);
             const pt = parseFloat(document.getElementById('m_pt').value || 0);
             const pse = parseFloat(document.getElementById('m_pse').value || 0);
             const psi = parseFloat(document.getElementById('m_psi').value || 0);
             const pa = parseFloat(document.getElementById('m_pa').value || 0);
-            const grasaPct = ((pt + pse + psi + pa) * 0.153) + 5.783;
+            const fat = ((pt + pse + psi + pa) * 0.153) + 5.783;
+
             const data = {
                 fecha: firebase.firestore.Timestamp.now(),
                 objetivos: {
-                    pesoObjetivo: parseFloat(document.getElementById('m_objetivo').value),
-                    actividadTipo: document.getElementById('m_actividad').value,
-                    horasSueno: parseFloat(document.getElementById('m_sueno').value),
-                    nivelEstres: parseInt(document.getElementById('m_estres').value)
+                    pesoObjetivo: parseFloat(document.getElementById('m_goal').value),
+                    actividadTipo: document.getElementById('m_act').value,
+                    horasSueno: parseFloat(document.getElementById('m_sleep').value)
                 },
                 resultados: {
-                    pesoActual: peso,
-                    tejidoGrasoPorcentaje: grasaPct,
-                    kilosGrasaTotal: (peso * grasaPct) / 100
+                    pesoActual: w,
+                    tejidoGrasoPorcentaje: fat
                 }
             };
-            await db.collection(getColPath("pacientes")).doc(state.selectedPatientId).collection("mediciones").add(data);
-            await db.collection(getColPath("pacientes")).doc(state.selectedPatientId).update({ ultimoPeso: peso, fechaUltimoRegistro: data.fecha });
+
+            await db.collection(getColPath("pacientes")).doc(state.selPat.id).collection("mediciones").add(data);
+            await db.collection(getColPath("pacientes")).doc(state.selPat.id).update({ ultimoPeso: w, fechaUltimoRegistro: data.fecha });
             closeModals();
             showLoader(false);
         };
 
-        function openTurnoModal(id = null, date = null) {
-            const form = document.getElementById('turnoForm');
-            form.reset();
-            document.getElementById('t_id').value = id || '';
-            document.getElementById('t_fecha').value = date || '';
-            document.getElementById('btnDelTurno').style.display = id ? 'block' : 'none';
-            if(id) {
-                const t = state.turnos.find(x => x.id === id);
-                document.getElementById('t_paciente').value = t.paciente;
-                document.getElementById('t_hora').value = t.hora;
-                document.getElementById('t_whatsapp').value = t.whatsapp;
-                document.getElementById('t_os').value = t.os;
-                document.getElementById('t_obs').value = t.obs;
-            }
+        function openAddTurno(date) {
+            document.getElementById('formTurno').reset();
+            document.getElementById('t_id').value = '';
+            document.getElementById('t_date').value = date;
+            document.getElementById('modalTurnoTitle').innerText = `Turno: ${date}`;
+            document.getElementById('btnDelTurno').style.display = 'none';
             document.getElementById('modalTurno').classList.add('active');
         }
 
-        document.getElementById('turnoForm').onsubmit = async (e) => {
+        function openEditTurno(t) {
+            document.getElementById('t_id').value = t.id;
+            document.getElementById('t_pat').value = t.paciente;
+            document.getElementById('t_time').value = t.time;
+            document.getElementById('t_wa').value = t.whatsapp;
+            document.getElementById('btnDelTurno').style.display = 'block';
+            document.getElementById('modalTurno').classList.add('active');
+        }
+
+        document.getElementById('formTurno').onsubmit = async (e) => {
             e.preventDefault();
             const id = document.getElementById('t_id').value;
             const data = {
-                paciente: document.getElementById('t_paciente').value,
-                hora: document.getElementById('t_hora').value,
-                whatsapp: document.getElementById('t_whatsapp').value,
-                os: document.getElementById('t_os').value,
-                obs: document.getElementById('t_obs').value,
-                fecha: id ? state.turnos.find(x=>x.id===id).fecha : document.getElementById('t_fecha').value
+                paciente: document.getElementById('t_pat').value,
+                time: document.getElementById('t_time').value,
+                whatsapp: document.getElementById('t_wa').value,
+                date: id ? state.turnos.find(x=>x.id===id).date : document.getElementById('t_date').value
             };
             if(id) await db.collection(getColPath("turnos")).doc(id).update(data);
             else await db.collection(getColPath("turnos")).add(data);
@@ -968,83 +881,65 @@
         };
 
         async function deleteTurno() {
-            const id = document.getElementById('t_id').value;
-            if(id && confirm("¿Borrar turno?")) {
-                await db.collection(getColPath("turnos")).doc(id).delete();
+            if(confirm("¿Borrar?")) {
+                await db.collection(getColPath("turnos")).doc(document.getElementById('t_id').value).delete();
                 closeModals();
             }
         }
 
-        function openFoodModal() { document.getElementById('foodForm').reset(); document.getElementById('modalFood').classList.add('active'); }
-        document.getElementById('foodForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const data = {
-                name: document.getElementById('f_nombre').value,
-                category: document.getElementById('f_cat').value,
-                protein: parseFloat(document.getElementById('f_p').value),
-                carbs: parseFloat(document.getElementById('f_c').value),
-                fats: parseFloat(document.getElementById('f_g').value)
-            };
-            await db.collection(getColPath("alimentos")).add(data);
-            closeModals();
-        };
-
-        function renderFoodLibrary() {
-            const container = document.getElementById('foodGrid');
-            const val = document.getElementById('foodSearch').value.toLowerCase();
-            const filtered = state.foodLibrary.filter(f => f.name.toLowerCase().includes(val));
-            container.innerHTML = filtered.map(f => `
+        function renderFoods() {
+            const v = document.getElementById('foodSearch').value.toLowerCase();
+            document.getElementById('foodGrid').innerHTML = state.foods.filter(f => f.name.toLowerCase().includes(v)).map(f => `
                 <div class="card">
-                    <div style="display:flex; justify-content:space-between">
-                        <strong>${f.name}</strong>
-                        <span style="font-size:10px; padding:2px 5px; background:#eee; border-radius:5px">${f.category}</span>
-                    </div>
-                    <div style="font-size:12px; margin-top:8px; display:flex; gap:10px">
-                        <span>P: ${f.protein}g</span> <span>C: ${f.carbs}g</span> <span>G: ${f.fats}g</span>
-                    </div>
+                    <strong>${f.name}</strong><br><small>${f.category}</small>
+                    <div style="font-size:12px; margin-top:8px">P: ${f.protein}g | C: ${f.carbs}g | G: ${f.fats}g</div>
                 </div>
             `).join('');
         }
 
-        function updateNotifBadge() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const upcoming = state.turnos.filter(t => t.fecha >= todayStr);
-            const badge = document.getElementById('notifCount');
-            if(upcoming.length > 0) {
-                badge.innerText = upcoming.length;
-                badge.style.display = 'block';
-            } else badge.style.display = 'none';
+        function openFoodModal() { document.getElementById('formFood').reset(); document.getElementById('modalFood').classList.add('active'); }
+        document.getElementById('formFood').onsubmit = async (e) => {
+            e.preventDefault();
+            await db.collection(getColPath("alimentos")).add({
+                name: document.getElementById('f_n').value,
+                category: document.getElementById('f_c').value,
+                protein: parseFloat(document.getElementById('f_p').value || 0),
+                carbs: parseFloat(document.getElementById('f_ca').value || 0),
+                fats: parseFloat(document.getElementById('f_g').value || 0)
+            });
+            closeModals();
+        };
+
+        function quickBMI() {
+            const w = parseFloat(document.getElementById('calcW').value);
+            const h = parseFloat(document.getElementById('calcH').value) / 100;
+            if(!w || !h) return;
+            const bmi = (w / (h*h)).toFixed(1);
+            document.getElementById('bmiRes').innerHTML = `<h3>IMC: ${bmi}</h3>`;
+            document.getElementById('bmiRes').style.display = 'block';
         }
 
-        function showUpcomingTurnos() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const upcoming = state.turnos.filter(t => t.fecha >= todayStr).sort((a,b) => a.fecha.localeCompare(b.fecha));
-            if(upcoming.length === 0) return alert("No hay turnos próximos.");
-            let list = "Próximos Turnos:\n" + upcoming.slice(0,5).map(t => `- ${t.fecha}: ${t.paciente} (${t.hora})`).join('\n');
-            alert(list);
+        function updateBadge() {
+            const tStr = new Date().toISOString().split('T')[0];
+            const upcoming = state.turnos.filter(x => x.date >= tStr);
+            document.getElementById('notifCount').innerText = upcoming.length;
+            document.getElementById('notifCount').style.display = upcoming.length > 0 ? 'block' : 'none';
         }
 
-        function quickCalc() {
-            const p = parseFloat(document.getElementById('calcPeso').value);
-            const a = parseFloat(document.getElementById('calcAltura').value) / 100;
-            if(!p || !a) return;
-            const imc = (p / (a*a)).toFixed(1);
-            let cat = imc < 18.5 ? 'Bajo peso' : imc < 25 ? 'Normal' : imc < 30 ? 'Sobrepeso' : 'Obesidad';
-            const res = document.getElementById('calcResult');
-            res.innerHTML = `<h3>IMC: ${imc}</h3><p>Categoría: <b>${cat}</b></p>`;
-            res.style.display = 'block';
+        function showNotifications() {
+            const tStr = new Date().toISOString().split('T')[0];
+            const list = state.turnos.filter(x => x.date >= tStr).sort((a,b) => a.date.localeCompare(b.date));
+            if(list.length === 0) return alert("No hay turnos próximos.");
+            alert("Próximos Turnos:\n" + list.slice(0,5).map(x => `- ${x.date}: ${x.paciente}`).join('\n'));
         }
 
-        async function viewMeasurementDetails(id) {
-            const m = state.measurements.find(x => x.id === id);
-            if(m && m.planInteligente) {
-                document.getElementById('planContent').innerHTML = m.planInteligente.menu;
+        function viewSavedPlan(mid) {
+            const m = state.measures.find(x => x.id === mid);
+            if(m && m.plan) {
+                document.getElementById('planContainer').innerHTML = m.plan;
                 document.getElementById('modalPlan').classList.add('active');
-            } else {
-                alert("Detalles básicos:\nPeso: " + m.resultados.pesoActual + " kg\nGrasa: " + m.resultados.tejidoGrasoPorcentaje.toFixed(1) + "%");
             }
         }
-
     </script>
 </body>
 </html>
